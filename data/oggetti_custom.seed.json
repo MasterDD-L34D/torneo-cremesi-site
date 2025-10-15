@@ -28,5 +28,85 @@
       "Non cumulare con altre fonti di sfocatura",
       "Tema: ombre/illusione"
     ]
+  },
+  {
+    "nome": "Mantello delle Rovine Ardenti",
+    "slot": "Spalle",
+    "li": 12,
+    "prezzo": 1750,
+    "rarita": "Non comune",
+    "hr": false,
+    "azioni": "Standard; 1/g; 24 ore",
+    "ts": "—",
+    "effetto": "+2 alle prove di Sopravvivenza (seguire tracce); attiva continual flame sul mantello",
+    "dettagli": [
+      "Fiamma ambrata non causa danno",
+      "Illumina come luce piena; non contrasta automaticamente aree di oscurità più potenti",
+      "Se rimosso si spegne; si riattiva quando indossato"
+    ]
+  },
+  {
+    "nome": "Occhio del Ciclope",
+    "slot": "Occhi",
+    "li": 10,
+    "prezzo": 1750,
+    "rarita": "Non comune",
+    "hr": false,
+    "azioni": "Standard; 1/g; 10 min",
+    "ts": "—",
+    "effetto": "Vedi normalmente attraverso nebbie o fumo e ottieni vista arcana",
+    "dettagli": [
+      "Percepisci aure magiche entro 36 m; CD 15 + LI per riconoscere la scuola",
+      "Superando la CD di 10 riconosci la natura dell’incantesimo attivo",
+      "Le aure appaiono come filamenti di luce"
+    ]
+  },
+  {
+    "nome": "Filamento della Spirale",
+    "slot": "Collo",
+    "li": 3,
+    "prezzo": 1750,
+    "rarita": "Non comune",
+    "hr": false,
+    "azioni": "—",
+    "ts": "—",
+    "effetto": "Come Phylactery of Faithfulness; +1 uso/g channel energy; +2 sacro ai TS vs risucchi di energia o effetti di morte",
+    "dettagli": [
+      "Non concede channel energy se il portatore non la possiede",
+      "Avverte senza azione quando un atto contrasta fede o allineamento",
+      "Bonus sacro ai TS si applica anche a CD di stabilizzazione"
+    ]
+  },
+  {
+    "nome": "Mantello delle Ombre Vorticanti",
+    "slot": "Spalle",
+    "li": 5,
+    "prezzo": 3250,
+    "rarita": "Raro",
+    "hr": true,
+    "azioni": "Reazione; attivo quando ti muovi ≥ 3 m; dura fino all’inizio del tuo prossimo turno",
+    "ts": "—",
+    "effetto": "+10 bonus di competenza a Furtività; quando ti muovi ≥ 3 m ottieni sfocatura per 1 round",
+    "dettagli": [
+      "Blur: 20% probabilità che gli attacchi manchino",
+      "Attivo fino all’inizio del tuo prossimo turno",
+      "Non fornisce invisibilità"
+    ]
+  },
+  {
+    "nome": "Casco di Banane Rigeneranti",
+    "slot": "Testa",
+    "li": 3,
+    "prezzo": 750,
+    "rarita": "Non comune",
+    "hr": false,
+    "azioni": "Standard; mangia un frutto",
+    "ts": "—",
+    "effetto": "Mangiare un frutto ripristina 1d6 PF",
+    "dettagli": [
+      "All’alba crescono 1d12 frutti; solo il portatore può staccarli",
+      "I frutti non si conservano oltre 24 ore",
+      "La guarigione proviene dal frutto, non dall’elmo"
+    ]
   }
 ]
