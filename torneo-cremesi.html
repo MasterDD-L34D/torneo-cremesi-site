@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Torneo Cremesi – Scheda e Handout PF1e</title>
+<style>
+  :root{
+    --bg:#0f1220; --panel:#151a2e; --ink:#e9ecf1; --muted:#9aa3b2; --accent:#e9506a; --line:#242a46;
+    --ok:#3fb950; --warn:#f2a900; --bad:#ff6b6b;
+    --panel2:#0f1430;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+  a{color:#89b4ff;text-decoration:none}
+  header{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+  header h1{margin:0;font-size:1.12rem;letter-spacing:.3px}
+  .tag{font-size:.78rem;color:var(--muted);border:1px solid var(--line);padding:4px 8px;border-radius:999px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{appearance:none;border:1px solid var(--line);background:#0e1a38;color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+  .btn:hover{border-color:#36406b}
+  .btn.primary{background:var(--accent);border-color:transparent}
+  .tabbar{display:flex;gap:8px;padding:10px 20px;border-bottom:1px solid var(--line);background:#0e1330;position:sticky;top:0;z-index:50}
+  .tab{padding:8px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;color:var(--muted);background:#0b1030}
+  .tab.active{color:var(--ink);background:var(--panel)}
+  main{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:1fr;gap:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .card h2{margin:.2rem 0 .8rem;font-size:1.05rem}
+  .grid{display:grid;gap:10px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  label{font-size:.85rem;color:var(--muted)}
+  input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink)}
+  textarea{min-height:80px;resize:vertical}
+  .stats table{width:100%;border-collapse:collapse}
+  .stats th,.stats td{border:1px solid var(--line);padding:8px;text-align:center}
+  .pill{display:inline-block;padding:4px 8px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:.8rem;margin-right:6px}
+  .muted{color:var(--muted)}
+  .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;font-size:.9rem}
+  .hr{height:1px;background:var(--line);margin:10px 0}
+  .toc a{display:block;padding:6px 8px;border-left:2px solid transparent}
+  .toc a:hover{background:#0c1336;border-left-color:#2a3f98}
+  .tc-list{display:grid;gap:8px}
+  .tc-option{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+  .tc-option input{margin-top:4px}
+  .kbd{padding:2px 6px;border:1px solid var(--line);border-radius:6px;background:#0b1030;color:var(--ink);font:600 .8rem ui-monospace,monospace}
+  .hint{background:#0b1133;border:1px dashed #2a3b7a;border-radius:10px;padding:10px;color:#c7d1e1}
+  .callout{background:#101a3a;border-left:4px solid var(--accent);padding:12px;border-radius:8px}
+  .split{display:grid;gap:10px;grid-template-columns:1fr}
+  @media (min-width:900px){ .split{grid-template-columns:300px 1fr} }
+  @media print{
+    header, .tabbar, .noprint{display:none !important}
+    body{background:white;color:black}
+    .card{border:1px solid #999}
+    a{color:inherit;text-decoration:none}
+  }
+
+  /* Stili per il menu a tendina di selezione TC */
+  #tcList select{
+    width:100%;
+    padding:10px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:var(--panel2);
+    color:var(--ink);
+  }
+  #tcList select:focus{
+    outline:none;
+    border-color:var(--accent);
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Torneo Cremesi — Scheda e Handout PF1e</h1>
+  <span class="tag">RAW</span><span class="tag">ABP ON</span><span class="tag">EITR ON</span><span class="tag">Budget 11.750 mo</span>
+  <div class="row noprint" style="margin-left:auto">
+    <button class="btn" onclick="exportJSON()">Esporta JSON</button>
+    <button class="btn" onclick="importJSON()">Importa JSON</button>
+    <button class="btn primary" onclick="window.print()">Esporta PDF</button>
+  </div>
+</header>
+
+<!-- TAB BAR -->
+<nav class="tabbar noprint">
+  <button class="tab active" data-tab="a" onclick="showTab('a')">📚 Parte A — Consultazione</button>
+  <button class="tab" data-tab="b" onclick="showTab('b')">📝 Parte B — Modificabile</button>
+</nav>
+
+<!-- ===== PARTE A: CONSULTAZIONE ===== -->
+<section id="tabA">
+  <main class="split">
+    <!-- Indice + ricerca -->
+    <aside class="card">
+      <h2>🗂️ Indice</h2>
+      <input id="searchA" placeholder="Cerca nell’Handout…" />
+      <div class="hr"></div>
+      <nav class="toc">
+        <a href="#regole--toggles-rawhr">🏆 Regole & Toggles (RAW/HR)</a>
+        <a href="#ambientazione-iniziale--foresta-di-fangwood">🌍 Ambientazione — Fangwood</a>
+        <a href="#sistema-a-punti-del-torneo">🎲 Sistema a Punti</a>
+        <a href="#tratti-di-campagna-scegline-1">🕯 Tratti di Campagna</a>
+        <a href="#-avvio-rapido--come-iniziare-in-5-minuti">🚀 Avvio Rapido</a>
+        <a href="#creazione-del-personaggio">📜 Creazione del Personaggio</a>
+        <a href="#oggetto-custom-su-misura">💎 Oggetto Custom</a>
+        <a href="#-glossario--sicurezza--cicatrici">📌 Glossario • 🛡️ Sicurezza • 🩹 Cicatrici</a>
+      </nav>
+      <div class="hr"></div>
+      <div class="muted">Suggerimento: premi <span class="kbd">/</span> per mettere a fuoco la ricerca.</div>
+    </aside>
+
+    <div class="card" id="handout">
+      <h2>🧭 ONE-PAGE TL;DR</h2>
+      <p><b>Sistema:</b> PF1e RAW Paizo • <b>Toggles:</b> ABP ON (no Big Six), EITR ON • <b>Budget:</b> 11.750 mo • <b>Divieti:</b> consumabili/slotless iniziali • <b>Oggetto Custom:</b> 1 opzionale.</p>
+      <div class="hint">Azioni subito: scegli 1 <b>TC</b>, compila la <b>Scheda Rapida</b>, concorda l’<b>Oggetto Custom</b>.</div>
+
+      <div class="hr"></div>
+      <a id="regole--toggles-rawhr"></a>
+      <h2>🏆 Regole & Toggles (RAW/HR)</h2>
+      <ul>
+        <li><b>Livello iniziale:</b> 7 • <b>Fonti:</b> Paizo (no 3PP).</li>
+        <li><b>EITR ON</b> — tassazione talenti semplificata (profilo del tavolo).</li>
+        <li><b>ABP ON</b> — bonus numerici base coperti da ABP; evita duplicati.</li>
+        <li><b>Budget equip:</b> 11.750 mo/PG • <b>Divieti all’avvio:</b> consumabili & slotless.</li>
+        <li><b>SSOT:</b> questo handout prevale su dubbi locali; il GM arbitra conflitti RAW/HR.</li>
+      </ul>
+
+      <div class="hr"></div>
+      <a id="ambientazione-iniziale--foresta-di-fangwood"></a>
+      <h2>🌍 Ambientazione Iniziale — Foresta di Fangwood</h2>
+      <p><b>Discesa Celeste:</b> vi risvegliate nella Fangwood; ricordate chi siete e la missione legata al vostro <b>TC</b>, non come siete arrivati.</p>
+      <p>La Fangwood è una foresta antica e capricciosa: la luna appare immobile nel cielo e presenze misteriose osservano dai margini. Dopo aver fatto ritorno dalla Discesa Celeste, ascoltate prima di agire, restate uniti e stabilite un ritmo comune. Visioni di scie luminose e un forte richiamo dall’alto accompagnano il vostro arrivo.</p>
+
+      <div class="hr"></div>
+      <a id="sistema-a-punti-del-torneo"></a>
+      <h2>🎲 Sistema a Punti del Torneo</h2>
+      <p>Ogni personaggio inizia con <b>2 Punti Arena (PA)</b>. Potete spendere PA come segue:</p>
+      <ul>
+        <li><b>1 PA:</b> Reroll di qualsiasi d20 (tuo, alleato o avversario).</li>
+        <li><b>2 PA:</b> PF pieni all’inizio del vostro turno <i>(azione di round completo)</i> oppure rimuovere tutte le condizioni.</li>
+        <li><b>2 PA:</b> Resurrezione d’emergenza più una cicatrice narrativa.</li>
+      </ul>
+      <p>È consentito un solo effetto PA per round per personaggio. Il valore dei PA può essere ridotto da malus di Corruzione (–1 ai PA ottenuti per evento, minimo 0) in seguito a fallimenti critici, tradimenti o scelte codarde.</p>
+      <p><b>Cicatrici:</b> ogni personaggio può avere fino a 3 cicatrici fisiche e 3 psicologiche. Con 2 cicatrici sulla stessa caratteristica subisce –1 permanente. Una cicatrice può essere rimossa con 2 PA o con magie appropriate.</p>
+
+      <div class="hr"></div>
+      <a id="tratti-di-campagna-scegline-1"></a>
+      <h2>🕯 Tratti di Campagna (scegline 1)</h2>
+      <p class="muted">Ogni giocatore seleziona un solo <b>Tratto di Campagna (TC)</b>; si consiglia di evitare doppioni nel party. Ogni TC conferisce un gancio narrativo e regole speciali. Il testo completo di ciascun TC è riportato nella scheda interattiva e riassunto di seguito.</p>
+      <div id="tcLong"></div>
+
+      <div class="hr"></div>
+      <a id="-avvio-rapido--come-iniziare-in-5-minuti"></a>
+      <h2>🚀 Avvio Rapido — Come iniziare in 5 minuti</h2>
+      <ol>
+        <li>Apri la <b>Parte B</b> (Scheda Rapida) e compila i dati anagrafici, le statistiche e le sezioni pertinenti.</li>
+        <li>Seleziona un <b>TC</b> e leggi la relativa narrazione e regole nella scheda.</li>
+        <li>Definisci l’<b>Oggetto Custom</b> (tema, trigger, costo) insieme al GM.</li>
+        <li>Annota i tuoi PA iniziali e monitorali nel Registro sessione.</li>
+        <li><b>Esporta</b> la scheda in JSON (backup) o in PDF per consegnarla al GM.</li>
+      </ol>
+
+      <div class="hr"></div>
+      <a id="creazione-del-personaggio"></a>
+      <h2>📜 Creazione del Personaggio</h2>
+      <p>La creazione del personaggio avviene secondo le regole Paizo (PF1e) con <b>EITR ON</b> e <b>ABP ON</b>. Ogni personaggio è di livello 7. Il budget iniziale per l’equipaggiamento è 11.750 mo, al di fuori dei bonus garantiti da ABP. Non sono consentiti consumabili e slotless al momento della creazione. Consultate il profilo EITR per i prerequisiti semplificati dei talenti e verificate le limitazioni ABP per evitare la duplicazione di bonus.</p>
+
+      <div class="hr"></div>
+      <a id="oggetto-custom-su-misura"></a>
+      <h2>💎 Oggetto Custom su Misura</h2>
+      <p>Ogni giocatore può progettare un <b>oggetto magico custom</b> che non entri in conflitto con i bonus forniti da ABP. L’oggetto deve avere un effetto chiaro, un costo basato sul budget disponibile, un trigger o un limite d’uso e una sinergia con il proprio personaggio o con il party. Discutete con il GM per bilanciare effetti e prezzo prima di approvare l’oggetto.</p>
+
+      <div class="hr"></div>
+      <a id="-glossario--sicurezza--cicatrici"></a>
+      <h2>📌 Glossario • 🛡️ Sicurezza • 🩹 Cicatrici</h2>
+      <p><b>Glossario:</b> <i>LI</i> (Livello Incantatore), <i>TS</i> (Tiro Salvezza), <i>TxC</i> (Tiro per Colpire), <i>PF</i> (Punti Ferita), <i>CD</i> (Classe Difficoltà), <i>RD</i> (Riduzione del Danno), <i>SR</i> (Resistenza agli Incantesimi), <i>RAW</i> (Regole As Written), <i>HR</i> (House Rules).</p>
+      <p><b>Sicurezza:</b> il tavolo utilizza linee e veli per garantire un ambiente di gioco sicuro. Comunicate eventuali temi sensibili al GM prima della sessione; è previsto un breve debrief a fine serata per affrontare eventuali disagi.</p>
+      <p><b>Cicatrici:</b> una cicatrice fisica o psicologica è un segno narrativo permanente. Si accumula fino a tre cicatrici di ciascun tipo; avere due cicatrici sulla stessa caratteristica comporta un malus permanente –1. Potete curare cicatrici con 2 PA oppure con magie appropriate.</p>
+
+      <div class="hr"></div>
+      <p class="muted"><a href="#top">Torna su ↑</a></p>
+    </div>
+  </main>
+</section>
+
+<!-- ===== PARTE B: MODIFICABILE ===== -->
+<section id="tabB" style="display:none">
+  <main>
+    <!-- Dati anagrafici -->
+    <section class="card">
+      <h2>Dati Anagrafici</h2>
+      <div class="grid g2">
+        <div><label>Nome PG</label><input id="nome" /></div>
+        <div><label>Razza / Classi (livelli) / Archetipi</label><input id="razzaClassi" placeholder="Es: Umano / Bardo 7 / Arcimago"/></div>
+        <div><label>Livello Totale</label><input id="livello" value="7"/></div>
+        <div><label>Allineamento / Divinità</label><input id="allineamento"/></div>
+        <div><label>Taglia / Età / Sesso</label><input id="taglia"/></div>
+        <div><label>Altezza / Peso</label><input id="altezza"/></div>
+      </div>
+    </section>
+
+    <!-- Dati fisici -->
+    <section class="card">
+      <h2>Dati Fisici</h2>
+      <div class="grid g3">
+        <div><label>Palette di Colori</label><input id="palette"/></div>
+        <div><label>Eco / Motto (1–3 parole)</label><input id="motto"/></div>
+        <div><label>Immagine (URL)</label><input id="imgUrl" placeholder="https://..."/></div>
+      </div>
+      <div class="grid"><label>Descrizione</label><textarea id="descrizione"></textarea></div>
+    </section>
+
+    <!-- Statistiche -->
+    <section class="card stats">
+      <h2>Statistiche</h2>
+      <table>
+        <thead><tr><th>Stat</th><th>Val</th><th>Mod</th></tr></thead>
+        <tbody id="statsBody"></tbody>
+      </table>
+    </section>
+
+    <!-- Tratto di Campagna -->
+    <section class="card">
+      <h2>Selezione Tratto di Campagna (scegline 1)</h2>
+      <div class="muted" style="margin-bottom:8px">
+        Istruzioni: seleziona un TC. La scheda sotto si compila da sola con <b>narrazione + RAW</b>. Evita i <b>doppioni</b> nel party.
+      </div>
+      <!-- Menu a tendina per i TC -->
+      <div id="tcList"></div>
+      <div class="hr"></div>
+      <div id="tcRender">
+        <div class="pill mono" id="tcCode">TC—</div>
+        <h3 id="tcTitle" style="margin:.4rem 0 0"></h3>
+        <div class="grid g2">
+          <div>
+            <label>Narrazione</label>
+            <textarea id="tcNarrField" readonly style="white-space:pre-wrap"></textarea>
+          </div>
+          <div>
+            <label>Bonus (RAW)</label>
+            <textarea id="tcRawField" readonly style="white-space:pre-wrap"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Talenti, tratti, difetti -->
+    <section class="card">
+      <h2>Talenti, Tratti & Difetti</h2>
+      <div class="grid">
+        <div><label>Talenti (EITR ON)</label><textarea id="talenti" placeholder="Elenca i talenti..."></textarea></div>
+        <div><label>Tratti</label><textarea id="tratti" placeholder="TC + 1 tratto base (+ eventuale 3° con 1 drawback)"></textarea></div>
+        <div><label>Difetti</label><textarea id="difetti"></textarea></div>
+      </div>
+    </section>
+
+    <!-- Difese -->
+    <section class="card">
+      <h2>Difese</h2>
+      <div class="grid g4">
+        <div><label>PF totali</label><input id="pf"/></div>
+        <div><label>CA Tot / Cont / Sorpr.</label><input id="ca" placeholder="— / — / —"/></div>
+        <div><label>TS (Temp / Rif / Vol)</label><input id="ts" placeholder="— / — / —"/></div>
+        <div><label>BAB</label><input id="bab"/></div>
+        <div><label>CMB / CMD</label><input id="cmbcmd" placeholder="— / —"/></div>
+        <div><label>Iniziativa</label><input id="iniziativa"/></div>
+        <div><label>Velocità</label><input id="velocita"/></div>
+      </div>
+    </section>
+
+    <!-- Attacchi -->
+    <section class="card">
+      <h2>Attacchi & Manovre</h2>
+      <div class="grid">
+        <table>
+          <thead><tr><th>Arma / Attacco</th><th>Attacco Totale</th><th>Danni</th><th>Critico</th><th>Portata</th><th>Note</th></tr></thead>
+          <tbody id="atkTable"></tbody>
+        </table>
+        <button class="btn noprint" onclick="addRow('atkTable')">+ riga</button>
+      </div>
+      <div style="margin-top:8px" class="muted">
+        Manovre CMB: Disarm — · Trip — · Grapple — · Bull Rush — · Sunder —
+      </div>
+    </section>
+
+    <!-- Abilità -->
+    <section class="card">
+      <h2>Abilità (principali)</h2>
+      <textarea id="skills" placeholder="Percezione — ; Furtività — ; Sopravvivenza — ; Sapienza Magica — ; Acrobazia — ; Diplomazia — ; Intuizione —."></textarea>
+    </section>
+
+    <!-- Incantesimi -->
+    <section class="card">
+      <h2>Incantesimi / Capacità Magiche</h2>
+      <div class="grid">
+        <table>
+          <thead><tr><th>Livello</th><th>Slot/giorno</th><th>CD base</th><th>Incantesimi principali</th></tr></thead>
+          <tbody id="spellTable">
+            <tr><td>0°</td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+            <tr><td>1°</td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+            <tr><td>2°</td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+            <tr><td>3°</td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Equipaggiamento -->
+    <section class="card">
+      <h2>Equipaggiamento Essenziale & Budget</h2>
+      <div class="grid">
+        <input id="loadout" placeholder="Loadout principale: armatura …; arma …; oggetti tematici …" />
+        <input id="altro" placeholder="Altro…"/>
+        <div class="grid g3">
+          <div><label>Budget rimanente (mo)</label><input id="budget"/></div>
+          <div><label>PP / GP / SP / CP</label><input id="valute" placeholder="PP __ / GP __ / SP __ / CP __"/></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Oggetto custom -->
+    <section class="card">
+      <h2>Oggetto Custom su Misura (opzionale)</h2>
+      <div class="grid g3">
+        <input id="customTema" placeholder="Tema"/>
+        <input id="customCosto" placeholder="Costo su 11.750 mo"/>
+        <input id="customTrigger" placeholder="Trigger / Limiti d’uso"/>
+      </div>
+      <input id="customSinergie" placeholder="Sinergie (classe/tratto/party)"/>
+    </section>
+
+    <!-- Background -->
+    <section class="card">
+      <h2>Background & Note di Ruolo</h2>
+      <textarea id="background" placeholder="5–10 righe, motto, stile decisionale, legami, ganci…"></textarea>
+    </section>
+
+    <!-- Punti Arena -->
+    <section class="card">
+      <h2>📊 Punti Arena & Cicatrici</h2>
+      <div class="grid g3">
+        <div><label>Punti Arena iniziali</label><input id="pa" value="2"/></div>
+        <div><label>Cicatrici Fisiche (x/3)</label><input id="cicFis"/></div>
+        <div><label>Cicatrici Psicologiche (x/3)</label><input id="cicPsy"/></div>
+      </div>
+      <div class="muted" style="margin-top:8px">
+        Uso 1 PA: <span class="pill">reroll d20</span> · Uso 2 PA: <span class="pill">PF massimi</span> o <span class="pill">rimuovi condizioni</span> (FR, inizio turno).  
+        Resurrezione d’emergenza (2 PA): ritorni in vita + <b>cicatrice narrativa</b>.
+      </div>
+      <div class="hr"></div>
+      <label>Registro sessione (note rapide)</label>
+      <textarea id="registro" placeholder="Data, scena, esito, PA spesi, cicatrici, bottino, decisioni…"></textarea>
+    </section>
+
+    <!-- Mini-tracker party -->
+    <section class="card">
+      <h2>📋 Mini-Tracker di Party</h2>
+      <table style="width:100%;border-collapse:collapse" id="partyTable">
+        <thead>
+          <tr>
+            <th style="border:1px solid var(--line);padding:6px">PG</th>
+            <th style="border:1px solid var(--line);padding:6px">PA</th>
+            <th style="border:1px solid var(--line);padding:6px">Cicatrici F/P</th>
+            <th style="border:1px solid var(--line);padding:6px">Malus Corruzione</th>
+            <th style="border:1px solid var(--line);padding:6px">Note</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="row noprint" style="margin-top:8px">
+        <button class="btn" onclick="addPartyRow()">+ PG</button>
+        <button class="btn" onclick="clearParty()">Svuota</button>
+      </div>
+    </section>
+  </main>
+</section>
+
+<script>
+/** ===== Dati TC (titolo, narrazione, RAW) =====
+ * Modifica liberamente i contenuti sotto. La Parte A si aggiorna da qui.
+ */
+const TC_DATA = {
+  "TC01": {
+    title: "Incaricato dell’Archivio (Ordine dei Pathfinder)",
+    narr: `Come Incaricato dell’Archivio, sei un agente della Società dei Pathfinder incaricato di cercare, studiare e preservare la storia di Golarion... Nel torneo rappresenti questa tradizione: i tuoi appunti, la tua memoria fotografica e la tua capacità di sostituire qualunque prova con la conoscenza storica sono strumenti per documentare i misteri dell’Arena e riportarli al Grand Lodge.`,
+    raw: [
+      "+1 a Diplomazia, Conoscenze (storia) e Conoscenze (piani).",
+      "Storia e Piani diventano abilità di classe.",
+      "1/giorno: puoi ritirare Diplomazia prima di conoscere l’esito.",
+      "1/giorno: puoi tirare Conoscenze (storia) al posto di qualsiasi altra prova di abilità (se narrativamente sensato, a giudizio del GM)."
+    ]
+  },
+  "TC02": {
+    title: "Protetto del Padiglione Grigio (Regenti di Giada / Tian Xia)",
+    narr: `Protetto da un mecenate di Tian Xia... Sai leggere gli indizi culturali e superare barriere razziali senza penalità: porti la raffinatezza di Tian Xia in un torneo dominato da occidentali.`,
+    raw: [
+      "+1 a Raggirare, Furtività, Sopravvivenza; tutte e tre diventano abilità di classe.",
+      "Intuizione diventa abilità di classe e bonus morale a Intuizione pari a 1/2 livello (min. +1).",
+      "Etichetta di corte (Tian Xia): +1 tratto a Linguistica; abilità di classe; +1 lingua bonus (GM approva).",
+      "Familiarità armi orientali: scegli 1 arma orientale; se esotica la tratti come marziale; se marziale: +1 tratto ad Artigianato (armaiolo) e Conoscenze (locali) (scuole di lama)."
+    ]
+  },
+  "TC03": {
+    title: "Volontà Infrangibile (Custodi del Sangue Rosso — linea redenzione)",
+    narr: `Scisma dei Signori del Sangue di Geb... usi autorità e intimidazione per spezzare il controllo altrui.`,
+    raw: [
+      "+1 ai TS Volontà.",
+      "1/giorno: puoi ritirare un TS contro influenza mentale.",
+      "Intimidire abilità di classe; bonus morale a Intimidire pari a 1/2 livello (min. +1)."
+    ]
+  },
+  "TC04": {
+    title: "Eco di un Altro Sé (I Senza-Nome)",
+    narr: `Visioni di cicli dimenticati della Fangwood... liberi dai vincoli d’allineamento cerchi significato nell’Arena.`,
+    raw: [
+      "+1 a Conoscenze (arcane) e Conoscenze (religioni); entrambe abilità di classe.",
+      "1/giorno: ritira un TS contro illusioni o confusione.",
+      "1/giorno: ritenta Sapienza Magica oppure Conoscenze (religioni).",
+      "Allineamenti slegati: ignori vincoli d’allineamento di classe/razza (codici divini a discrezione del GM)."
+    ]
+  },
+  "TC05": {
+    title: "Sentinella del Vento (Circuiti messaggeri dell’Arena)",
+    narr: `Addestrato nello stile dei Chernasardo Rangers... rapido, silenzioso e vigile.`,
+    raw: [
+      "+1 ai TS Riflessi.",
+      "+1 a Disattivare Congegni e Acrobazia; entrambe abilità di classe.",
+      "Scoprire Trappole (come il Ladro): +1/2 livello a Percezione (trappole) e Disattivare Congegni; puoi disinnescare trappole magiche."
+    ]
+  },
+  "TC06": {
+    title: "Custode delle Rovine (Archeologi di Campo / Osirion)",
+    narr: `Osirion riaperto al mondo dal Principe di Rubino Khemet III... affronti l’Arena con l’oscuro splendore delle tombe.`,
+    raw: [
+      "+1 ai TS Tempra.",
+      "+1 a Conoscenze (dungeon) e Conoscenze (natura); entrambe abilità di classe.",
+      "1/giorno: ritira un TS contro trappole o veleni.",
+      "Linguaggi “costante” (solo lettura magica): puoi leggere/comprendere per identificare immediatamente rune/glifi/scritte magiche (non parlare)."
+    ]
+  }
+};
+
+/** ===== Stato, salvataggio ===== */
+const FIELDS = [
+  "nome","razzaClassi","livello","allineamento","taglia","altezza",
+  "palette","motto","imgUrl","descrizione",
+  "talenti","tratti","difetti","pf","ca","ts","bab","cmbcmd","iniziativa","velocita",
+  "skills","loadout","altro","budget","valute","customTema","customCosto","customTrigger","customSinergie",
+  "background","pa","cicFis","cicPsy","registro"
+];
+const STATS = ["For","Des","Cos","Int","Sag","Car"];
+const STORAGE_KEY = "hj_scheda_v1";
+
+function byId(id){return document.getElementById(id)}
+
+/** ===== Tab switching ===== */
+function showTab(which){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===which));
+  byId('tabA').style.display = (which==='a')?'block':'none';
+  byId('tabB').style.display = (which==='b')?'block':'none';
+  localStorage.setItem('hj_tab', which);
+}
+(function restoreTab(){
+  const t = localStorage.getItem('hj_tab')||'a';
+  showTab(t);
+})();
+
+/** ===== Build Parte A (TC long) ===== */
+function buildTCHandout(){
+  const wrap = byId('tcLong'); wrap.innerHTML = '';
+  Object.entries(TC_DATA).forEach(([code,info])=>{
+    const sec = document.createElement('section');
+    sec.className = 'callout';
+    sec.innerHTML = `
+      <h3 id="${code}">${code} — ${info.title}</h3>
+      <p style="white-space:pre-wrap">${info.narr}</p>
+      <h4>Regole RAW</h4>
+      <ul>${info.raw.map(r=>`<li>${r}</li>`).join('')}</ul>
+      <div class="muted">In gioco brilli quando… <i>(personalizza col GM)</i></div>
+    `;
+    wrap.appendChild(sec);
+  });
+}
+
+/** ===== Build stats, TC list (Parte B) ===== */
+function buildStats(){
+  const tb = byId("statsBody"); tb.innerHTML="";
+  STATS.forEach(s=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td><b>${s}</b></td>
+      <td><input id="stat_${s}_val"/></td>
+      <td><input id="stat_${s}_mod"/></td>`;
+    tb.appendChild(tr);
+  });
+}
+function buildTCList(){
+  const wrap = byId("tcList"); wrap.innerHTML="";
+  // Crea un menu a tendina per la selezione dei TC
+  const select = document.createElement("select");
+  select.id = "tcSelect";
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = "— Seleziona un TC —";
+  select.appendChild(placeholder);
+  Object.entries(TC_DATA).forEach(([code,info])=>{
+    const option = document.createElement("option");
+    option.value = code;
+    option.textContent = `${code} — ${info.title}`;
+    select.appendChild(option);
+  });
+  select.addEventListener("change",(e)=>{
+    const code = e.target.value;
+    if(code){ selectTC(code); save(); }
+  });
+  wrap.appendChild(select);
+}
+
+/** ===== TC select render ===== */
+let currentTC = null;
+function selectTC(code){
+  currentTC = code;
+  const info = TC_DATA[code];
+  if(!info) return;
+  byId("tcCode").textContent = code;
+  byId("tcTitle").textContent = info.title;
+  // popola i campi narrativa e bonus RAW
+  const narrField = byId("tcNarrField");
+  if(narrField){ narrField.value = info.narr; }
+  const rawField = byId("tcRawField");
+  if(rawField){ rawField.value = info.raw.join('\n'); }
+  // aggiorna il menu a tendina
+  const select = byId("tcSelect");
+  if(select && select.value !== code){ select.value = code; }
+}
+
+/** ===== Tabelle dinamiche ===== */
+function addRow(tableId, data){
+  const tb = byId(tableId);
+  const tr = document.createElement("tr");
+  if(tableId==="atkTable"){
+    tr.innerHTML = `
+      <td contenteditable>${data?.[0]||""}</td>
+      <td contenteditable>${data?.[1]||""}</td>
+      <td contenteditable>${data?.[2]||""}</td>
+      <td contenteditable>${data?.[3]||""}</td>
+      <td contenteditable>${data?.[4]||""}</td>
+      <td contenteditable>${data?.[5]||""}</td>`;
+  }
+  tb.appendChild(tr);
+}
+function tableToArr(id){
+  const rows = [...byId(id).rows];
+  return rows.map(r=>[...r.cells].map(c=>c.innerText));
+}
+
+/** ===== Party mini-tracker ===== */
+function addPartyRow(row){
+  const tb = byId('partyTable').querySelector('tbody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td contenteditable>${row?.pg||""}</td>
+    <td contenteditable>${row?.pa||""}</td>
+    <td contenteditable>${row?.cic||""}</td>
+    <td contenteditable>${row?.malus||""}</td>
+    <td contenteditable>${row?.note||""}</td>`;
+  tr.querySelectorAll('td').forEach(td=>{
+    td.style.border = '1px solid var(--line)';
+    td.style.padding = '6px';
+  });
+  tb.appendChild(tr);
+}
+function clearParty(){
+  byId('partyTable').querySelector('tbody').innerHTML = '';
+  save();
+}
+function partyToData(){
+  const rows = [...byId('partyTable').querySelector('tbody').rows];
+  return rows.map(r=>{
+    const [pg,pa,cic,malus,note] = [...r.cells].map(c=>c.innerText);
+    return {pg,pa,cic,malus,note};
+  });
+}
+
+/** ===== Salvataggio ===== */
+function save(){
+  const data = {};
+  FIELDS.forEach(k=>data[k]=byId(k)?.value ?? "");
+  data.stats = STATS.map(s=>({ stat:s, val: byId(`stat_${s}_val`)?.value || "", mod: byId(`stat_${s}_mod`)?.value || "" }));
+  data.attacchi = tableToArr("atkTable");
+  // spells
+  const srows = [...byId("spellTable").rows];
+  data.spells = srows.map(r=>[...r.cells].map((c,i)=> i ? c.innerText : c.innerText));
+  data.tc = currentTC;
+  data.party = partyToData();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+function load(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(!raw) return;
+  const data = JSON.parse(raw);
+  FIELDS.forEach(k=>{ if(byId(k)) byId(k).value = data[k] ?? "" });
+  if(data.stats){
+    data.stats.forEach(r=>{
+      if(byId(`stat_${r.stat}_val`)) byId(`stat_${r.stat}_val`).value = r.val;
+      if(byId(`stat_${r.stat}_mod`)) byId(`stat_${r.stat}_mod`).value = r.mod;
+    });
+  }
+  if(data.attacchi){
+    const tbody = byId("atkTable"); tbody.innerHTML="";
+    data.attacchi.forEach(row=>addRow("atkTable", row));
+  } else addRow("atkTable");
+
+  if(data.spells){
+    const rows = [...byId("spellTable").rows];
+    data.spells.forEach((row,i)=>{
+      if(rows[i]){
+        // ensure we skip the first cell (label) for spells
+        rows[i].cells[1].innerText = row[1]||"";
+        rows[i].cells[2].innerText = row[2]||"";
+        rows[i].cells[3].innerText = row[3]||"";
+      }
+    });
+  }
+  if(data.tc){ selectTC(data.tc); }
+  if(data.party){ data.party.forEach(addPartyRow); }
+}
+function exportJSON(){
+  const raw = localStorage.getItem(STORAGE_KEY) || "{}";
+  const blob = new Blob([raw], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "torneo_cremesi_scheda.json";
+  a.click();
+}
+function importJSON(){
+  const inp = document.createElement("input"); inp.type="file"; inp.accept="application/json";
+  inp.onchange = ()=> {
+    const f = inp.files[0]; if(!f) return;
+    const fr = new FileReader();
+    fr.onload = ()=>{ localStorage.setItem(STORAGE_KEY, fr.result); location.reload(); }
+    fr.readAsText(f);
+  };
+  inp.click();
+}
+
+/** ===== Ricerca Parte A ===== */
+(function setupSearch(){
+  const q = byId('searchA');
+  if(!q) return;
+  function filter(){
+    const term = q.value.trim().toLowerCase();
+    const host = byId('handout');
+    [...host.querySelectorAll('h2,h3,h4,p,li,section.callout')].forEach(el=>{
+      if(!term){ el.style.display=''; return; }
+      const t = el.textContent.toLowerCase();
+      el.style.display = t.includes(term) ? '' : 'none';
+    });
+  }
+  q.addEventListener('input', debounce(filter, 120));
+  document.addEventListener('keydown', (e)=>{ if(e.key=='/'){ e.preventDefault(); q.focus(); }});
+})();
+
+/** ===== Autosave & init ===== */
+function bindAutosave(){
+  document.addEventListener("input", debounce(save, 400));
+  // contenteditable listeners
+  document.querySelectorAll('[contenteditable]').forEach(el=>{
+    el.addEventListener("input", debounce(save, 400));
+  });
+}
+function debounce(fn,ms){let t;return (...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}}
+function shorten(txt, n){ return (txt.length>n)? txt.slice(0,n-1)+"…":txt; }
+
+(function init(){
+  buildTCHandout();
+  buildStats();
+  buildTCList();
+  addRow("atkTable");
+  addPartyRow();
+  bindAutosave();
+  load();
+  setInterval(save, 2000); // salvataggio periodico
+})();
+</script>
+</body>
+</html>
