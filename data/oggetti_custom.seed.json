@@ -1,0 +1,32 @@
+[
+  {
+    "nome": "Zanna del Primo Branco",
+    "slot": "—",
+    "li": 4,
+    "prezzo": 2000,
+    "rarita": "Non comune",
+    "hr": false,
+    "azioni": "Veloce; 1/g; 1 min",
+    "ts": "—",
+    "effetto": "Fiuto + +2 a Sopravvivenza (tracce); +2 danni al primo attacco su preda ferita",
+    "dettagli": [
+      "Attivo in inseguimenti o tracciature",
+      "Tema: selvatico/lupo"
+    ]
+  },
+  {
+    "nome": "Specchio Crepuscolare",
+    "slot": "—",
+    "li": 6,
+    "prezzo": 3000,
+    "rarita": "Raro",
+    "hr": true,
+    "azioni": "Veloce; 1/g; 1 round",
+    "ts": "—",
+    "effetto": "Sfocatura per 1 round; se superi TS vs. illusione quel round: Percezione +2 per la scena",
+    "dettagli": [
+      "Non cumulare con altre fonti di sfocatura",
+      "Tema: ombre/illusione"
+    ]
+  }
+]
