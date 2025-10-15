@@ -1,0 +1,2 @@
+Questa cartella può contenere materiali sorgente (PDF, documenti esportati da Google Drive o file Markdown) da cui derivano le regole e i testi presenti nel sito.
+Per ragioni di copyright, assicurati di avere l’autorizzazione a condividere questi documenti. Non committare materiali non tuoi o coperti da licenze restrittive.
