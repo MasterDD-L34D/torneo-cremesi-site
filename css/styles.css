@@ -126,6 +126,7 @@ a:hover{text-decoration:underline}
 .prof-column{display:flex;flex-direction:column;gap:10px;}
 .grid.compact,
 .row.compact{gap:6px;}
+.compact{gap:6px;}
 .small-note{margin:4px 0 0;font-size:.85rem;}
 .defenses-grid{align-items:end;}
 .summary-grid>.grid,.equip-grid>.grid{gap:10px;}

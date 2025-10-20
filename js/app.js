@@ -190,6 +190,30 @@ function initScheda(){
     }
     const persist = debounce(()=>{
       state[key] = el.value;
+  // mappa campi di testo
+  const fields = [
+    'nome','razzaClassi','livello','allineamento','taglia','altezza',
+    'palette','motto','imgUrl','descrizione',
+    'talenti','tratti','difetti','pf','ca','ts','bab','cmbcmd','iniziativa','velocita',
+    'skills','loadout','altro','budget','pp','gp','sp','cp',
+    'customTema','customCosto','customTrigger','customSinergie',
+    'profArmiSemplici','profArmiSempliciFonte','profArmiMarziali','profArmiMarzialiFonte','profArmiEsotiche','profArmiEsoticheFonte',
+    'profArmatureLeggere','profArmatureLeggereFonte','profArmatureMedie','profArmatureMedieFonte','profArmaturePesanti','profArmaturePesantiFonte',
+    'profScudi','profScudiFonte','profScudiPesanti','profScudiPesantiFonte','profScudiTorre','profScudiTorreFonte','profCategorieExtra',
+    'riassRazza','riassClassi','riassMovimento','riassSensi','riassRD','riassCapacita',
+    'background'
+  ];
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    const baseValue = el.value;
+    if(state[id] != null){
+      el.value = state[id];
+    } else if(baseValue != null){
+      el.value = baseValue;
+    }
+    el.addEventListener('input', debounce(()=>{
+      state[id] = el.value;
       saveAppState(state);
     }, 250);
     el.addEventListener('input', persist);
@@ -226,6 +250,13 @@ function migrateLegacyValute(){
   COIN_KEYS.forEach(key => {
     if(parsed[key] == null) return;
     const el = document.getElementById(key) || container?.querySelector(`[data-field="${key}"]`);
+  const hasNewValues = COIN_KEYS.some(key => state[key]);
+  if(hasNewValues) return;
+  const parsed = parseLegacyValute(state.valute);
+  let touched = false;
+  COIN_KEYS.forEach(key => {
+    if(!parsed[key]) return;
+    const el = document.getElementById(key);
     if(el && !el.value){
       el.value = parsed[key];
     }
