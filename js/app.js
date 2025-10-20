@@ -188,10 +188,14 @@ function initScheda(){
     } else if(baseValue != null && baseValue !== ''){
       el.value = baseValue;
     }
-    el.addEventListener('input', debounce(()=>{
+    const persist = debounce(()=>{
       state[key] = el.value;
       saveAppState(state);
-    }, 250));
+    }, 250);
+    el.addEventListener('input', persist);
+    if(el.tagName === 'SELECT'){
+      el.addEventListener('change', persist);
+    }
   });
   migrateLegacyValute();
   // Stats
