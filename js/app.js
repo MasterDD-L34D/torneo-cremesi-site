@@ -138,7 +138,10 @@ function render(route){
 
 function highlightActive(route){
   navLinks.forEach(a => {
-    a.classList.toggle('active', a.getAttribute('href') === `#${route}`);
+    const isActive = a.getAttribute('href') === `#${route}`;
+    a.classList.toggle('active', isActive);
+    if(isActive) a.setAttribute('aria-current', 'page');
+    else a.removeAttribute('aria-current');
   });
 }
 
@@ -572,14 +575,46 @@ function setupSchedaTabs(){
   const panels = Array.from(document.querySelectorAll('[data-tab-panel]'));
   if(!buttons.length || !panels.length) return;
 
-  const setActive = (id, persist = false) => {
+  const ensurePanelMetadata = () => {
+    buttons.forEach(btn => {
+      const target = btn.dataset.tabTarget;
+      if(!target) return;
+      if(!btn.hasAttribute('role')) btn.setAttribute('role', 'tab');
+      if(!btn.id) btn.id = `tab-${target}`;
+      const panelId = `panel-${target}`;
+      btn.setAttribute('aria-controls', panelId);
+      if(!btn.hasAttribute('tabindex')) btn.setAttribute('tabindex', '-1');
+      const panel = panels.find(p => p.dataset.tabPanel === target);
+      if(panel){
+        if(!panel.id) panel.id = panelId;
+        panel.setAttribute('role', 'tabpanel');
+        panel.setAttribute('aria-labelledby', btn.id);
+      }
+    });
+  };
+
+  ensurePanelMetadata();
+
+  const setActive = (id, persist = false, focusTab = false) => {
+    if(!id) return;
     buttons.forEach(btn => {
       const active = btn.dataset.tabTarget === id;
       btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      btn.setAttribute('tabindex', active ? '0' : '-1');
+      if(active && focusTab) btn.focus();
     });
     panels.forEach(panel => {
       const match = panel.getAttribute('data-tab-panel') === id;
-      if(match) panel.removeAttribute('hidden'); else panel.setAttribute('hidden', '');
+      if(match){
+        panel.removeAttribute('hidden');
+        panel.setAttribute('aria-hidden', 'false');
+        panel.setAttribute('tabindex', '0');
+      } else {
+        panel.setAttribute('hidden', '');
+        panel.setAttribute('aria-hidden', 'true');
+        panel.setAttribute('tabindex', '-1');
+      }
     });
     if(persist){
       state.lastSchedaTab = id;
@@ -587,11 +622,44 @@ function setupSchedaTabs(){
     }
   };
 
-  buttons.forEach(btn => {
+  const focusTabByIndex = (index) => {
+    const btn = buttons[(index + buttons.length) % buttons.length];
+    if(!btn) return;
+    setActive(btn.dataset.tabTarget, true, true);
+  };
+
+  buttons.forEach((btn, index) => {
     btn.addEventListener('click', () => setActive(btn.dataset.tabTarget, true));
+    btn.addEventListener('keydown', evt => {
+      let targetIndex = null;
+      switch(evt.key){
+        case 'ArrowRight':
+        case 'ArrowDown':
+          targetIndex = index + 1;
+          break;
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          targetIndex = index - 1;
+          break;
+        case 'Home':
+          targetIndex = 0;
+          break;
+        case 'End':
+          targetIndex = buttons.length - 1;
+          break;
+        default:
+          return;
+      }
+      evt.preventDefault();
+      focusTabByIndex(targetIndex);
+    });
   });
 
-  const preferred = state.lastSchedaTab || buttons.find(btn => btn.hasAttribute('data-tab-default'))?.dataset.tabTarget || buttons[0].dataset.tabTarget;
+  const availableTargets = new Set(buttons.map(btn => btn.dataset.tabTarget));
+  let preferred = state.lastSchedaTab;
+  if(!preferred || !availableTargets.has(preferred)){
+    preferred = buttons.find(btn => btn.hasAttribute('data-tab-default'))?.dataset.tabTarget || buttons[0].dataset.tabTarget;
+  }
   setActive(preferred, false);
 }
 

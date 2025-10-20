@@ -169,7 +169,8 @@ a:hover{text-decoration:underline}
   background:#182356;
   outline:none;
 }
-.scheda-tabs__btn.is-active{
+.scheda-tabs__btn.is-active,
+.scheda-tabs__btn[aria-selected="true"]{
   background:var(--accent);
   border-color:var(--accent);
   color:#fff;
