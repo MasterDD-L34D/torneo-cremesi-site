@@ -5,36 +5,782 @@
       "name": "Umano",
       "source": "Manuale Base",
       "size": "Media",
-      "height": {"unit": "cm", "min": 150, "max": 190},
-      "weight": {"unit": "kg", "min": 55, "max": 120},
       "altTraits": [
-        {"id": "human-giantblooded", "name": "Sangue di Gigante", "summary": "+2 For, considera la taglia come Grande per determinati effetti.", "sizeOverride": "Grande"},
-        {"id": "human-visionario", "name": "Visionario", "summary": "+1 a Percezione e Conoscenze (religioni)."}
-      ]
+        {
+          "id": "human-giantblooded",
+          "name": "Sangue di Gigante",
+          "summary": "+2 For, considera la taglia come Grande per determinati effetti.",
+          "sizeOverride": "Grande"
+        },
+        {
+          "id": "human-visionario",
+          "name": "Visionario",
+          "summary": "+1 a Percezione e Conoscenze (religioni)."
+        },
+        {
+          "id": "human-heart-of-the-fields",
+          "name": "Cuore dei Campi",
+          "summary": "Ottieni un bonus +1 a Professione (agricoltore) e Tolleranza al Dolore."
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 55,
+        "max": 120
+      }
     },
     {
       "id": "elf",
       "name": "Elfo",
       "source": "Manuale Base",
       "size": "Media",
-      "height": {"unit": "cm", "min": 160, "max": 210},
-      "weight": {"unit": "kg", "min": 45, "max": 80},
       "altTraits": [
-        {"id": "elf-feral", "name": "Elfo Feroce", "summary": "+1 a Intimidire, sostituisce il bonus a Diplomazia."},
-        {"id": "elf-underworld", "name": "Esule del Sottosuolo", "summary": "Scurovisione 36 m, -2 ai TS contro luce intensa.", "sizeOverride": "Piccola"}
-      ]
+        {
+          "id": "elf-feral",
+          "name": "Elfo Feroce",
+          "summary": "+1 a Intimidire, sostituisce il bonus a Diplomazia."
+        },
+        {
+          "id": "elf-underworld",
+          "name": "Esule del Sottosuolo",
+          "summary": "Scurovisione 36 m, -2 ai TS contro luce intensa.",
+          "sizeOverride": "Piccola"
+        },
+        {
+          "id": "elf-arctic",
+          "name": "Elfo Artico",
+          "summary": "+2 a Sopravvivenza nelle regioni fredde."
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 210
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 80
+      }
     },
     {
       "id": "dwarf",
       "name": "Nano",
       "source": "Manuale Base",
       "size": "Piccola",
-      "height": {"unit": "cm", "min": 120, "max": 150},
-      "weight": {"unit": "kg", "min": 60, "max": 100},
       "altTraits": [
-        {"id": "dwarf-forgemaster", "name": "Forgiatore", "summary": "+2 Artigianato (armi) e (metalli)."},
-        {"id": "dwarf-giantkiller", "name": "Uccisore di Giganti", "summary": "+1 TxC e CA contro creature di taglia Grande.", "sizeOverride": "Media"}
-      ]
+        {
+          "id": "dwarf-forgemaster",
+          "name": "Forgiatore",
+          "summary": "+2 Artigianato (armi) e (metalli)."
+        },
+        {
+          "id": "dwarf-giantkiller",
+          "name": "Uccisore di Giganti",
+          "summary": "+1 TxC e CA contro creature di taglia Grande.",
+          "sizeOverride": "Media"
+        },
+        {
+          "id": "dwarf-ancient-enmity",
+          "name": "Antica Inimicizia",
+          "summary": "+1 ai TxC contro orchi e goblinoidi."
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 120,
+        "max": 150
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 60,
+        "max": 100
+      }
+    },
+    {
+      "id": "gnome",
+      "name": "Gnomo",
+      "source": "Manuale Base",
+      "size": "Piccola",
+      "altTraits": [
+        {
+          "id": "gnome-bleachling",
+          "name": "Sbiadito",
+          "summary": "Perdi estro ma ottieni bonus ai TS mentali."
+        },
+        {
+          "id": "gnome-fey-touched",
+          "name": "Toccato dalle Fate",
+          "summary": "+1 a Illusione (CD)."
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 90,
+        "max": 120
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 18,
+        "max": 25
+      }
+    },
+    {
+      "id": "halfling",
+      "name": "Halfling",
+      "source": "Manuale Base",
+      "size": "Piccola",
+      "altTraits": [
+        {
+          "id": "halfling-surefooted",
+          "name": "Piede Sicuro",
+          "summary": "+2 a Saltare e Acrobazia."
+        },
+        {
+          "id": "halfling-jungle",
+          "name": "Halfling della Giungla",
+          "summary": "+2 a Sopravvivenza in ambienti tropicali."
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 85,
+        "max": 110
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 18,
+        "max": 28
+      }
+    },
+    {
+      "id": "half-elf",
+      "name": "Mezzelfo",
+      "source": "Manuale Base",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "half-elf-kindred-raised",
+          "name": "Cresciuto tra i Simili",
+          "summary": "Bonus di razza sostituito con competenza nelle armi preferite."
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 200
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 90
+      }
+    },
+    {
+      "id": "half-orc",
+      "name": "Mezzorco",
+      "source": "Manuale Base",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "half-orc-toothy",
+          "name": "Denti Aguzzi",
+          "summary": "Ottieni un attacco con morso."
+        },
+        {
+          "id": "half-orc-strong-blooded",
+          "name": "Sangue Robusto",
+          "summary": "+2 ai TS contro malattie, nausea e stordimento."
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 210
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 70,
+        "max": 130
+      }
+    },
+    {
+      "id": "aasimar",
+      "name": "Aasimar",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "aasimar-angel-blooded",
+          "name": "Sangue Angelico",
+          "summary": "+2 Sag, +2 Car, competenza nel cimiterio."
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 200
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 55,
+        "max": 90
+      }
+    },
+    {
+      "id": "tiefling",
+      "name": "Tiefling",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "tiefling-pitborn",
+          "name": "Nato dalle Fosse",
+          "summary": "+2 For, +2 Cos, -2 Car."
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 195
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 50,
+        "max": 85
+      }
+    },
+    {
+      "id": "ifrit",
+      "name": "Ifrit",
+      "source": "Guida alle Razze Avanzate",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 80
+      }
+    },
+    {
+      "id": "oread",
+      "name": "Oread",
+      "source": "Guida alle Razze Avanzate",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 60,
+        "max": 110
+      }
+    },
+    {
+      "id": "sylph",
+      "name": "Silfide",
+      "source": "Guida alle Razze Avanzate",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 185
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 40,
+        "max": 70
+      }
+    },
+    {
+      "id": "undine",
+      "name": "Ondina",
+      "source": "Guida alle Razze Avanzate",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 185
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 75
+      }
+    },
+    {
+      "id": "catfolk",
+      "name": "Catfolk",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 40,
+        "max": 75
+      }
+    },
+    {
+      "id": "tengu",
+      "name": "Tengu",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 50,
+        "max": 80
+      }
+    },
+    {
+      "id": "kitsune",
+      "name": "Kitsune",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 185
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 40,
+        "max": 65
+      }
+    },
+    {
+      "id": "ratfolk",
+      "name": "Ratfolk",
+      "source": "Guida alle Razze",
+      "size": "Piccola",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 100,
+        "max": 130
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 25,
+        "max": 40
+      }
+    },
+    {
+      "id": "vanara",
+      "name": "Vanara",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 75
+      }
+    },
+    {
+      "id": "vishkanya",
+      "name": "Vishkanya",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 40,
+        "max": 70
+      }
+    },
+    {
+      "id": "nagaji",
+      "name": "Nagaji",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 180,
+        "max": 220
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 65,
+        "max": 110
+      }
+    },
+    {
+      "id": "suli",
+      "name": "Suli",
+      "source": "Guida alle Razze Avanzate",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 170,
+        "max": 210
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 60,
+        "max": 100
+      }
+    },
+    {
+      "id": "strix",
+      "name": "Strix",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 75
+      }
+    },
+    {
+      "id": "samsaran",
+      "name": "Samsaran",
+      "source": "Guida alle Razze Avanzate",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 195
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 40,
+        "max": 70
+      }
+    },
+    {
+      "id": "wayang",
+      "name": "Wayang",
+      "source": "Guida alle Razze Avanzate",
+      "size": "Piccola",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 80,
+        "max": 110
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 18,
+        "max": 28
+      }
+    },
+    {
+      "id": "changeling",
+      "name": "Mutapelle",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 185
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 75
+      }
+    },
+    {
+      "id": "dhampir",
+      "name": "Dhampir",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 200
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 50,
+        "max": 80
+      }
+    },
+    {
+      "id": "fetchling",
+      "name": "Esule d'Ombra",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 75
+      }
+    },
+    {
+      "id": "hobgoblin",
+      "name": "Hobgoblin",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 200
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 55,
+        "max": 95
+      }
+    },
+    {
+      "id": "kobold",
+      "name": "Coboldo",
+      "source": "Guida alle Razze Avanzate",
+      "size": "Piccola",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 90,
+        "max": 120
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 18,
+        "max": 25
+      }
+    },
+    {
+      "id": "orc",
+      "name": "Orco",
+      "source": "Bestiario",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 180,
+        "max": 230
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 80,
+        "max": 140
+      }
+    },
+    {
+      "id": "merfolk",
+      "name": "Tritone",
+      "source": "Bestiario",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 200
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 50,
+        "max": 85
+      }
+    },
+    {
+      "id": "android",
+      "name": "Android",
+      "source": "Guida alla Tecnologia",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 55,
+        "max": 90
+      }
+    },
+    {
+      "id": "gillman",
+      "name": "Gillman",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 55,
+        "max": 90
+      }
+    },
+    {
+      "id": "skinwalker",
+      "name": "Mutapelle Selvatico",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 195
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 50,
+        "max": 85
+      }
+    },
+    {
+      "id": "lashunta",
+      "name": "Lashunta",
+      "source": "Guida alla Tecnologia",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 200
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 50,
+        "max": 85
+      }
+    },
+    {
+      "id": "kasatha",
+      "name": "Kasatha",
+      "source": "Guida alla Tecnologia",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 180,
+        "max": 220
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 60,
+        "max": 100
+      }
+    },
+    {
+      "id": "shabti",
+      "name": "Shabti",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 200
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 75
+      }
+    },
+    {
+      "id": "syrinx",
+      "name": "Siringe",
+      "source": "Bestiario 3",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 195
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 50,
+        "max": 80
+      }
+    },
+    {
+      "id": "gnoll",
+      "name": "Gnoll",
+      "source": "Bestiario",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 170,
+        "max": 210
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 70,
+        "max": 120
+      }
+    },
+    {
+      "id": "triton",
+      "name": "Tritone Superiore",
+      "source": "Bestiario",
+      "size": "Media",
+      "altTraits": [],
+      "height": {
+        "unit": "cm",
+        "min": 170,
+        "max": 210
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 60,
+        "max": 100
+      }
     }
   ]
 }
