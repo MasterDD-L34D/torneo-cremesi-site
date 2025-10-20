@@ -54,6 +54,16 @@ Tutti i dati compilati dall’utente sono conservati nel browser tramite `localS
 - Cambia l’aspetto del sito modificando `css/styles.css`.
 - Se desideri importare materiale di riferimento (handout PDF, documenti), salvali in `docs/` (assicurati di rispettare i diritti d’autore).
 
+## Aggiornare i dati da Archive of Nethys
+
+Il progetto include uno script per scaricare e normalizzare i dati pubblici di Archive of Nethys (razze, classi, archetipi, tratti e tratti razziali alternativi) in formato JSON compatibile con il sito.
+
+```bash
+node scripts/fetch-aon-data.mjs
+```
+
+Lo script salva i file aggiornati nella cartella `data/` (`aon-races.json`, `aon-alt-traits.json`, `aon-classes.json`, `aon-archetypes.json`, `aon-traits.json`). Richiede una connessione Internet attiva per completare il download.
+
 ## Licenza
 
 Il codice e i template di questo sito sono distribuiti sotto licenza **MIT** (includi un file LICENSE se desideri esplicitare la licenza). Il materiale testuale (ambientazione, regole) è soggetto alle politiche e alle licenze di Paizo; usalo solo per scopi personali o concordati con il GM.
