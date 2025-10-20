@@ -130,15 +130,15 @@
         <li>Le cicatrici possono essere curate con 2 PA o tramite magie appropriate.</li>
       </ul>
     </section>
-   <section class="card">
-  <h2>🎁 Ricompense & Loot (ABP)</h2>
-  <u<ul class="list">
-    <li><b>Niente duplicati</b> dei bonus coperti da ABP (arma/armatura/scudo, deflessione, resistenza, enhancement alle caratteristiche, ecc.).</li>
-    <li><b>Ricompense tematiche:</b> utility narrative legate a sensi, movimento, comunicazione, chiavi narrative (sigilli, emblemi) o effetti limitati al torneo.</li>
-    <li><b>Indipendenza dai TC:</b> gli oggetti non replicano né potenziano direttamente i poteri dei Tratti di Campagna (TC01–TC06).</li>
-</ul>
-  <p class="muted">Consulta la sezione <a href="#/oggetti">Oggetti Custom</a> per esempi di ricompense e il manuale del GM per linee guida complete.</p>
-</section>
+    <section class="card">
+      <h2>🎁 Ricompense & Loot (ABP)</h2>
+      <ul class="list">
+        <li><b>Niente duplicati</b> dei bonus coperti da ABP (arma/armatura/scudo, deflessione, resistenza, enhancement alle caratteristiche, ecc.).</li>
+        <li><b>Ricompense tematiche:</b> utility narrative legate a sensi, movimento, comunicazione, chiavi narrative (sigilli, emblemi) o effetti limitati al torneo.</li>
+        <li><b>Indipendenza dai TC:</b> gli oggetti non replicano né potenziano direttamente i poteri dei Tratti di Campagna (TC01–TC06).</li>
+      </ul>
+      <p class="muted">Consulta la sezione <a href="#/oggetti">Oggetti Custom</a> per esempi di ricompense e il manuale del GM per linee guida complete.</p>
+    </section>
 <section class="card">
   <h2>📌 Glossario lampo</h2>
   <p><b>LI</b> = Livello Incantatore; <b>TS</b> = Tiri Salvezza; <b>TxC</b> = Tiro per Colpire; <b>PF</b> = Punti Ferita; <b>CD</b> = Classe Difficoltà; <b>RD</b> = Riduzione del Danno; <b>SR</b> = Resistenza agli Incantesimi; <b>RAW</b> = Rules As Written; <b>HR</b> = House Rules.</p>
@@ -278,7 +278,7 @@
           <thead><tr><th>Arma / Attacco</th><th>Attacco Totale</th><th>Danni</th><th>Critico</th><th>Portata</th><th>Note</th></tr></thead>
           <tbody id="atkTable"></tbody>
         </table>
-        <button class="btn" onclick="addRow('atkTable')">+ riga</button>
+        <button class="btn" id="btnAddAtkRow">+ riga</button>
       </div>
       <div class="muted" style="margin-top:8px">
         Manovre CMB: Disarm — · Trip — · Grapple — · Bull Rush — · Sunder —
@@ -376,7 +376,7 @@
         <thead><tr><th>PG</th><th>PA</th><th>Cicatrici F/P</th><th>Malus</th><th>Note</th></tr></thead>
         <tbody id="partyTable"></tbody>
       </table>
-      <button class="btn" onclick="addRow('partyTable',['',' ',' / ','',''])">+ riga PG</button>
+      <button class="btn" id="btnAddPartyRow">+ riga PG</button>
     </section>
   </script>
 
