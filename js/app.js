@@ -16,6 +16,13 @@ let fieldBindings = new Map();
 let raceCatalog = [];
 let classCatalog = [];
 let traitCatalog = { traits: [], drawbacks: [] };
+let raceCatalogLoaded = false;
+let classCatalogLoaded = false;
+let traitCatalogLoaded = false;
+let raceCatalogPromise = null;
+let classCatalogPromise = null;
+let traitCatalogPromise = null;
+let schedaMenusPromise = null;
 const SIZE_ORDER = ['Minuscola','Piccola','Media','Grande','Enorme','Mastodontica'];
 const ARRAY_FIELD = 'array';
 
@@ -157,7 +164,18 @@ function focusMainHeading(){
   }
 }
 
+function initSharedMenus(){
+  buildTCSelect();
+  setupAlignmentSelect();
+  setupAgeStageSelect();
+  buildOCPicker();
+  if(hasSchedaMenus()){
+    hydrateSchedaMenus().catch(err => console.error('[Scheda] Impossibile popolare i menù dinamici.', err));
+  }
+}
+
 function afterRender(route){
+  initSharedMenus();
   switch(route){
     case '/scheda': initScheda(); break;
     case '/tracker': initTracker(); break;
@@ -344,8 +362,6 @@ function initScheda(){
       saveTables();
     });
   }
-  buildTCSelect();
-  buildOCPicker();
 }
 
 function migrateLegacyValute(){
@@ -663,35 +679,103 @@ function setupSchedaTabs(){
   setActive(preferred, false);
 }
 
+function hasSchedaMenus(){
+  return !!document.querySelector('#dgRazza, #dgClasse, #dgTrattiGenerali, #dgDifetti, #dgTrattiRazza, #dgArchetipi');
+}
+
+async function ensureRaceCatalog(){
+  if(raceCatalogLoaded) return raceCatalog;
+  if(!raceCatalogPromise){
+    raceCatalogPromise = getRaces()
+      .catch(err => {
+        console.warn('[AON] Impossibile ottenere la lista razze, uso fallback.', err);
+        return [];
+      })
+      .then(list => Array.isArray(list) ? list : [])
+      .then(list => {
+        raceCatalog = list;
+        raceCatalogLoaded = true;
+        return raceCatalog;
+      })
+      .finally(() => {
+        raceCatalogPromise = null;
+      });
+  }
+  return raceCatalogPromise;
+}
+
+async function ensureClassCatalog(){
+  if(classCatalogLoaded) return classCatalog;
+  if(!classCatalogPromise){
+    classCatalogPromise = getClasses()
+      .catch(err => {
+        console.warn('[AON] Impossibile ottenere la lista classi, uso fallback.', err);
+        return [];
+      })
+      .then(list => Array.isArray(list) ? list : [])
+      .then(list => {
+        classCatalog = list;
+        classCatalogLoaded = true;
+        return classCatalog;
+      })
+      .finally(() => {
+        classCatalogPromise = null;
+      });
+  }
+  return classCatalogPromise;
+}
+
+async function ensureTraitCatalog(){
+  if(traitCatalogLoaded) return traitCatalog;
+  if(!traitCatalogPromise){
+    traitCatalogPromise = getTraitsAndDrawbacks()
+      .catch(err => {
+        console.warn('[AON] Impossibile ottenere tratti/difetti, uso fallback.', err);
+        return { traits: [], drawbacks: [] };
+      })
+      .then(data => ({
+        traits: Array.isArray(data?.traits) ? data.traits : [],
+        drawbacks: Array.isArray(data?.drawbacks) ? data.drawbacks : [],
+      }))
+      .then(result => {
+        traitCatalog = result;
+        traitCatalogLoaded = true;
+        return traitCatalog;
+      })
+      .finally(() => {
+        traitCatalogPromise = null;
+      });
+  }
+  return traitCatalogPromise;
+}
+
+async function hydrateSchedaMenus(){
+  if(!hasSchedaMenus()) return { sizeAdjusted: false, traitAdjusted: false };
+  if(schedaMenusPromise) return schedaMenusPromise;
+  schedaMenusPromise = (async () => {
+    await Promise.all([ensureRaceCatalog(), ensureClassCatalog(), ensureTraitCatalog()]);
+    renderRaceSelect();
+    renderClassSelect();
+    const traitAdjusted = renderTraitsSelect();
+    const sizeAdjusted = applyRaceDetails(state.razzaId);
+    applyClassDetails(state.classeId);
+    return { sizeAdjusted, traitAdjusted };
+  })();
+  try {
+    return await schedaMenusPromise;
+  } finally {
+    schedaMenusPromise = null;
+  }
+}
+
 async function initSchedaGenerali(){
-  setupAlignmentSelect();
-  setupAgeStageSelect();
+  let sizeAdjusted = false;
+  let traitAdjusted = false;
   try {
-    raceCatalog = await getRaces();
+    ({ sizeAdjusted, traitAdjusted } = await hydrateSchedaMenus());
   } catch (err) {
-    console.warn('[AON] Impossibile ottenere la lista razze, uso fallback.', err);
-    raceCatalog = [];
+    console.error('[Scheda] Errore durante il popolamento dei menù dinamici.', err);
   }
-  renderRaceSelect();
-
-  try {
-    classCatalog = await getClasses();
-  } catch (err) {
-    console.warn('[AON] Impossibile ottenere la lista classi, uso fallback.', err);
-    classCatalog = [];
-  }
-  renderClassSelect();
-
-  try {
-    traitCatalog = await getTraitsAndDrawbacks();
-  } catch (err) {
-    console.warn('[AON] Impossibile ottenere tratti/difetti, uso fallback.', err);
-    traitCatalog = { traits: [], drawbacks: [] };
-  }
-  const traitAdjusted = renderTraitsSelect();
-
-  const sizeAdjusted = applyRaceDetails(state.razzaId);
-  applyClassDetails(state.classeId);
   updateAlignmentSummary();
   updateAnagraficaSummary();
   updateMisureSummary();
@@ -703,16 +787,38 @@ async function initSchedaGenerali(){
 }
 
 function setupAlignmentSelect(){
-  const select = document.querySelector('[data-align-select]');
-  if(!select) return;
-  select.innerHTML = `<option value="">— seleziona —</option>` + ALIGNMENTS.map(a => `<option value="${a.id}">${a.id} — ${a.label}</option>`).join('');
+  const selects = Array.from(document.querySelectorAll('select[data-align-select]'));
+  if(!selects.length) return;
+  const options = `<option value="">— seleziona —</option>` + ALIGNMENTS.map(a => `<option value="${a.id}">${a.id} — ${a.label}</option>`).join('');
+  selects.forEach(select => {
+    select.innerHTML = options;
+    const value = state.alignment ?? '';
+    if(value && !ALIGNMENTS.some(a => a.id === value)){
+      const custom = document.createElement('option');
+      custom.value = value;
+      custom.textContent = `${value} — personalizzato`;
+      select.appendChild(custom);
+    }
+    select.value = value || '';
+  });
   restoreFieldValue('alignment');
 }
 
 function setupAgeStageSelect(){
-  const select = document.getElementById('dgEtaStage');
-  if(!select) return;
-  select.innerHTML = `<option value="">—</option>` + AGE_STAGES.map(stage => `<option value="${stage.id}">${stage.label}</option>`).join('');
+  const selects = Array.from(document.querySelectorAll('select[data-age-stage-select], #dgEtaStage'));
+  if(!selects.length) return;
+  const options = `<option value="">—</option>` + AGE_STAGES.map(stage => `<option value="${stage.id}">${stage.label}</option>`).join('');
+  selects.forEach(select => {
+    select.innerHTML = options;
+    const value = state.etaStage ?? '';
+    if(value && !AGE_STAGES.some(stage => stage.id === value)){
+      const custom = document.createElement('option');
+      custom.value = value;
+      custom.textContent = `${value} — personalizzato`;
+      select.appendChild(custom);
+    }
+    select.value = value || '';
+  });
   restoreFieldValue('etaStage');
 }
 

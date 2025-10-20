@@ -1,11 +1,192 @@
 {
   "traits": [
-    {"id": "trait-reactionary", "name": "Reazionario", "summary": "+2 alle prove di Iniziativa.", "category": "Base"},
-    {"id": "trait-magical-knack", "name": "Affinità Magica", "summary": "+2 al livello incantatore (massimo il livello del personaggio).", "category": "Magico"},
-    {"id": "trait-indomitable-faith", "name": "Fede Indomita", "summary": "+1 ai TS Volontà.", "category": "Fede"}
+    {
+      "id": "trait-armor-expert",
+      "name": "Esperto di Armature",
+      "summary": "Riduci di 1 la penalità di armatura alle prove",
+      "category": "Combattimento"
+    },
+    {
+      "id": "trait-axe-to-grind",
+      "name": "Rancore Personale",
+      "summary": "+1 ai danni contro nemici isolati",
+      "category": "Combattimento"
+    },
+    {
+      "id": "trait-reactionary",
+      "name": "Reazionario",
+      "summary": "+2 all'Iniziativa",
+      "category": "Combattimento"
+    },
+    {
+      "id": "trait-resilient",
+      "name": "Resistente",
+      "summary": "+1 ai TS Tempra",
+      "category": "Combattimento"
+    },
+    {
+      "id": "trait-magical-knack",
+      "name": "Affinità Magica",
+      "summary": "+2 al livello incantatore (massimo il livello del personaggio)",
+      "category": "Magico"
+    },
+    {
+      "id": "trait-magical-lineage",
+      "name": "Discendenza Magica",
+      "summary": "Riduci di 1 il costo metamagico di un incantesimo scelto",
+      "category": "Magico"
+    },
+    {
+      "id": "trait-pragmatic-activator",
+      "name": "Attivatore Pragmatico",
+      "summary": "Usa Intelligenza per attivare oggetti magici",
+      "category": "Magico"
+    },
+    {
+      "id": "trait-hedge-magician",
+      "name": "Maghetto di Campagna",
+      "summary": "Riduci il costo di creare oggetti magici del 5%",
+      "category": "Magico"
+    },
+    {
+      "id": "trait-indomitable-faith",
+      "name": "Fede Indomita",
+      "summary": "+1 ai TS Volontà",
+      "category": "Fede"
+    },
+    {
+      "id": "trait-devoted-healer",
+      "name": "Guaritore Devoto",
+      "summary": "+4 a Guarire per fermare sanguinamento",
+      "category": "Fede"
+    },
+    {
+      "id": "trait-birthmark",
+      "name": "Marchio di Nascita",
+      "summary": "+2 ai TS contro ammaliamento",
+      "category": "Fede"
+    },
+    {
+      "id": "trait-veteran-of-battle",
+      "name": "Veterano di Battaglia",
+      "summary": "Usi Saggezza per l'iniziativa",
+      "category": "Fede"
+    },
+    {
+      "id": "trait-charming",
+      "name": "Affascinante",
+      "summary": "+1 a Diplomazia e Raggirare con creature che ti trovano attraente",
+      "category": "Sociale"
+    },
+    {
+      "id": "trait-student-of-philosophy",
+      "name": "Studioso di Filosofia",
+      "summary": "Usa Intelligenza per Diplomazia (argomentare)",
+      "category": "Sociale"
+    },
+    {
+      "id": "trait-worldly",
+      "name": "Cosmopolita",
+      "summary": "Diplomazia e Conoscenze (locali) sono abilità di classe",
+      "category": "Sociale"
+    },
+    {
+      "id": "trait-seeker",
+      "name": "Cercatore",
+      "summary": "Percezione è abilità di classe e +1 a individuare trappole",
+      "category": "Campagna"
+    },
+    {
+      "id": "trait-berserker-of-the-society",
+      "name": "Berserker della Società",
+      "summary": "+2 ai danni in ira",
+      "category": "Campagna"
+    },
+    {
+      "id": "trait-liberator",
+      "name": "Liberatore",
+      "summary": "+1 a prove per liberarsi da vincoli",
+      "category": "Campagna"
+    },
+    {
+      "id": "trait-guardian-of-the-forge",
+      "name": "Guardiano della Forgia",
+      "summary": "+1 ai TS contro effetti di fuoco",
+      "category": "Regionale"
+    },
+    {
+      "id": "trait-quain-martial-artist",
+      "name": "Artista Marziale di Quain",
+      "summary": "+1 a colpire con attacchi senz'armi",
+      "category": "Regionale"
+    },
+    {
+      "id": "trait-elven-reflexes",
+      "name": "Riflessi Elfici",
+      "summary": "+2 all'Iniziativa",
+      "category": "Razza"
+    },
+    {
+      "id": "trait-dwarven-hatred",
+      "name": "Odio Nanico",
+      "summary": "+1 a colpire contro orchi e goblinoidi",
+      "category": "Razza"
+    },
+    {
+      "id": "trait-halfling-optimist",
+      "name": "Ottimista Halfling",
+      "summary": "+1 ai TS Volontà contro paura",
+      "category": "Razza"
+    },
+    {
+      "id": "trait-orc-savage",
+      "name": "Ferocia Orchesca",
+      "summary": "+1 ai danni in mischia",
+      "category": "Razza"
+    },
+    {
+      "id": "trait-aasimar-heavenborn",
+      "name": "Nato nei Cieli",
+      "summary": "+1 a Diplomazia e Linguistica",
+      "category": "Razza"
+    },
+    {
+      "id": "trait-tiefling-shadowplay",
+      "name": "Giochi d'Ombra",
+      "summary": "+2 a Furtività in penombra",
+      "category": "Razza"
+    }
   ],
   "drawbacks": [
-    {"id": "drawback-vain", "name": "Vanitoso", "summary": "-2 ai TS contro effetti che danneggiano l'aspetto, ottieni 1 tratto extra."},
-    {"id": "drawback-miser", "name": "Avaro", "summary": "-1 a tutte le prove di Carisma finché non possiedi almeno 100 mo in liquidi."}
+    {
+      "id": "drawback-pride",
+      "name": "Orgoglioso",
+      "summary": "-2 a Diplomazia contro creature che ti hanno sconfitto"
+    },
+    {
+      "id": "drawback-meticulous",
+      "name": "Meticoloso",
+      "summary": "-2 alle prove di Iniziativa ma +1 a Conoscenze"
+    },
+    {
+      "id": "drawback-vain",
+      "name": "Vanitoso",
+      "summary": "-2 ai TS contro effetti che danneggiano l'aspetto"
+    },
+    {
+      "id": "drawback-miser",
+      "name": "Avaro",
+      "summary": "-1 a prove di Carisma finché non possiedi 100 mo liquide"
+    },
+    {
+      "id": "drawback-paranoid",
+      "name": "Paranoico",
+      "summary": "-2 a Diplomazia e Raggirare"
+    },
+    {
+      "id": "drawback-haunted",
+      "name": "Infestato",
+      "summary": "Oggetti estratti richiedono un'azione di movimento aggiuntiva"
+    }
   ]
 }

@@ -1,51 +1,696 @@
 {
   "entries": [
     {
-      "id": "fighter-two-weapon-warrior",
-      "name": "Guerriero a Due Armi",
-      "summary": "Specialista nel combattimento con due armi.",
+      "id": "alchemist-bomber",
+      "name": "Bombarolo",
+      "summary": "Le bombe infliggono danni extra e ottengono nuove forme",
       "classes": [
-        {"id": "fighter", "name": "Guerriero"}
+        {
+          "id": "alchemist",
+          "name": "Alchimista"
+        }
       ]
     },
     {
-      "id": "fighter-archer",
-      "name": "Arciere",
-      "summary": "Focalizzato sugli attacchi a distanza.",
+      "id": "alchemist-chirurgeon",
+      "name": "Chirurgo",
+      "summary": "Usa infusi alchemici per guarire gli alleati",
       "classes": [
-        {"id": "fighter", "name": "Guerriero"}
+        {
+          "id": "alchemist",
+          "name": "Alchimista"
+        }
+      ]
+    },
+    {
+      "id": "alchemist-vivisectionist",
+      "name": "Vivisezionista",
+      "summary": "Trasforma le scoperte in tecniche di assassinio",
+      "classes": [
+        {
+          "id": "alchemist",
+          "name": "Alchimista"
+        }
+      ]
+    },
+    {
+      "id": "antipaladin-desecrator",
+      "name": "Profanatore",
+      "summary": "Estende un'aura che corrompe il terreno sacro",
+      "classes": [
+        {
+          "id": "antipaladin",
+          "name": "Antipaladino"
+        }
+      ]
+    },
+    {
+      "id": "antipaladin-iron-tyrant",
+      "name": "Tiranno di Ferro",
+      "summary": "Canalizza energia negativa attraverso l'armatura",
+      "classes": [
+        {
+          "id": "antipaladin",
+          "name": "Antipaladino"
+        }
+      ]
+    },
+    {
+      "id": "antipaladin-tormentor",
+      "name": "Torturatore",
+      "summary": "Ottiene poteri per infliggere dolore persistente",
+      "classes": [
+        {
+          "id": "antipaladin",
+          "name": "Antipaladino"
+        }
+      ]
+    },
+    {
+      "id": "arcanist-brown-fur-transmuter",
+      "name": "Trasmutatore Pelliccia Bruna",
+      "summary": "Condivide metamorfosi con gli alleati",
+      "classes": [
+        {
+          "id": "arcanist",
+          "name": "Arcanista"
+        }
+      ]
+    },
+    {
+      "id": "arcanist-occultist",
+      "name": "Occultista",
+      "summary": "Imbeve reliquie di potere esoterico",
+      "classes": [
+        {
+          "id": "arcanist",
+          "name": "Arcanista"
+        }
+      ]
+    },
+    {
+      "id": "arcanist-white-mage",
+      "name": "Mago Bianco",
+      "summary": "Canalizza magia curativa pura",
+      "classes": [
+        {
+          "id": "arcanist",
+          "name": "Arcanista"
+        }
+      ]
+    },
+    {
+      "id": "barbarian-savage-technologist",
+      "name": "Tecnologa Selvaggia",
+      "summary": "Impugna armi da fuoco in ira",
+      "classes": [
+        {
+          "id": "barbarian",
+          "name": "Barbaro"
+        }
+      ]
+    },
+    {
+      "id": "barbarian-totem-warrior",
+      "name": "Guerriero Totem",
+      "summary": "Canalizza lo spirito di un animale totemico",
+      "classes": [
+        {
+          "id": "barbarian",
+          "name": "Barbaro"
+        }
+      ]
+    },
+    {
+      "id": "barbarian-urban-barbarian",
+      "name": "Barbaro Urbano",
+      "summary": "Converte la furia in disciplina controllata",
+      "classes": [
+        {
+          "id": "barbarian",
+          "name": "Barbaro"
+        }
+      ]
+    },
+    {
+      "id": "bard-archaeologist",
+      "name": "Archeologo",
+      "summary": "Sostituisce gli inni bardici con fortuna personale",
+      "classes": [
+        {
+          "id": "bard",
+          "name": "Bardo"
+        }
+      ]
+    },
+    {
+      "id": "bard-court-bard",
+      "name": "Bardo di Corte",
+      "summary": "Maestro delle corti nobiliari",
+      "classes": [
+        {
+          "id": "bard",
+          "name": "Bardo"
+        }
+      ]
+    },
+    {
+      "id": "bard-sandman",
+      "name": "Sonnacchioso",
+      "summary": "Ipnotizza con musica soporifera",
+      "classes": [
+        {
+          "id": "bard",
+          "name": "Bardo"
+        }
       ]
     },
     {
       "id": "cleric-evangelist",
       "name": "Evangelista",
-      "summary": "Emissario della propria fede, ottiene capacità di influenza.",
+      "summary": "Predica invece di combattere corazzato",
       "classes": [
-        {"id": "cleric", "name": "Chierico"}
+        {
+          "id": "cleric",
+          "name": "Chierico"
+        }
       ]
     },
     {
-      "id": "cleric-liberator",
-      "name": "Liberatore",
-      "summary": "Combattente sacro votato a spezzare catene e maledizioni.",
+      "id": "cleric-merciful-healer",
+      "name": "Guaritore Misericordioso",
+      "summary": "Dedica la canalizzazione a curare",
       "classes": [
-        {"id": "cleric", "name": "Chierico"}
+        {
+          "id": "cleric",
+          "name": "Chierico"
+        }
+      ]
+    },
+    {
+      "id": "cleric-separatist",
+      "name": "Separatista",
+      "summary": "Dominii distaccati dall'ortodossia",
+      "classes": [
+        {
+          "id": "cleric",
+          "name": "Chierico"
+        }
+      ]
+    },
+    {
+      "id": "druid-blight-druid",
+      "name": "Druido della Piaga",
+      "summary": "Sfrutta piante corrotte e malattie",
+      "classes": [
+        {
+          "id": "druid",
+          "name": "Druido"
+        }
+      ]
+    },
+    {
+      "id": "druid-mooncaller",
+      "name": "Invocatore della Luna",
+      "summary": "Ispirato ai licantropi benevoli",
+      "classes": [
+        {
+          "id": "druid",
+          "name": "Druido"
+        }
+      ]
+    },
+    {
+      "id": "druid-sky-druid",
+      "name": "Druido del Cielo",
+      "summary": "Domina venti e alleati alati",
+      "classes": [
+        {
+          "id": "druid",
+          "name": "Druido"
+        }
+      ]
+    },
+    {
+      "id": "fighter-archer",
+      "name": "Arciere",
+      "summary": "Massimizza la precisione a distanza",
+      "classes": [
+        {
+          "id": "fighter",
+          "name": "Guerriero"
+        }
+      ]
+    },
+    {
+      "id": "fighter-two-weapon-warrior",
+      "name": "Guerriero a Due Armi",
+      "summary": "Raffica di colpi con due armi",
+      "classes": [
+        {
+          "id": "fighter",
+          "name": "Guerriero"
+        }
+      ]
+    },
+    {
+      "id": "fighter-lore-warden",
+      "name": "Custode delle Tradizioni",
+      "summary": "Sostituisce talenti con abilità tattiche",
+      "classes": [
+        {
+          "id": "fighter",
+          "name": "Guerriero"
+        }
       ]
     },
     {
       "id": "rogue-scout",
       "name": "Esploratore",
-      "summary": "Bonus a Furtività e capacità in avanscoperta.",
+      "summary": "Colpisce i nemici in movimento",
       "classes": [
-        {"id": "rogue", "name": "Ladro"}
+        {
+          "id": "rogue",
+          "name": "Ladro"
+        }
+      ]
+    },
+    {
+      "id": "rogue-sniper",
+      "name": "Cecchino",
+      "summary": "Furtivi letali a lunga distanza",
+      "classes": [
+        {
+          "id": "rogue",
+          "name": "Ladro"
+        }
       ]
     },
     {
       "id": "rogue-rake",
       "name": "Mascalzone",
-      "summary": "Versato nell'interazione sociale e nel combattimento elegante.",
+      "summary": "Duella con stile nelle città",
       "classes": [
-        {"id": "rogue", "name": "Ladro"}
+        {
+          "id": "rogue",
+          "name": "Ladro"
+        }
+      ]
+    },
+    {
+      "id": "monk-sensei",
+      "name": "Sensei",
+      "summary": "Distribuisce consigli illuminati",
+      "classes": [
+        {
+          "id": "monk",
+          "name": "Monaco"
+        }
+      ]
+    },
+    {
+      "id": "monk-sohei",
+      "name": "Sohei",
+      "summary": "Monaco cavaliere armato",
+      "classes": [
+        {
+          "id": "monk",
+          "name": "Monaco"
+        }
+      ]
+    },
+    {
+      "id": "monk-tetori",
+      "name": "Tetori",
+      "summary": "Campione delle prese",
+      "classes": [
+        {
+          "id": "monk",
+          "name": "Monaco"
+        }
+      ]
+    },
+    {
+      "id": "paladin-sacred-shield",
+      "name": "Scudo Sacro",
+      "summary": "Aure che riducono i danni sugli alleati",
+      "classes": [
+        {
+          "id": "paladin",
+          "name": "Paladino"
+        }
+      ]
+    },
+    {
+      "id": "paladin-hospitaler",
+      "name": "Ospedaliere",
+      "summary": "Bilancia cavalcature e guarigione",
+      "classes": [
+        {
+          "id": "paladin",
+          "name": "Paladino"
+        }
+      ]
+    },
+    {
+      "id": "paladin-warrior-of-the-holy-light",
+      "name": "Guerriero della Luce",
+      "summary": "Irradia luce purificatrice",
+      "classes": [
+        {
+          "id": "paladin",
+          "name": "Paladino"
+        }
+      ]
+    },
+    {
+      "id": "ranger-beastmaster",
+      "name": "Signore delle Bestie",
+      "summary": "Gestisce più compagni animali",
+      "classes": [
+        {
+          "id": "ranger",
+          "name": "Ranger"
+        }
+      ]
+    },
+    {
+      "id": "ranger-guide",
+      "name": "Guida",
+      "summary": "Supporta il gruppo con adattabilità",
+      "classes": [
+        {
+          "id": "ranger",
+          "name": "Ranger"
+        }
+      ]
+    },
+    {
+      "id": "ranger-demon-hunter",
+      "name": "Cacciatore di Demoni",
+      "summary": "Nemici prescelti infernali",
+      "classes": [
+        {
+          "id": "ranger",
+          "name": "Ranger"
+        }
+      ]
+    },
+    {
+      "id": "sorcerer-crossblooded",
+      "name": "Sangue Incrociato",
+      "summary": "Combina due stirpi arcane",
+      "classes": [
+        {
+          "id": "sorcerer",
+          "name": "Stregone"
+        }
+      ]
+    },
+    {
+      "id": "sorcerer-eldritch-scrapper",
+      "name": "Rissaiolo Eldritch",
+      "summary": "Converte potere arcano in prodezze fisiche",
+      "classes": [
+        {
+          "id": "sorcerer",
+          "name": "Stregone"
+        }
+      ]
+    },
+    {
+      "id": "sorcerer-sage",
+      "name": "Saggio",
+      "summary": "Lancia con l'Intelligenza",
+      "classes": [
+        {
+          "id": "sorcerer",
+          "name": "Stregone"
+        }
+      ]
+    },
+    {
+      "id": "wizard-arcane-bomber",
+      "name": "Bombarolo Arcano",
+      "summary": "Lancia bombe magiche",
+      "classes": [
+        {
+          "id": "wizard",
+          "name": "Mago"
+        }
+      ]
+    },
+    {
+      "id": "wizard-spell-sage",
+      "name": "Saggio degli Incantesimi",
+      "summary": "Adatta incantesimi di altre tradizioni",
+      "classes": [
+        {
+          "id": "wizard",
+          "name": "Mago"
+        }
+      ]
+    },
+    {
+      "id": "wizard-teleportation",
+      "name": "Specialista della Traslocazione",
+      "summary": "Teletrasporti rapidi",
+      "classes": [
+        {
+          "id": "wizard",
+          "name": "Mago"
+        }
+      ]
+    },
+    {
+      "id": "cavalier-beast-rider",
+      "name": "Cavaliere delle Bestie",
+      "summary": "Cavalcature esotiche e potenti",
+      "classes": [
+        {
+          "id": "cavalier",
+          "name": "Cavaliere"
+        }
+      ]
+    },
+    {
+      "id": "cavalier-musketeer",
+      "name": "Moschettiere",
+      "summary": "Sfide risolte a colpi di moschetto",
+      "classes": [
+        {
+          "id": "cavalier",
+          "name": "Cavaliere"
+        }
+      ]
+    },
+    {
+      "id": "cavalier-standard-bearer",
+      "name": "Alfiere",
+      "summary": "Potenzia gli alleati con lo stendardo",
+      "classes": [
+        {
+          "id": "cavalier",
+          "name": "Cavaliere"
+        }
+      ]
+    },
+    {
+      "id": "gunslinger-buccaneer",
+      "name": "Bucaniere",
+      "summary": "Assalti e acrobazie sui ponti delle navi",
+      "classes": [
+        {
+          "id": "gunslinger",
+          "name": "Pistolero"
+        }
+      ]
+    },
+    {
+      "id": "gunslinger-musket-master",
+      "name": "Maestro di Archibugi",
+      "summary": "Predilige moschetti e armi lunghe",
+      "classes": [
+        {
+          "id": "gunslinger",
+          "name": "Pistolero"
+        }
+      ]
+    },
+    {
+      "id": "gunslinger-pistolero",
+      "name": "Duellante Pistolero",
+      "summary": "Duelli ravvicinati con pistole",
+      "classes": [
+        {
+          "id": "gunslinger",
+          "name": "Pistolero"
+        }
+      ]
+    },
+    {
+      "id": "inquisitor-judge",
+      "name": "Giudice",
+      "summary": "Emette verdetti contro i nemici",
+      "classes": [
+        {
+          "id": "inquisitor",
+          "name": "Inquisitore"
+        }
+      ]
+    },
+    {
+      "id": "inquisitor-sacred-huntsmaster",
+      "name": "Maestro di Caccia Sacra",
+      "summary": "Condivide giudizi col compagno animale",
+      "classes": [
+        {
+          "id": "inquisitor",
+          "name": "Inquisitore"
+        }
+      ]
+    },
+    {
+      "id": "inquisitor-witch-hunter",
+      "name": "Cacciatore di Streghe",
+      "summary": "Specializzato contro la magia arcana",
+      "classes": [
+        {
+          "id": "inquisitor",
+          "name": "Inquisitore"
+        }
+      ]
+    },
+    {
+      "id": "magus-bladebound",
+      "name": "Vincolalame",
+      "summary": "Legato a una lama intelligente",
+      "classes": [
+        {
+          "id": "magus",
+          "name": "Magus"
+        }
+      ]
+    },
+    {
+      "id": "magus-hexcrafter",
+      "name": "Fattucchiere",
+      "summary": "Attrae maledizioni di strega",
+      "classes": [
+        {
+          "id": "magus",
+          "name": "Magus"
+        }
+      ]
+    },
+    {
+      "id": "magus-spell-dancer",
+      "name": "Danzatore di Incantesimi",
+      "summary": "Combina danza e scherma arcana",
+      "classes": [
+        {
+          "id": "magus",
+          "name": "Magus"
+        }
+      ]
+    },
+    {
+      "id": "oracle-ancestor",
+      "name": "Antico",
+      "summary": "Richiama i consigli degli antenati",
+      "classes": [
+        {
+          "id": "oracle",
+          "name": "Oracolo"
+        }
+      ]
+    },
+    {
+      "id": "oracle-seer",
+      "name": "Veggente",
+      "summary": "Amplifica le divinazioni",
+      "classes": [
+        {
+          "id": "oracle",
+          "name": "Oracolo"
+        }
+      ]
+    },
+    {
+      "id": "oracle-stargazer",
+      "name": "Astrologo",
+      "summary": "Legge le stelle per poteri predittivi",
+      "classes": [
+        {
+          "id": "oracle",
+          "name": "Oracolo"
+        }
+      ]
+    },
+    {
+      "id": "summoner-master-summoner",
+      "name": "Maestro Evocatore",
+      "summary": "Molte evocazioni minori",
+      "classes": [
+        {
+          "id": "summoner",
+          "name": "Invocatore"
+        }
+      ]
+    },
+    {
+      "id": "summoner-synthesist",
+      "name": "Sintetista",
+      "summary": "Si fonde con l'eidolon",
+      "classes": [
+        {
+          "id": "summoner",
+          "name": "Invocatore"
+        }
+      ]
+    },
+    {
+      "id": "summoner-blood-god-disciple",
+      "name": "Discepolo del Dio del Sangue",
+      "summary": "Sacrifici alimentano l'eidolon",
+      "classes": [
+        {
+          "id": "summoner",
+          "name": "Invocatore"
+        }
+      ]
+    },
+    {
+      "id": "witch-gravewalker",
+      "name": "Camminatrice delle Tombe",
+      "summary": "Padroneggia i non morti",
+      "classes": [
+        {
+          "id": "witch",
+          "name": "Strega"
+        }
+      ]
+    },
+    {
+      "id": "witch-hedge-witch",
+      "name": "Fattucchiera del Villaggio",
+      "summary": "Erbe e guarigioni",
+      "classes": [
+        {
+          "id": "witch",
+          "name": "Strega"
+        }
+      ]
+    },
+    {
+      "id": "witch-sea-witch",
+      "name": "Strega del Mare",
+      "summary": "Evoca tempeste marine",
+      "classes": [
+        {
+          "id": "witch",
+          "name": "Strega"
+        }
       ]
     }
   ]

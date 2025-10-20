@@ -8,12 +8,17 @@
         {
           "id": "alchemist-bomber",
           "name": "Bombarolo",
-          "summary": "Specializzato nell'alchimia offensiva con bombe potenziate."
+          "summary": "Specialista delle bombe offensive"
+        },
+        {
+          "id": "alchemist-chirurgeon",
+          "name": "Chirurgo",
+          "summary": "Trasforma le scoperte in capacità curative"
         },
         {
           "id": "alchemist-vivisectionist",
           "name": "Vivisezionista",
-          "summary": "Sostituisce le bombe con attacchi furtivi e mutageni più sinistri."
+          "summary": "Sostituisce le bombe con furtivi"
         }
       ]
     },
@@ -25,12 +30,17 @@
         {
           "id": "antipaladin-desecrator",
           "name": "Profanatore",
-          "summary": "Canalizza energia negativa e indebolisce gli avversari sacri."
+          "summary": "Corrompe luoghi sacri"
         },
         {
           "id": "antipaladin-iron-tyrant",
           "name": "Tiranno di Ferro",
-          "summary": "Combina armature pesanti e potere malvagio con autorità marziale."
+          "summary": "Combina armature pesanti e tirannia"
+        },
+        {
+          "id": "antipaladin-tormentor",
+          "name": "Torturatore",
+          "summary": "Infligge dolore debilitante"
         }
       ]
     },
@@ -40,14 +50,19 @@
       "source": "Guida all'Occulto",
       "archetypes": [
         {
-          "id": "arcanist-blood-arsenal",
-          "name": "Arsenale di Sangue",
-          "summary": "Trasforma la propria energia arcana in armi temporanee."
+          "id": "arcanist-brown-fur-transmuter",
+          "name": "Trasmutatore Pelliccia Bruna",
+          "summary": "Condivide trasmutazioni con gli alleati"
+        },
+        {
+          "id": "arcanist-occultist",
+          "name": "Occultista",
+          "summary": "Sfrutta reliquie cariche di energia esoterica"
         },
         {
           "id": "arcanist-white-mage",
           "name": "Mago Bianco",
-          "summary": "Focalizzato su magia di guarigione e supporto."
+          "summary": "Focalizzato sulla guarigione"
         }
       ]
     },
@@ -57,14 +72,19 @@
       "source": "Manuale Base",
       "archetypes": [
         {
-          "id": "barbarian-totem-warrior",
-          "name": "Guerriero Totem",
-          "summary": "Ottiene poteri totemici legati a un animale scelto."
+          "id": "barbarian-savage-technologist",
+          "name": "Tecnologa Selvaggia",
+          "summary": "Ira e armi da fuoco"
         },
         {
-          "id": "barbarian-urban",
+          "id": "barbarian-totem-warrior",
+          "name": "Guerriero Totem",
+          "summary": "Sentieri d'ira legati a totem animali"
+        },
+        {
+          "id": "barbarian-urban-barbarian",
           "name": "Barbaro Urbano",
-          "summary": "Sostituisce l'ira con disciplina adattata alla vita cittadina."
+          "summary": "Raffina la furia in disciplina"
         }
       ]
     },
@@ -76,63 +96,17 @@
         {
           "id": "bard-archaeologist",
           "name": "Archeologo",
-          "summary": "Combina fortuna e trappole con conoscenza storica."
+          "summary": "Affida il successo alla fortuna"
         },
         {
-          "id": "bard-sound-striker",
-          "name": "Colpitore Sonoro",
-          "summary": "Usa performance sonore come arma offensiva."
-        }
-      ]
-    },
-    {
-      "id": "bloodrager",
-      "name": "Furia di Sangue",
-      "source": "Guida dei Combattenti Avanzata",
-      "archetypes": [
-        {
-          "id": "bloodrager-abyssal",
-          "name": "Furia Abissale",
-          "summary": "Scatena potere demoniaco durante la trance."
+          "id": "bard-court-bard",
+          "name": "Bardo di Corte",
+          "summary": "Intrighi politici e diplomazia"
         },
         {
-          "id": "bloodrager-primalist",
-          "name": "Primalista",
-          "summary": "Sceglie poteri barbare in luogo di quelli sanguigni."
-        }
-      ]
-    },
-    {
-      "id": "brawler",
-      "name": "Rissaiolo",
-      "source": "Guida dei Combattenti Avanzata",
-      "archetypes": [
-        {
-          "id": "brawler-wild-child",
-          "name": "Figlio Selvaggio",
-          "summary": "Fonde capacità da animale compagno con lotta improvvisata."
-        },
-        {
-          "id": "brawler-exemplar",
-          "name": "Esemplare",
-          "summary": "Trasforma il carisma in potere marziale versatile."
-        }
-      ]
-    },
-    {
-      "id": "cavalier",
-      "name": "Cavaliere",
-      "source": "Guida del Giocatore Avanzata",
-      "archetypes": [
-        {
-          "id": "cavalier-emissary",
-          "name": "Emissario",
-          "summary": "Funziona bene senza cavalcatura, specializzato in diplomazia."
-        },
-        {
-          "id": "cavalier-beast-rider",
-          "name": "Cavaliere delle Bestie",
-          "summary": "Permette cavalcature mostruose."
+          "id": "bard-sandman",
+          "name": "Sonnacchioso",
+          "summary": "Ipnotizza con le esibizioni"
         }
       ]
     },
@@ -144,12 +118,17 @@
         {
           "id": "cleric-evangelist",
           "name": "Evangelista",
-          "summary": "Predicatore carismatico con poteri di influenza."
+          "summary": "Sostituisce armatura con capacità persuasive"
         },
         {
-          "id": "cleric-liberator",
-          "name": "Liberatore",
-          "summary": "Incanala la propria fede per spezzare catene e maledizioni."
+          "id": "cleric-merciful-healer",
+          "name": "Guaritore Misericordioso",
+          "summary": "Canalizza solo per curare"
+        },
+        {
+          "id": "cleric-separatist",
+          "name": "Separatista",
+          "summary": "Domini disallineati"
         }
       ]
     },
@@ -159,14 +138,19 @@
       "source": "Manuale Base",
       "archetypes": [
         {
-          "id": "druid-menhir-savant",
-          "name": "Savant del Menhir",
-          "summary": "Si lega ai nodi druidici e manipola il tempo."
+          "id": "druid-blight-druid",
+          "name": "Druido della Piaga",
+          "summary": "Sfrutta flora corrotta"
         },
         {
-          "id": "druid-blight",
-          "name": "Flagello",
-          "summary": "Combina natura corrotta e magie distruttive."
+          "id": "druid-mooncaller",
+          "name": "Invocatore della Luna",
+          "summary": "Legame con il ciclo lunare"
+        },
+        {
+          "id": "druid-sky-druid",
+          "name": "Druido del Cielo",
+          "summary": "Alleati alati e tempeste"
         }
       ]
     },
@@ -176,219 +160,19 @@
       "source": "Manuale Base",
       "archetypes": [
         {
-          "id": "fighter-two-weapon-warrior",
-          "name": "Guerriero a Due Armi",
-          "summary": "Specialista nel combattimento con due armi."
-        },
-        {
           "id": "fighter-archer",
           "name": "Arciere",
-          "summary": "Si concentra sugli attacchi a distanza con l'arco."
+          "summary": "Maestro degli archi"
         },
         {
-          "id": "fighter-free-hand",
-          "name": "Mano Libera",
-          "summary": "Fa leva sul combattimento senza scudi per disarmare e spingere."
-        }
-      ]
-    },
-    {
-      "id": "gunslinger",
-      "name": "Pistolero",
-      "source": "Guida del Giocatore Avanzata",
-      "archetypes": [
-        {
-          "id": "gunslinger-musket-master",
-          "name": "Maestro di Archibugi",
-          "summary": "Ottimizza le armi a miccia lunga."
+          "id": "fighter-two-weapon-warrior",
+          "name": "Guerriero a Due Armi",
+          "summary": "Specialista in doppie armi"
         },
         {
-          "id": "gunslinger-mysterious-stranger",
-          "name": "Sconosciuto Misterioso",
-          "summary": "Affida il potere del fuoco al carisma."
-        },
-        {
-          "id": "gunslinger-buccaneer",
-          "name": "Bucaniere",
-          "summary": "Combina pistole e manovre acrobatiche in mare."
-        }
-      ]
-    },
-    {
-      "id": "hunter",
-      "name": "Cacciatore",
-      "source": "Guida dei Combattenti Avanzata",
-      "archetypes": [
-        {
-          "id": "hunter-feral",
-          "name": "Selvaggio",
-          "summary": "Esalta i sensi ferini condivisi con il compagno animale."
-        },
-        {
-          "id": "hunter-urban",
-          "name": "Cacciatore Urbano",
-          "summary": "Adatta tattiche e compagno animale alla vita di città."
-        }
-      ]
-    },
-    {
-      "id": "inquisitor",
-      "name": "Inquisitore",
-      "source": "Guida del Giocatore Avanzata",
-      "archetypes": [
-        {
-          "id": "inquisitor-sanctified",
-          "name": "Santificato",
-          "summary": "Combina giudizi con capacità di guarigione."
-        },
-        {
-          "id": "inquisitor-spy",
-          "name": "Spia",
-          "summary": "Eccelle in infiltrazione e raccolta di informazioni."
-        }
-      ]
-    },
-    {
-      "id": "investigator",
-      "name": "Investigatore",
-      "source": "Guida dei Combattenti Avanzata",
-      "archetypes": [
-        {
-          "id": "investigator-clandestine",
-          "name": "Clandestino",
-          "summary": "Sostituisce l'alchimia con reti di informatori."
-        },
-        {
-          "id": "investigator-psychic-detective",
-          "name": "Detective Psichico",
-          "summary": "Intreccia poteri psichici alle capacità investigative."
-        }
-      ]
-    },
-    {
-      "id": "kineticist",
-      "name": "Cineta",
-      "source": "Guida all'Occulto",
-      "archetypes": [
-        {
-          "id": "kineticist-aetherial",
-          "name": "Aetereo",
-          "summary": "Plasma energia grezza in armi telecinetiche."
-        },
-        {
-          "id": "kineticist-psychokineticist",
-          "name": "Psicocinetico",
-          "summary": "Focalizzato su manipolazioni mentali."
-        }
-      ]
-    },
-    {
-      "id": "magus",
-      "name": "Magus",
-      "source": "Guida del Giocatore Avanzata",
-      "archetypes": [
-        {
-          "id": "magus-eldritch-scion",
-          "name": "Rampollo Eldritch",
-          "summary": "Combina poteri arcani e lignaggi mistici."
-        },
-        {
-          "id": "magus-hexcrafter",
-          "name": "Stregone delle Maledizioni",
-          "summary": "Integra maledizioni nello stile di combattimento."
-        },
-        {
-          "id": "magus-ley-line-guardian",
-          "name": "Guardiano delle Linee",
-          "summary": "Devia flussi magici attraverso la spada."
-        }
-      ]
-    },
-    {
-      "id": "monk",
-      "name": "Monaco",
-      "source": "Manuale Base",
-      "archetypes": [
-        {
-          "id": "monk-zen-archer",
-          "name": "Arciere Zen",
-          "summary": "Usa l'arco come arma monastica."
-        },
-        {
-          "id": "monk-master-of-many-styles",
-          "name": "Maestro di Mille Stili",
-          "summary": "Combina numerosi stili di combattimento."
-        },
-        {
-          "id": "monk-sensei",
-          "name": "Sensei",
-          "summary": "Insegna saggezza e tecniche di supporto al gruppo."
-        }
-      ]
-    },
-    {
-      "id": "oracle",
-      "name": "Oracolo",
-      "source": "Guida del Giocatore Avanzata",
-      "archetypes": [
-        {
-          "id": "oracle-ancient-lorekeeper",
-          "name": "Custode di Antiche Saggezze",
-          "summary": "Apprende magie arcane oltre ai misteri divini."
-        },
-        {
-          "id": "oracle-seer",
-          "name": "Veggente",
-          "summary": "Predice gli eventi e manipola il destino."
-        },
-        {
-          "id": "oracle-black-blood",
-          "name": "Sangue Oscuro",
-          "summary": "Controlla liquidi vitrei maledetti."
-        }
-      ]
-    },
-    {
-      "id": "paladin",
-      "name": "Paladino",
-      "source": "Manuale Base",
-      "archetypes": [
-        {
-          "id": "paladin-holy-tactician",
-          "name": "Tattico Sacro",
-          "summary": "Condivide il carisma e il comando con gli alleati."
-        },
-        {
-          "id": "paladin-sacred-shield",
-          "name": "Scudo Sacro",
-          "summary": "Protegge il gruppo con aura difensiva."
-        },
-        {
-          "id": "paladin-oath-of-vengeance",
-          "name": "Giuramento di Vendetta",
-          "summary": "Massimizza punire il male contro bersagli specifici."
-        }
-      ]
-    },
-    {
-      "id": "ranger",
-      "name": "Ranger",
-      "source": "Manuale Base",
-      "archetypes": [
-        {
-          "id": "ranger-beastmaster",
-          "name": "Maestro delle Bestie",
-          "summary": "Ottiene più compagni animali versatili."
-        },
-        {
-          "id": "ranger-skirmisher",
-          "name": "Guastatore",
-          "summary": "Sostituisce la magia con trucchetti tattici."
-        },
-        {
-          "id": "ranger-urban",
-          "name": "Ranger Urbano",
-          "summary": "Adatta i bonus di nemico prescelto alla vita cittadina."
+          "id": "fighter-lore-warden",
+          "name": "Custode delle Tradizioni",
+          "summary": "Combatte con manovre e conoscenze"
         }
       ]
     },
@@ -400,73 +184,83 @@
         {
           "id": "rogue-scout",
           "name": "Esploratore",
-          "summary": "Specializzato in imboscate durante il movimento."
-        },
-        {
-          "id": "rogue-rake",
-          "name": "Mascalzone",
-          "summary": "Combina charme e combattimento elegante."
+          "summary": "Colpisce mentre si muove"
         },
         {
           "id": "rogue-sniper",
           "name": "Cecchino",
-          "summary": "Infligge furtivi a distanza con precisione."
+          "summary": "Potenzia i colpi furtivi a distanza"
+        },
+        {
+          "id": "rogue-rake",
+          "name": "Mascalzone",
+          "summary": "Combattente elegante e sociale"
         }
       ]
     },
     {
-      "id": "shaman",
-      "name": "Sciamano",
-      "source": "Guida all'Occulto",
+      "id": "monk",
+      "name": "Monaco",
+      "source": "Manuale Base",
       "archetypes": [
         {
-          "id": "shaman-speaker-for-the-past",
-          "name": "Voce del Passato",
-          "summary": "Interagisce con gli spiriti ancestrali."
+          "id": "monk-sensei",
+          "name": "Sensei",
+          "summary": "Condivide consigli ki"
         },
         {
-          "id": "shaman-possession",
-          "name": "Possessione",
-          "summary": "Lascia che gli spiriti guidino il proprio corpo."
+          "id": "monk-sohei",
+          "name": "Sohei",
+          "summary": "Monaco cavaliere"
+        },
+        {
+          "id": "monk-tetori",
+          "name": "Tetori",
+          "summary": "Maestro delle prese"
         }
       ]
     },
     {
-      "id": "skald",
-      "name": "Skald",
-      "source": "Guida dei Combattenti Avanzata",
+      "id": "paladin",
+      "name": "Paladino",
+      "source": "Manuale Base",
       "archetypes": [
         {
-          "id": "skald-battle-scion",
-          "name": "Rampollo di Battaglia",
-          "summary": "Trasmette ira controllata agli alleati."
+          "id": "paladin-sacred-shield",
+          "name": "Scudo Sacro",
+          "summary": "Aura protettiva"
         },
         {
-          "id": "skald-spirit",
-          "name": "Skald degli Spiriti",
-          "summary": "Permette agli alleati di assumere aspetti spirituali."
+          "id": "paladin-hospitaler",
+          "name": "Ospedaliere",
+          "summary": "Bilancia cura e cavalcature"
+        },
+        {
+          "id": "paladin-warrior-of-the-holy-light",
+          "name": "Guerriero della Luce",
+          "summary": "Sostituisce gli incantesimi con luce sacra"
         }
       ]
     },
     {
-      "id": "slayer",
-      "name": "Assassino",
-      "source": "Guida dei Combattenti Avanzata",
+      "id": "ranger",
+      "name": "Ranger",
+      "source": "Manuale Base",
       "archetypes": [
         {
-          "id": "slayer-grim-reaper",
-          "name": "Cupomietitore",
-          "summary": "Combina studio del bersaglio e letali esecuzioni."
+          "id": "ranger-beastmaster",
+          "name": "Signore delle Bestie",
+          "summary": "Più compagni animali"
         },
         {
-          "id": "slayer-bounty-hunter",
-          "name": "Cacciatore di Taglie",
-          "summary": "Specializzato nel catturare i bersagli vivi."
+          "id": "ranger-guide",
+          "name": "Guida",
+          "summary": "Bonus adattivi al gruppo"
         },
         {
-          "id": "slayer-vanguard",
-          "name": "Avanguardia",
-          "summary": "Condivide tattiche di squadra mentre caccia."
+          "id": "ranger-demon-hunter",
+          "name": "Cacciatore di Demoni",
+          "summary": "Nemici prescelti infernali"
         }
       ]
     },
@@ -476,85 +270,19 @@
       "source": "Manuale Base",
       "archetypes": [
         {
-          "id": "sorcerer-draconic",
-          "name": "Draconico",
-          "summary": "Lignaggio draconico con soffio e resistenza."
+          "id": "sorcerer-crossblooded",
+          "name": "Sangue Incrociato",
+          "summary": "Combina due lignaggi"
         },
         {
-          "id": "sorcerer-fey",
-          "name": "Fatato",
-          "summary": "Influenza mentale e magia di illusione."
+          "id": "sorcerer-eldritch-scrapper",
+          "name": "Rissaiolo Eldritch",
+          "summary": "Recupera talenti di combattimento"
         },
         {
-          "id": "sorcerer-undead",
-          "name": "Non Morto",
-          "summary": "Trae potere dalle energie necromantiche."
-        }
-      ]
-    },
-    {
-      "id": "summoner",
-      "name": "Evocatore",
-      "source": "Manuale Avanzato",
-      "archetypes": [
-        {
-          "id": "summoner-master-summoner",
-          "name": "Maestro Evocatore",
-          "summary": "Moltiplica il numero di creature evocate."
-        },
-        {
-          "id": "summoner-broodmaster",
-          "name": "Signore della Covata",
-          "summary": "Divide l'eidolon in molte forme minori."
-        },
-        {
-          "id": "summoner-synthesist",
-          "name": "Sintetista",
-          "summary": "Si fonde fisicamente con l'eidolon in un'unica forma."
-        }
-      ]
-    },
-    {
-      "id": "swashbuckler",
-      "name": "Duellante",
-      "source": "Guida dei Combattenti Avanzata",
-      "archetypes": [
-        {
-          "id": "swashbuckler-inspired-blade",
-          "name": "Lama Ispirata",
-          "summary": "Mescola panache e precisione con la spada sottile."
-        },
-        {
-          "id": "swashbuckler-mouser",
-          "name": "Mammifero Rapido",
-          "summary": "Combattente agile che sfrutta la mobilità."
-        },
-        {
-          "id": "swashbuckler-whirling-dervish",
-          "name": "Derviscio Turbinante",
-          "summary": "Combatte in danza vorticosa."
-        }
-      ]
-    },
-    {
-      "id": "witch",
-      "name": "Strega",
-      "source": "Guida del Giocatore Avanzata",
-      "archetypes": [
-        {
-          "id": "witch-hedge-witch",
-          "name": "Strega dei Rovi",
-          "summary": "Guarisce e protegge attraverso il sapere erboristico."
-        },
-        {
-          "id": "witch-winter-witch",
-          "name": "Strega d'Inverno",
-          "summary": "Controlla il gelo e le tempeste."
-        },
-        {
-          "id": "witch-sea-witch",
-          "name": "Strega del Mare",
-          "summary": "Domina le onde e il clima costiero."
+          "id": "sorcerer-sage",
+          "name": "Saggio",
+          "summary": "Lancia usando Intelligenza"
         }
       ]
     },
@@ -564,207 +292,173 @@
       "source": "Manuale Base",
       "archetypes": [
         {
-          "id": "wizard-bladesinger",
-          "name": "Cantamagia",
-          "summary": "Mescola spada e incantesimi in combattimento elegante."
+          "id": "wizard-arcane-bomber",
+          "name": "Bombarolo Arcano",
+          "summary": "Converte incantesimi in esplosioni"
         },
         {
-          "id": "wizard-spellslinger",
-          "name": "Lanciamagie",
-          "summary": "Sostituisce alcune magie con tiri di arma a distanza."
+          "id": "wizard-spell-sage",
+          "name": "Saggio degli Incantesimi",
+          "summary": "Prende incantesimi da altre liste"
         },
         {
-          "id": "wizard-school-savant",
-          "name": "Erudito della Scuola",
-          "summary": "Approfondisce una scuola arcana specifica."
+          "id": "wizard-teleportation",
+          "name": "Specialista della Traslocazione",
+          "summary": "Teletrasporti rapidi"
         }
       ]
     },
     {
-      "id": "warpriest",
-      "name": "Sacerdote della Guerra",
-      "source": "Guida dei Combattenti Avanzata",
-      "archetypes": [
-        {
-          "id": "warpriest-champion-of-the-faith",
-          "name": "Campione della Fede",
-          "summary": "Canalizza punire e benedizioni aggressive."
-        },
-        {
-          "id": "warpriest-feral-champion",
-          "name": "Campione Ferale",
-          "summary": "Assume aspetti bestiali durante la guerra."
-        },
-        {
-          "id": "warpriest-sentinel",
-          "name": "Sentinella",
-          "summary": "Protegge i templi e guida la difesa sacra."
-        }
-      ]
-    },
-    {
-      "id": "occultist",
-      "name": "Occultista",
-      "source": "Guida all'Occulto",
-      "archetypes": [
-        {
-          "id": "occultist-constellation",
-          "name": "Costellatore",
-          "summary": "Evoca reliquie stellari come focus."
-        },
-        {
-          "id": "occultist-planar-prodigy",
-          "name": "Prodigio Planare",
-          "summary": "Canalizza poteri extraplanari nei focus."
-        }
-      ]
-    },
-    {
-      "id": "medium",
-      "name": "Medium",
-      "source": "Guida all'Occulto",
-      "archetypes": [
-        {
-          "id": "medium-relic-channeler",
-          "name": "Canalizzatore di Reliquie",
-          "summary": "Attinge da reliquie possedute per poteri unici."
-        },
-        {
-          "id": "medium-spirited",
-          "name": "Ispirato",
-          "summary": "Cambia leggenda più rapidamente per adattarsi alla missione."
-        },
-        {
-          "id": "medium-trickster",
-          "name": "Impostore",
-          "summary": "Predilige le leggende del furfante per azioni furtive."
-        }
-      ]
-    },
-    {
-      "id": "mesmerist",
-      "name": "Ipnolettore",
-      "source": "Guida all'Occulto",
-      "archetypes": [
-        {
-          "id": "mesmerist-spiritualist",
-          "name": "Ipnolettore Spiritista",
-          "summary": "Integra un fantasma come assistente psicico."
-        },
-        {
-          "id": "mesmerist-hypnagogue",
-          "name": "Ipnagogo",
-          "summary": "Manipola i sogni degli avversari."
-        },
-        {
-          "id": "mesmerist-shadow",
-          "name": "Mente d'Ombra",
-          "summary": "Controlla paure e tenebre psichiche."
-        }
-      ]
-    },
-    {
-      "id": "psychic",
-      "name": "Psichico",
-      "source": "Guida all'Occulto",
-      "archetypes": [
-        {
-          "id": "psychic-rebirth",
-          "name": "Rinascita",
-          "summary": "Incapsula frammenti di vite passate per poteri mentali."
-        },
-        {
-          "id": "psychic-soul-survivor",
-          "name": "Sopravvissuto dell'Anima",
-          "summary": "Resiste agli attacchi mentali con resilienza."
-        },
-        {
-          "id": "psychic-amped",
-          "name": "Amplificato",
-          "summary": "Sovraccarica gli impulsi psichici per effetti intensi."
-        }
-      ]
-    },
-    {
-      "id": "spiritualist",
-      "name": "Spiritualista",
-      "source": "Guida all'Occulto",
-      "archetypes": [
-        {
-          "id": "spiritualist-fractured-mind",
-          "name": "Mente Fratturata",
-          "summary": "Condivide la coscienza con il fantasma accompagnatore."
-        },
-        {
-          "id": "spiritualist-onmyoji",
-          "name": "Onmyoji",
-          "summary": "Combina tradizioni orientali e medianità."
-        },
-        {
-          "id": "spiritualist-ectoplasmatist",
-          "name": "Ectoplasmatista",
-          "summary": "Modella l'ectoplasma del compagno in armi e armature."
-        }
-      ]
-    },
-    {
-      "id": "vigilante",
-      "name": "Vigilante",
-      "source": "Guida delle Cospirazioni",
-      "archetypes": [
-        {
-          "id": "vigilante-avenger",
-          "name": "Vendicatore",
-          "summary": "Identità pubblica eroica focalizzata sul combattimento."
-        },
-        {
-          "id": "vigilante-warlock",
-          "name": "Stregone Mascherato",
-          "summary": "Utilizza magia arcana mantenendo una doppia vita."
-        },
-        {
-          "id": "vigilante-psychometrist",
-          "name": "Psicometrico",
-          "summary": "Legge emozioni e segreti degli oggetti."
-        },
-        {
-          "id": "vigilante-zealot",
-          "name": "Zelota",
-          "summary": "Canalizza fervore religioso dietro la maschera."
-        }
-      ]
-    },
-    {
-      "id": "ninja",
-      "name": "Ninja",
+      "id": "cavalier",
+      "name": "Cavaliere",
       "source": "Guida del Giocatore Avanzata",
       "archetypes": [
         {
-          "id": "ninja-scout",
-          "name": "Esploratore Ninja",
-          "summary": "Organizza imboscate rapide e movimento furtivo."
+          "id": "cavalier-beast-rider",
+          "name": "Cavaliere delle Bestie",
+          "summary": "Cavalcature esotiche"
         },
         {
-          "id": "ninja-ghost-hunter",
-          "name": "Cacciatore di Spettri",
-          "summary": "Sfrutta tecniche ki contro i non morti."
+          "id": "cavalier-musketeer",
+          "name": "Moschettiere",
+          "summary": "Sfide con armi da fuoco"
+        },
+        {
+          "id": "cavalier-standard-bearer",
+          "name": "Alfiere",
+          "summary": "Supporto tramite stendardi"
         }
       ]
     },
     {
-      "id": "samurai",
-      "name": "Samurai",
+      "id": "gunslinger",
+      "name": "Pistolero",
       "source": "Guida del Giocatore Avanzata",
       "archetypes": [
         {
-          "id": "samurai-daimyo",
-          "name": "Daimyo",
-          "summary": "Combina comando militare e disciplina da duellante."
+          "id": "gunslinger-buccaneer",
+          "name": "Bucaniere",
+          "summary": "Acrobazie da marinaio"
         },
         {
-          "id": "samurai-warrior-poet",
-          "name": "Poeta Guerriero",
-          "summary": "Armonizza disciplina e arte."
+          "id": "gunslinger-musket-master",
+          "name": "Maestro di Archibugi",
+          "summary": "Preferisce moschetti"
+        },
+        {
+          "id": "gunslinger-pistolero",
+          "name": "Duellante Pistolero",
+          "summary": "Colpi rapidi e parate"
+        }
+      ]
+    },
+    {
+      "id": "inquisitor",
+      "name": "Inquisitore",
+      "source": "Guida del Giocatore Avanzata",
+      "archetypes": [
+        {
+          "id": "inquisitor-judge",
+          "name": "Giudice",
+          "summary": "Emette sentenze in battaglia"
+        },
+        {
+          "id": "inquisitor-sacred-huntsmaster",
+          "name": "Maestro di Caccia Sacra",
+          "summary": "Condivide giudizi col compagno"
+        },
+        {
+          "id": "inquisitor-witch-hunter",
+          "name": "Cacciatore di Streghe",
+          "summary": "Contro la magia arcana"
+        }
+      ]
+    },
+    {
+      "id": "magus",
+      "name": "Magus",
+      "source": "Guida del Giocatore Avanzata",
+      "archetypes": [
+        {
+          "id": "magus-bladebound",
+          "name": "Vincolalame",
+          "summary": "Legame con spada intelligente"
+        },
+        {
+          "id": "magus-hexcrafter",
+          "name": "Fattucchiere",
+          "summary": "Ottiene maledizioni di strega"
+        },
+        {
+          "id": "magus-spell-dancer",
+          "name": "Danzatore di Incantesimi",
+          "summary": "Combina danza e scherma"
+        }
+      ]
+    },
+    {
+      "id": "oracle",
+      "name": "Oracolo",
+      "source": "Guida del Giocatore Avanzata",
+      "archetypes": [
+        {
+          "id": "oracle-ancestor",
+          "name": "Antico",
+          "summary": "Consulta gli spiriti degli avi"
+        },
+        {
+          "id": "oracle-seer",
+          "name": "Veggente",
+          "summary": "Divinazioni potenziate"
+        },
+        {
+          "id": "oracle-stargazer",
+          "name": "Astrologo",
+          "summary": "Legge il futuro nelle stelle"
+        }
+      ]
+    },
+    {
+      "id": "summoner",
+      "name": "Invocatore",
+      "source": "Guida del Giocatore Avanzata",
+      "archetypes": [
+        {
+          "id": "summoner-master-summoner",
+          "name": "Maestro Evocatore",
+          "summary": "Molte evocazioni invece di un eidolon forte"
+        },
+        {
+          "id": "summoner-synthesist",
+          "name": "Sintetista",
+          "summary": "Si fonde con l'eidolon"
+        },
+        {
+          "id": "summoner-blood-god-disciple",
+          "name": "Discepolo del Dio del Sangue",
+          "summary": "Eidolon alimentato da sacrifici"
+        }
+      ]
+    },
+    {
+      "id": "witch",
+      "name": "Strega",
+      "source": "Guida del Giocatore Avanzata",
+      "archetypes": [
+        {
+          "id": "witch-gravewalker",
+          "name": "Camminatrice delle Tombe",
+          "summary": "Comanda non morti tramite famiglio"
+        },
+        {
+          "id": "witch-hedge-witch",
+          "name": "Fattucchiera del Villaggio",
+          "summary": "Specialista di guarigione e talismani"
+        },
+        {
+          "id": "witch-sea-witch",
+          "name": "Strega del Mare",
+          "summary": "Richiama tempeste"
         }
       ]
     }
