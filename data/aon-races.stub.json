@@ -1,0 +1,40 @@
+{
+  "entries": [
+    {
+      "id": "human",
+      "name": "Umano",
+      "source": "Manuale Base",
+      "size": "Media",
+      "height": {"unit": "cm", "min": 150, "max": 190},
+      "weight": {"unit": "kg", "min": 55, "max": 120},
+      "altTraits": [
+        {"id": "human-giantblooded", "name": "Sangue di Gigante", "summary": "+2 For, considera la taglia come Grande per determinati effetti.", "sizeOverride": "Grande"},
+        {"id": "human-visionario", "name": "Visionario", "summary": "+1 a Percezione e Conoscenze (religioni)."}
+      ]
+    },
+    {
+      "id": "elf",
+      "name": "Elfo",
+      "source": "Manuale Base",
+      "size": "Media",
+      "height": {"unit": "cm", "min": 160, "max": 210},
+      "weight": {"unit": "kg", "min": 45, "max": 80},
+      "altTraits": [
+        {"id": "elf-feral", "name": "Elfo Feroce", "summary": "+1 a Intimidire, sostituisce il bonus a Diplomazia."},
+        {"id": "elf-underworld", "name": "Esule del Sottosuolo", "summary": "Scurovisione 36 m, -2 ai TS contro luce intensa.", "sizeOverride": "Piccola"}
+      ]
+    },
+    {
+      "id": "dwarf",
+      "name": "Nano",
+      "source": "Manuale Base",
+      "size": "Piccola",
+      "height": {"unit": "cm", "min": 120, "max": 150},
+      "weight": {"unit": "kg", "min": 60, "max": 100},
+      "altTraits": [
+        {"id": "dwarf-forgemaster", "name": "Forgiatore", "summary": "+2 Artigianato (armi) e (metalli)."},
+        {"id": "dwarf-giantkiller", "name": "Uccisore di Giganti", "summary": "+1 TxC e CA contro creature di taglia Grande.", "sizeOverride": "Media"}
+      ]
+    }
+  ]
+}
