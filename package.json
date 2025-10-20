@@ -1,0 +1,8 @@
+{
+  "name": "torneo-cremesi-site",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "fetch-aon": "node scripts/fetch-aon-data.mjs"
+  }
+}
