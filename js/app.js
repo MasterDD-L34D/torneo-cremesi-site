@@ -178,20 +178,34 @@ const COIN_KEYS = ['pp','gp','sp','cp'];
 
 function initScheda(){
   const container = document.getElementById('app');
-  const fields = container ? [...container.querySelectorAll('[data-field]')] : [];
-  fields.forEach(el => {
-    const key = el.dataset.field || el.id;
-    if(!key) return;
-    const baseValue = el.defaultValue ?? el.value;
+  const autoFields = container ? Array.from(container.querySelectorAll('[data-field]')) : [];
+  const handledKeys = new Set();
+
+  const bindField = (el, key) => {
+    if(!el || !key) return;
+    handledKeys.add(key);
+    const baseValue = el.defaultValue ?? el.value ?? '';
     if(state[key] != null){
       el.value = state[key];
-    } else if(baseValue != null && baseValue !== ''){
+    } else if(baseValue !== ''){
       el.value = baseValue;
     }
-    const persist = debounce(()=>{
+    const persist = debounce(() => {
       state[key] = el.value;
-  // mappa campi di testo
-  const fields = [
+      saveAppState(state);
+    }, 250);
+    el.addEventListener('input', persist);
+    if(el.tagName === 'SELECT'){
+      el.addEventListener('change', persist);
+    }
+  };
+
+  autoFields.forEach(el => {
+    const key = el.dataset.field || el.id;
+    bindField(el, key);
+  });
+
+  const legacyIds = [
     'nome','razzaClassi','livello','allineamento','taglia','altezza',
     'palette','motto','imgUrl','descrizione',
     'talenti','tratti','difetti','pf','ca','ts','bab','cmbcmd','iniziativa','velocita',
@@ -203,24 +217,10 @@ function initScheda(){
     'riassRazza','riassClassi','riassMovimento','riassSensi','riassRD','riassCapacita',
     'background'
   ];
-  fields.forEach(id => {
-    const el = document.getElementById(id);
-    if(!el) return;
-    const baseValue = el.value;
-    if(state[id] != null){
-      el.value = state[id];
-    } else if(baseValue != null){
-      el.value = baseValue;
-    }
-    el.addEventListener('input', debounce(()=>{
-      state[id] = el.value;
-      saveAppState(state);
-    }, 250);
-    el.addEventListener('input', persist);
-    if(el.tagName === 'SELECT'){
-      el.addEventListener('change', persist);
-    }
-  });
+  legacyIds
+    .filter(key => !handledKeys.has(key))
+    .forEach(key => bindField(document.getElementById(key), key));
+
   migrateLegacyValute();
   // Stats
   buildStats();
@@ -238,6 +238,7 @@ function initScheda(){
   buildTCSelect();
   // Oggetti custom picker
   buildOCPicker();
+  setupSchedaNav(container);
 }
 
 function migrateLegacyValute(){
@@ -248,22 +249,46 @@ function migrateLegacyValute(){
   let touched = false;
   const container = document.getElementById('app');
   COIN_KEYS.forEach(key => {
-    if(parsed[key] == null) return;
+    const val = parsed[key];
+    if(val == null) return;
     const el = document.getElementById(key) || container?.querySelector(`[data-field="${key}"]`);
-  const hasNewValues = COIN_KEYS.some(key => state[key]);
-  if(hasNewValues) return;
-  const parsed = parseLegacyValute(state.valute);
-  let touched = false;
-  COIN_KEYS.forEach(key => {
-    if(!parsed[key]) return;
-    const el = document.getElementById(key);
     if(el && !el.value){
-      el.value = parsed[key];
+      el.value = val;
     }
-    state[key] = parsed[key];
+    state[key] = val;
     touched = true;
   });
   if(touched) saveAppState(state);
+}
+
+function setupSchedaNav(container){
+  const links = Array.from(container?.querySelectorAll('.scheda-nav a[data-target]') || []);
+  if(!links.length) return;
+  const setActive = targetLink => {
+    links.forEach(link => link.classList.toggle('active', link === targetLink));
+  };
+  links.forEach(link => {
+    link.addEventListener('click', evt => {
+      evt.preventDefault();
+      const targetId = link.dataset.target;
+      if(!targetId) return;
+      const section = container.querySelector(`#${targetId}`);
+      if(!section) return;
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const heading = section.querySelector('h2, h3');
+      if(heading){
+        heading.setAttribute('tabindex', '-1');
+        try{
+          heading.focus({ preventScroll: true });
+        } catch(err){
+          heading.focus();
+        }
+        heading.addEventListener('blur', () => heading.removeAttribute('tabindex'), { once: true });
+      }
+      setActive(link);
+    });
+  });
+  setActive(links[0]);
 }
 
 function parseLegacyValute(str){
