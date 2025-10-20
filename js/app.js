@@ -2,7 +2,8 @@
 // Router e logica dell’interfaccia per il sito Torneo Cremesi
 
 import { loadAppState, saveAppState, exportAll, importAll, loadOC, saveOC } from './store.js';
-import { TC_DATA, STATS } from './data.js';
+import { TC_DATA, STATS, ALIGNMENTS, AGE_STAGES } from './data.js';
+import { getRaces, getClasses, getTraitsAndDrawbacks } from './aon.js';
 
 /*
   Router
@@ -175,27 +176,119 @@ render(location.hash.replace('#',''));
 */
 let state = loadAppState();
 const COIN_KEYS = ['pp','gp','sp','cp'];
+let fieldBindings = new Map();
+let raceCatalog = [];
+let classCatalog = [];
+let traitCatalog = { traits: [], drawbacks: [] };
+const SIZE_ORDER = ['Minuscola','Piccola','Media','Grande','Enorme','Mastodontica'];
+const ARRAY_FIELD = 'array';
+
+const toArray = value => {
+  if(Array.isArray(value)) return value;
+  if(value == null || value === '') return [];
+  return Array.isArray(value) ? value : [value];
+};
+
+function registerBinding(key, el){
+  if(!fieldBindings.has(key)) fieldBindings.set(key, new Set());
+  fieldBindings.get(key).add(el);
+}
+
+function setElementValue(el, value){
+  if(!el) return;
+  if(el.dataset.fieldType === ARRAY_FIELD){
+    const values = toArray(value);
+    Array.from(el.options || []).forEach(opt => {
+      opt.selected = values.includes(opt.value);
+    });
+    return;
+  }
+  if(el.type === 'checkbox'){
+    el.checked = value === true || value === 'true';
+    return;
+  }
+  if(value == null){
+    el.value = '';
+    return;
+  }
+  el.value = value;
+}
+
+function getElementValue(el){
+  if(el.dataset.fieldType === ARRAY_FIELD){
+    return Array.from(el.selectedOptions || []).map(opt => opt.value);
+  }
+  if(el.type === 'checkbox'){
+    return !!el.checked;
+  }
+  return el.value;
+}
+
+function restoreFieldValue(key){
+  const els = fieldBindings.get(key);
+  if(!els) return;
+  const value = state[key];
+  els.forEach(el => setElementValue(el, value));
+}
+
+function syncBoundFields(key, origin){
+  const els = fieldBindings.get(key);
+  if(!els) return;
+  const value = getElementValue(origin);
+  els.forEach(el => {
+    if(el === origin) return;
+    setElementValue(el, value);
+  });
+}
+
+function updateComputedField(key, value){
+  if(state[key] === value) return;
+  state[key] = value;
+  restoreFieldValue(key);
+}
+
+const getStateValue = key => state[key];
 
 function initScheda(){
+  fieldBindings = new Map();
   const container = document.getElementById('app');
   const autoFields = container ? Array.from(container.querySelectorAll('[data-field]')) : [];
   const handledKeys = new Set();
 
+  state.toggleEitr = state.toggleEitr ?? true;
+  state.toggleAbp = state.toggleAbp ?? true;
+  state.raceAltTraits = toArray(state.raceAltTraits ?? []);
+  state.archetypes = toArray(state.archetypes ?? []);
+  state.traitsList = toArray(state.traitsList ?? []);
+  state.drawbackList = toArray(state.drawbackList ?? []);
+  state.tagliaManual = state.tagliaManual ?? false;
+
   const bindField = (el, key) => {
     if(!el || !key) return;
     handledKeys.add(key);
-    const baseValue = el.defaultValue ?? el.value ?? '';
+    registerBinding(key, el);
     if(state[key] != null){
-      el.value = state[key];
-    } else if(baseValue !== ''){
-      el.value = baseValue;
+      setElementValue(el, state[key]);
+    } else if(el.dataset.fieldType === ARRAY_FIELD){
+      state[key] = [];
+      setElementValue(el, []);
+    } else if(el.type === 'checkbox'){
+      state[key] = el.checked;
+    } else {
+      const baseValue = el.defaultValue ?? el.value ?? '';
+      if(baseValue !== ''){
+        state[key] = baseValue;
+      }
     }
     const persist = debounce(() => {
-      state[key] = el.value;
+      const value = getElementValue(el);
+      state[key] = value;
+      syncBoundFields(key, el);
+      handleFieldUpdate(key, value, el);
       saveAppState(state);
     }, 250);
     el.addEventListener('input', persist);
-    if(el.tagName === 'SELECT'){
+    if(el.tagName === 'SELECT' || el.type === 'checkbox' || el.type === 'radio'){
       el.addEventListener('change', persist);
     }
   };
@@ -206,7 +299,7 @@ function initScheda(){
   });
 
   const legacyIds = [
-    'nome','razzaClassi','livello','allineamento','taglia','altezza',
+    'nome','razzaClassiSynth','livello','allineamentoSynth','tagliaSintesi','misureSintesi',
     'palette','motto','imgUrl','descrizione',
     'talenti','tratti','difetti','pf','ca','ts','bab','cmbcmd','iniziativa','velocita',
     'skills','loadout','altro','budget','pp','gp','sp','cp',
@@ -222,9 +315,17 @@ function initScheda(){
     .forEach(key => bindField(document.getElementById(key), key));
 
   migrateLegacyValute();
-  // Stats
+  setupSchedaTabs();
+  initSchedaGenerali();
+  updateAlignmentSummary();
+  updateRuleSummary();
+  updateAnagraficaSummary();
+  updateMisureSummary();
+  updateRazzaClassiSummary();
+  updateTraitNotes();
+  updateDrawbackNotes();
+
   buildStats();
-  // Tabelle
   buildAtkTable();
   buildSpellTable();
   const btnAddAtkRow = document.getElementById('btnAddAtkRow');
@@ -234,9 +335,7 @@ function initScheda(){
       saveTables();
     });
   }
-  // TC selector e auto-fill
   buildTCSelect();
-  // Oggetti custom picker
   buildOCPicker();
 }
 
@@ -336,31 +435,47 @@ export function addRow(tableId, data){
 }
 
 function buildTCSelect(){
-  const sel = document.getElementById('tcSelect');
-  if(!sel) return;
-  sel.innerHTML = `<option value="">— seleziona TC —</option>` + Object.entries(TC_DATA).map(([code,info])=>`<option value="${code}">${code} — ${info.title}</option>`).join('');
-  if(state.tc) sel.value = state.tc;
-  applyTC(sel.value);
-  sel.onchange = () => {
-    state.tc = sel.value;
-    saveAppState(state);
-    applyTC(sel.value);
-  };
+  const selects = Array.from(document.querySelectorAll('select[data-tc-select]'));
+  if(!selects.length) return;
+  const options = `<option value="">— seleziona TC —</option>` + Object.entries(TC_DATA).map(([code, info]) => `<option value="${code}">${code} — ${info.title}</option>`).join('');
+  selects.forEach(sel => {
+    sel.innerHTML = options;
+    if(state.tc) sel.value = state.tc;
+    sel.onchange = () => {
+      const value = sel.value;
+      state.tc = value;
+      selects.forEach(other => { if(other !== sel) other.value = value; });
+      applyTC(value);
+      saveAppState(state);
+    };
+  });
+  applyTC(state.tc || selects[0].value || '');
 }
 
 function applyTC(code){
   const info = TC_DATA[code] || null;
-  const codeEl = document.getElementById('tcCode');
-  const titleEl = document.getElementById('tcTitle');
-  const narrEl = document.getElementById('tcNarr');
-  const rawList = document.getElementById('tcRaw');
-  if(!codeEl) return; // non in questa vista
-  codeEl.value = code || '';
-  titleEl.value = info?.title || '';
-  narrEl.value = info?.narr || '';
-  rawList.innerHTML = '';
-  (info?.raw || []).forEach(r => {
-    const li = document.createElement('li'); li.textContent = r; rawList.appendChild(li);
+  document.querySelectorAll('[data-tc-code]').forEach(el => {
+    if('value' in el) el.value = code || '';
+    else el.textContent = code || '';
+  });
+  document.querySelectorAll('[data-tc-title]').forEach(el => {
+    if('value' in el) el.value = info?.title || '';
+    else el.textContent = info?.title || '';
+  });
+  document.querySelectorAll('[data-tc-narr]').forEach(el => {
+    if('value' in el) el.value = info?.narr || '';
+    else el.textContent = info?.narr || '';
+  });
+  document.querySelectorAll('[data-tc-raw]').forEach(el => {
+    el.innerHTML = '';
+    (info?.raw || []).forEach(r => {
+      const li = document.createElement('li');
+      li.textContent = r;
+      el.appendChild(li);
+    });
+  });
+  document.querySelectorAll('select[data-tc-select]').forEach(sel => {
+    if(sel.value !== code) sel.value = code || '';
   });
 }
 
@@ -396,6 +511,439 @@ function buildOCPicker(){
     saveAppState(state);
   };
   if(picker.value !== '') picker.dispatchEvent(new Event('change'));
+}
+
+function handleFieldUpdate(key, value){
+  switch(key){
+    case 'alignment':
+    case 'divinita':
+      updateAlignmentSummary();
+      break;
+    case 'razzaId':
+    case 'raceAltTraits':
+      if(applyRaceDetails(state.razzaId)) updateAnagraficaSummary();
+      updateRazzaClassiSummary();
+      break;
+    case 'classeId':
+    case 'archetypes':
+      applyClassDetails(state.classeId);
+      updateRazzaClassiSummary();
+      break;
+    case 'livello':
+      updateRazzaClassiSummary();
+      break;
+    case 'taglia':
+      state.tagliaManual = !!value;
+      if(!state.tagliaManual) applyRaceDetails(state.razzaId);
+      updateAnagraficaSummary();
+      break;
+    case 'eta':
+    case 'etaStage':
+    case 'genere':
+      updateAnagraficaSummary();
+      break;
+    case 'altezzaVal':
+    case 'pesoVal':
+      updateMisureSummary();
+      break;
+    case 'traitsList':
+      updateTraitNotes();
+      break;
+    case 'drawbackList':
+      updateDrawbackNotes();
+      break;
+    case 'toggleEitr':
+    case 'toggleAbp':
+      updateRuleSummary();
+      break;
+    default:
+      break;
+  }
+}
+
+function setupSchedaTabs(){
+  const buttons = Array.from(document.querySelectorAll('.scheda-tabs__btn'));
+  const panels = Array.from(document.querySelectorAll('[data-tab-panel]'));
+  if(!buttons.length || !panels.length) return;
+
+  const setActive = (id, persist = false) => {
+    buttons.forEach(btn => {
+      const active = btn.dataset.tabTarget === id;
+      btn.classList.toggle('is-active', active);
+    });
+    panels.forEach(panel => {
+      const match = panel.getAttribute('data-tab-panel') === id;
+      if(match) panel.removeAttribute('hidden'); else panel.setAttribute('hidden', '');
+    });
+    if(persist){
+      state.lastSchedaTab = id;
+      saveAppState(state);
+    }
+  };
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => setActive(btn.dataset.tabTarget, true));
+  });
+
+  const preferred = state.lastSchedaTab || buttons.find(btn => btn.hasAttribute('data-tab-default'))?.dataset.tabTarget || buttons[0].dataset.tabTarget;
+  setActive(preferred, false);
+}
+
+async function initSchedaGenerali(){
+  setupAlignmentSelect();
+  setupAgeStageSelect();
+  try {
+    raceCatalog = await getRaces();
+  } catch (err) {
+    console.warn('[AON] Impossibile ottenere la lista razze, uso fallback.', err);
+    raceCatalog = [];
+  }
+  renderRaceSelect();
+
+  try {
+    classCatalog = await getClasses();
+  } catch (err) {
+    console.warn('[AON] Impossibile ottenere la lista classi, uso fallback.', err);
+    classCatalog = [];
+  }
+  renderClassSelect();
+
+  try {
+    traitCatalog = await getTraitsAndDrawbacks();
+  } catch (err) {
+    console.warn('[AON] Impossibile ottenere tratti/difetti, uso fallback.', err);
+    traitCatalog = { traits: [], drawbacks: [] };
+  }
+  const traitAdjusted = renderTraitsSelect();
+
+  const sizeAdjusted = applyRaceDetails(state.razzaId);
+  applyClassDetails(state.classeId);
+  updateAlignmentSummary();
+  updateAnagraficaSummary();
+  updateMisureSummary();
+  updateRuleSummary();
+  updateTraitNotes();
+  updateDrawbackNotes();
+  updateRazzaClassiSummary();
+  if(sizeAdjusted || traitAdjusted) saveAppState(state);
+}
+
+function setupAlignmentSelect(){
+  const select = document.querySelector('[data-align-select]');
+  if(!select) return;
+  select.innerHTML = `<option value="">— seleziona —</option>` + ALIGNMENTS.map(a => `<option value="${a.id}">${a.id} — ${a.label}</option>`).join('');
+  restoreFieldValue('alignment');
+}
+
+function setupAgeStageSelect(){
+  const select = document.getElementById('dgEtaStage');
+  if(!select) return;
+  select.innerHTML = `<option value="">—</option>` + AGE_STAGES.map(stage => `<option value="${stage.id}">${stage.label}</option>`).join('');
+  restoreFieldValue('etaStage');
+}
+
+function renderRaceSelect(){
+  const select = document.getElementById('dgRazza');
+  if(!select) return;
+  select.innerHTML = `<option value="">— seleziona —</option>` + raceCatalog.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+  restoreFieldValue('razzaId');
+}
+
+function renderClassSelect(){
+  const select = document.getElementById('dgClasse');
+  if(!select) return;
+  select.innerHTML = `<option value="">— seleziona —</option>` + classCatalog.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  restoreFieldValue('classeId');
+}
+
+function renderTraitsSelect(){
+  let changed = false;
+  const traitSelect = document.getElementById('dgTrattiGenerali');
+  if(traitSelect){
+    if(traitCatalog.traits.length){
+      const grouped = traitCatalog.traits.reduce((acc, trait) => {
+        const cat = trait.category || 'Generico';
+        if(!acc[cat]) acc[cat] = [];
+        acc[cat].push(trait);
+        return acc;
+      }, {});
+      traitSelect.innerHTML = Object.entries(grouped).map(([cat, list]) => {
+        return `<optgroup label="${cat}">${list.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</optgroup>`;
+      }).join('');
+      traitSelect.disabled = false;
+      const allowed = new Set(traitCatalog.traits.map(t => t.id));
+      const filtered = toArray(state.traitsList).filter(id => allowed.has(id));
+      if(filtered.length !== toArray(state.traitsList).length){
+        state.traitsList = filtered;
+        changed = true;
+      }
+    } else {
+      traitSelect.innerHTML = '';
+      traitSelect.disabled = true;
+      if(state.traitsList.length){
+        state.traitsList = [];
+        changed = true;
+      }
+    }
+    restoreFieldValue('traitsList');
+  }
+  const drawbackSelect = document.getElementById('dgDifetti');
+  if(drawbackSelect){
+    if(traitCatalog.drawbacks.length){
+      drawbackSelect.innerHTML = traitCatalog.drawbacks.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+      drawbackSelect.disabled = false;
+      const allowed = new Set(traitCatalog.drawbacks.map(t => t.id));
+      const filtered = toArray(state.drawbackList).filter(id => allowed.has(id));
+      if(filtered.length !== toArray(state.drawbackList).length){
+        state.drawbackList = filtered;
+        changed = true;
+      }
+    } else {
+      drawbackSelect.innerHTML = '';
+      drawbackSelect.disabled = true;
+      if(state.drawbackList.length){
+        state.drawbackList = [];
+        changed = true;
+      }
+    }
+    restoreFieldValue('drawbackList');
+  }
+  return changed;
+}
+
+function applyRaceDetails(raceId){
+  const race = raceCatalog.find(r => r.id === raceId) || null;
+  const fonteEl = document.getElementById('dgRazzaFonte');
+  const traitsSelect = document.getElementById('dgTrattiRazza');
+  const traitNote = document.getElementById('dgTrattiRazzaNote');
+  const tagliaSelect = document.getElementById('dgTaglia');
+  const tagliaNote = document.getElementById('dgTagliaNote');
+  const altezzaNote = document.getElementById('dgAltezzaRange');
+  const pesoNote = document.getElementById('dgPesoRange');
+  let sizeChanged = false;
+
+  if(race){
+    if(fonteEl) fonteEl.textContent = race.source ? `Fonte: ${race.source}` : '';
+    const altTraits = race.altTraits || [];
+    if(traitsSelect){
+      if(altTraits.length){
+        traitsSelect.innerHTML = altTraits.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+        traitsSelect.disabled = false;
+      } else {
+        traitsSelect.innerHTML = '';
+        traitsSelect.disabled = true;
+        if(state.raceAltTraits.length) state.raceAltTraits = [];
+      }
+      restoreFieldValue('raceAltTraits');
+    }
+    const selectedIds = toArray(state.raceAltTraits).filter(id => altTraits.some(t => t.id === id));
+    if(selectedIds.length !== state.raceAltTraits.length){
+      state.raceAltTraits = selectedIds;
+    }
+    const summaries = selectedIds.map(id => {
+      const trait = altTraits.find(t => t.id === id);
+      return trait ? `${trait.name}: ${trait.summary || '—'}` : null;
+    }).filter(Boolean);
+    if(traitNote){
+      if(altTraits.length){
+        traitNote.textContent = summaries.length ? summaries.join(' • ') : 'Nessun tratto alternativo selezionato.';
+      } else {
+        traitNote.textContent = 'La razza selezionata non offre tratti alternativi nel dataset corrente.';
+      }
+    }
+    const computedSize = computeRaceSize(race, selectedIds);
+    renderSizeOptions(tagliaSelect, computedSize);
+    if(!state.tagliaManual && computedSize && state.taglia !== computedSize){
+      updateComputedField('taglia', computedSize);
+      sizeChanged = true;
+    }
+    if(tagliaNote){
+      const overrides = selectedIds.map(id => {
+        const trait = altTraits.find(t => t.id === id);
+        return trait?.sizeOverride ? `${trait.name} ⇒ ${trait.sizeOverride}` : null;
+      }).filter(Boolean);
+      const baseText = race.size ? `Taglia base: ${race.size}` : '';
+      tagliaNote.textContent = overrides.length ? `${baseText}. Override: ${overrides.join(' • ')}` : baseText;
+    }
+    if(altezzaNote) altezzaNote.textContent = formatRangeNote(race.height, 'cm');
+    if(pesoNote) pesoNote.textContent = formatRangeNote(race.weight, 'kg');
+  } else {
+    if(fonteEl) fonteEl.textContent = '';
+    if(traitsSelect){
+      traitsSelect.innerHTML = '';
+      traitsSelect.disabled = true;
+    }
+    if(traitNote) traitNote.textContent = 'Seleziona una razza per visualizzare i tratti alternativi.';
+    renderSizeOptions(tagliaSelect, null);
+    if(tagliaNote) tagliaNote.textContent = '';
+    if(altezzaNote) altezzaNote.textContent = '';
+    if(pesoNote) pesoNote.textContent = '';
+  }
+  return sizeChanged;
+}
+
+function applyClassDetails(classId){
+  const cls = classCatalog.find(c => c.id === classId) || null;
+  const fonteEl = document.getElementById('dgClasseFonte');
+  const archSelect = document.getElementById('dgArchetipi');
+  const archNote = document.getElementById('dgArchetipiNote');
+  if(cls){
+    if(fonteEl) fonteEl.textContent = cls.source ? `Fonte: ${cls.source}` : '';
+    const archetypes = cls.archetypes || [];
+    if(archSelect){
+      if(archetypes.length){
+        archSelect.innerHTML = archetypes.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+        archSelect.disabled = false;
+      } else {
+        archSelect.innerHTML = '';
+        archSelect.disabled = true;
+      }
+      restoreFieldValue('archetypes');
+    }
+    if(archNote){
+      if(archetypes.length){
+        const details = toArray(state.archetypes).map(id => {
+          const archetype = archetypes.find(a => a.id === id);
+          return archetype ? `${archetype.name}: ${archetype.summary || '—'}` : null;
+        }).filter(Boolean);
+        archNote.textContent = details.length ? details.join(' • ') : 'Nessun archetipo selezionato.';
+      } else {
+        archNote.textContent = 'La classe selezionata non ha archetipi collegati nel dataset corrente.';
+      }
+    }
+  } else {
+    if(fonteEl) fonteEl.textContent = '';
+    if(archSelect){
+      archSelect.innerHTML = '';
+      archSelect.disabled = true;
+    }
+    if(archNote) archNote.textContent = 'Seleziona una classe per visualizzare gli archetipi.';
+  }
+}
+
+function renderSizeOptions(select, recommended){
+  if(!select) return;
+  const options = ['<option value="">— seleziona —</option>'];
+  SIZE_ORDER.forEach(size => {
+    const label = size === recommended ? `${size} (consigliata)` : size;
+    options.push(`<option value="${size}">${label}</option>`);
+  });
+  select.innerHTML = options.join('');
+  restoreFieldValue('taglia');
+}
+
+function computeRaceSize(race, altTraitIds){
+  if(!race) return '';
+  let size = race.size || '';
+  const altTraits = race.altTraits || [];
+  altTraitIds.forEach(id => {
+    const trait = altTraits.find(t => t.id === id);
+    if(trait?.sizeOverride) size = trait.sizeOverride;
+  });
+  return size;
+}
+
+function formatRangeNote(range, defaultUnit){
+  if(!range) return '';
+  if(range.text) return range.text;
+  const unit = range.unit || defaultUnit || '';
+  if(range.min != null && range.max != null){
+    return `${range.min}–${range.max} ${unit}`.trim();
+  }
+  if(range.min != null) return `${range.min} ${unit}`.trim();
+  if(range.max != null) return `${range.max} ${unit}`.trim();
+  return '';
+}
+
+function updateAlignmentSummary(){
+  const alignment = ALIGNMENTS.find(a => a.id === state.alignment);
+  const note = document.getElementById('dgAllineamentoNote');
+  if(note){
+    note.textContent = alignment ? alignment.description : 'Seleziona un allineamento per mostrare la descrizione.';
+  }
+  const parts = [];
+  if(alignment) parts.push(`${alignment.id} ${alignment.label}`);
+  if(state.divinita) parts.push(state.divinita);
+  updateComputedField('allineamentoSynth', parts.join(' / '));
+}
+
+function updateAnagraficaSummary(){
+  const size = state.taglia || '';
+  const eta = state.eta || '';
+  const stage = AGE_STAGES.find(s => s.id === state.etaStage);
+  const genere = state.genere || '';
+  const parts = [];
+  if(size) parts.push(size);
+  if(eta) parts.push(stage ? `${eta} anni (${stage.label})` : `${eta} anni`);
+  else if(stage) parts.push(stage.label);
+  if(genere) parts.push(genere);
+  updateComputedField('tagliaSintesi', parts.join(' / '));
+  const ageNote = document.getElementById('dgEtaBonus');
+  if(ageNote){
+    ageNote.textContent = stage ? stage.summary : 'Seleziona una fascia d’età per applicare modificatori opzionali.';
+  }
+}
+
+function updateMisureSummary(){
+  const height = state.altezzaVal ? `${state.altezzaVal} cm` : '';
+  const weight = state.pesoVal ? `${state.pesoVal} kg` : '';
+  updateComputedField('misureSintesi', [height, weight].filter(Boolean).join(' / '));
+}
+
+function updateRazzaClassiSummary(){
+  const raceName = raceCatalog.find(r => r.id === state.razzaId)?.name || '';
+  const className = classCatalog.find(c => c.id === state.classeId)?.name || '';
+  const archetypeNames = toArray(state.archetypes).map(id => {
+    const cls = classCatalog.find(c => c.id === state.classeId);
+    return cls?.archetypes?.find(a => a.id === id)?.name || null;
+  }).filter(Boolean);
+  const level = state.livello ? `Lv ${state.livello}` : '';
+  const parts = [];
+  if(raceName) parts.push(raceName);
+  const classParts = [];
+  if(className) classParts.push(className);
+  if(archetypeNames.length) classParts.push(archetypeNames.join(', '));
+  if(level) classParts.push(level);
+  if(classParts.length) parts.push(classParts.join(' • '));
+  updateComputedField('razzaClassiSynth', parts.join(' / '));
+}
+
+function updateRuleSummary(){
+  const note = document.getElementById('dgRuleSummary');
+  if(!note) return;
+  const eitr = state.toggleEitr !== false;
+  const abp = state.toggleAbp !== false;
+  note.textContent = `${eitr ? 'EITR attivo' : 'EITR disattivato'} • ${abp ? 'ABP attivo' : 'ABP disattivato'}`;
+}
+
+function updateTraitNotes(){
+  const note = document.getElementById('dgTrattiNote');
+  if(!note) return;
+  const selections = toArray(state.traitsList);
+  if(!selections.length){
+    note.textContent = traitCatalog.traits.length ? 'Seleziona fino a due tratti da applicare oltre al Tratto di Campagna.' : 'Tratti non disponibili: controlla la connessione ad AON.';
+    return;
+  }
+  const lines = selections.map(id => {
+    const trait = traitCatalog.traits.find(t => t.id === id);
+    return trait ? `${trait.name}: ${trait.summary || '—'}` : null;
+  }).filter(Boolean);
+  note.textContent = lines.join(' • ');
+}
+
+function updateDrawbackNotes(){
+  const note = document.getElementById('dgDifettiNote');
+  if(!note) return;
+  const selections = toArray(state.drawbackList);
+  if(!selections.length){
+    note.textContent = traitCatalog.drawbacks.length ? 'Puoi selezionare un difetto opzionale per ottenere un tratto extra.' : 'Nessun difetto disponibile nel dataset caricato.';
+    return;
+  }
+  const lines = selections.map(id => {
+    const item = traitCatalog.drawbacks.find(t => t.id === id);
+    return item ? `${item.name}: ${item.summary || '—'}` : null;
+  }).filter(Boolean);
+  note.textContent = lines.join(' • ');
 }
 
 /*

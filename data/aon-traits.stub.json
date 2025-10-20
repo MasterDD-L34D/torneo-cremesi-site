@@ -1,0 +1,11 @@
+{
+  "traits": [
+    {"id": "trait-reactionary", "name": "Reazionario", "summary": "+2 alle prove di Iniziativa.", "category": "Base"},
+    {"id": "trait-magical-knack", "name": "Affinità Magica", "summary": "+2 al livello incantatore (massimo il livello del personaggio).", "category": "Magico"},
+    {"id": "trait-indomitable-faith", "name": "Fede Indomita", "summary": "+1 ai TS Volontà.", "category": "Fede"}
+  ],
+  "drawbacks": [
+    {"id": "drawback-vain", "name": "Vanitoso", "summary": "-2 ai TS contro effetti che danneggiano l'aspetto, ottieni 1 tratto extra."},
+    {"id": "drawback-miser", "name": "Avaro", "summary": "-1 a tutte le prove di Carisma finché non possiedi almeno 100 mo in liquidi."}
+  ]
+}

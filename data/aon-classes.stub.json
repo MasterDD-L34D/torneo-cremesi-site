@@ -1,0 +1,31 @@
+{
+  "entries": [
+    {
+      "id": "fighter",
+      "name": "Guerriero",
+      "source": "Manuale Base",
+      "archetypes": [
+        {"id": "fighter-two-weapon-warrior", "name": "Guerriero a Due Armi", "summary": "Specialista nel combattimento con due armi."},
+        {"id": "fighter-archer", "name": "Arciere", "summary": "Focalizzato sugli attacchi a distanza."}
+      ]
+    },
+    {
+      "id": "cleric",
+      "name": "Chierico",
+      "source": "Manuale Base",
+      "archetypes": [
+        {"id": "cleric-evangelist", "name": "Evangelista", "summary": "Emissario della propria fede, ottiene capacità di influenza."},
+        {"id": "cleric-liberator", "name": "Liberatore", "summary": "Combattente sacro votato a spezzare catene e maledizioni."}
+      ]
+    },
+    {
+      "id": "rogue",
+      "name": "Ladro",
+      "source": "Manuale Base",
+      "archetypes": [
+        {"id": "rogue-scout", "name": "Esploratore", "summary": "Bonus a Furtività e capacità in avanscoperta."},
+        {"id": "rogue-rake", "name": "Mascalzone", "summary": "Versato nell'interazione sociale e nel combattimento elegante."}
+      ]
+    }
+  ]
+}
