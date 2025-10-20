@@ -1,0 +1,52 @@
+{
+  "entries": [
+    {
+      "id": "fighter-two-weapon-warrior",
+      "name": "Guerriero a Due Armi",
+      "summary": "Specialista nel combattimento con due armi.",
+      "classes": [
+        {"id": "fighter", "name": "Guerriero"}
+      ]
+    },
+    {
+      "id": "fighter-archer",
+      "name": "Arciere",
+      "summary": "Focalizzato sugli attacchi a distanza.",
+      "classes": [
+        {"id": "fighter", "name": "Guerriero"}
+      ]
+    },
+    {
+      "id": "cleric-evangelist",
+      "name": "Evangelista",
+      "summary": "Emissario della propria fede, ottiene capacità di influenza.",
+      "classes": [
+        {"id": "cleric", "name": "Chierico"}
+      ]
+    },
+    {
+      "id": "cleric-liberator",
+      "name": "Liberatore",
+      "summary": "Combattente sacro votato a spezzare catene e maledizioni.",
+      "classes": [
+        {"id": "cleric", "name": "Chierico"}
+      ]
+    },
+    {
+      "id": "rogue-scout",
+      "name": "Esploratore",
+      "summary": "Bonus a Furtività e capacità in avanscoperta.",
+      "classes": [
+        {"id": "rogue", "name": "Ladro"}
+      ]
+    },
+    {
+      "id": "rogue-rake",
+      "name": "Mascalzone",
+      "summary": "Versato nell'interazione sociale e nel combattimento elegante.",
+      "classes": [
+        {"id": "rogue", "name": "Ladro"}
+      ]
+    }
+  ]
+}
