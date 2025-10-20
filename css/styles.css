@@ -15,6 +15,45 @@ body{
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
   display:flex;
 }
+.skip-link{
+  position:absolute;
+  left:-999px;
+  top:10px;
+  background:var(--accent);
+  color:#fff;
+  padding:10px 16px;
+  border-radius:999px;
+  text-decoration:none;
+  font-weight:600;
+  z-index:1200;
+}
+.skip-link:focus{
+  left:12px;
+  outline:2px solid #fff4;
+  outline-offset:2px;
+}
+.sidebar-toggle{
+  position:fixed;
+  top:16px;
+  left:16px;
+  display:none;
+  align-items:center;
+  gap:8px;
+  padding:10px 16px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:var(--panel);
+  color:var(--ink);
+  cursor:pointer;
+  z-index:1101;
+  font-weight:600;
+}
+.sidebar-toggle__icon{font-size:1.1rem;}
+.sidebar-toggle__label{line-height:1;}
+.sidebar-toggle:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:3px;
+}
 a{color:#ffd2da;text-decoration:none}
 a:hover{text-decoration:underline}
 
@@ -117,7 +156,40 @@ textarea{min-height:90px;resize:vertical;}
 .list.num{list-style:decimal;}
 .auto-list{min-height:90px;background:#0f1430;border:1px dashed #2b335a;border-radius:10px;padding:10px;}
 @media print{
-  .sidebar, .sidebar-actions, .btn {display:none !important;}
+  .sidebar, .sidebar-actions, .btn, .sidebar-toggle {display:none !important;}
   body{background:white;color:black;}
   .card{border:1px solid #999;}
+}
+
+@media (max-width:900px){
+  body{flex-direction:column;}
+  .sidebar-toggle{display:inline-flex;}
+  .sidebar{
+    position:fixed;
+    top:0;
+    left:0;
+    bottom:0;
+    transform:translateX(-105%);
+    transition:transform .3s ease;
+    width:min(80vw,320px);
+    box-shadow:0 0 20px rgba(0,0,0,.35);
+    z-index:1100;
+    overflow-y:auto;
+  }
+  body.sidebar-open .sidebar{transform:translateX(0);}
+  body.sidebar-open{overflow:hidden;}
+  body.sidebar-open::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:rgba(4,7,18,.65);
+    z-index:1090;
+  }
+  #app{
+    width:100%;
+    max-width:none;
+    margin:0;
+    padding:88px 16px 48px;
+  }
+  .sidebar-actions{padding-bottom:24px;}
 }
