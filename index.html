@@ -9,8 +9,13 @@
   <meta name="theme-color" content="#e9506a" />
 </head>
 <body>
+  <a class="skip-link" href="#app">Salta al contenuto principale</a>
+  <button id="sidebarToggle" class="sidebar-toggle" aria-expanded="false" aria-controls="sidebar">
+    <span class="sidebar-toggle__icon" aria-hidden="true">☰</span>
+    <span class="sidebar-toggle__label">Menu</span>
+  </button>
   <!-- Sidebar navigation -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar" aria-hidden="false">
     <a class="brand" href="#/avvio">
       <img src="assets/logo.svg" alt="Logo" class="logo"/>
       <span>Torneo Cremesi</span>
@@ -34,7 +39,7 @@
   </aside>
 
   <!-- Main content area where views are injected -->
-  <main id="app">
+  <main id="app" tabindex="-1">
     <!-- Le viste vengono iniettate via router definito in js/app.js -->
   </main>
 

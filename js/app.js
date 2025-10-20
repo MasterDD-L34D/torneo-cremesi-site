@@ -10,6 +10,13 @@ import { TC_DATA, STATS } from './data.js';
   viene cercato il template e renderizzato in #app. Alcune viste necessitano
   inizializzazioni speciali (scheda, tracker, oggetti).
 */
+const appEl = document.getElementById('app');
+const bodyEl = document.body;
+const sidebarEl = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebarToggle');
+const navLinks = Array.from(document.querySelectorAll('.sidebar nav a'));
+const mobileQuery = window.matchMedia('(max-width: 900px)');
+
 const routes = {
   '/avvio': 'view-avvio',
   '/ambientazione': 'view-ambientazione',
@@ -19,19 +26,117 @@ const routes = {
   '/tracker': 'view-tracker',
 };
 
+const isMobile = () => mobileQuery.matches;
+
+function updateSidebarToggleLabel(){
+  if(!sidebarToggle) return;
+  const isOpen = bodyEl.classList.contains('sidebar-open') && isMobile();
+  sidebarToggle.setAttribute('aria-label', isOpen ? 'Chiudi navigazione principale' : 'Apri navigazione principale');
+  const icon = sidebarToggle.querySelector('.sidebar-toggle__icon');
+  const label = sidebarToggle.querySelector('.sidebar-toggle__label');
+  if(icon) icon.textContent = isOpen ? '✕' : '☰';
+  if(label) label.textContent = isOpen ? 'Chiudi' : 'Menu';
+}
+
+function syncSidebarState(){
+  if(!sidebarEl) return;
+  if(!isMobile()){
+    sidebarEl.setAttribute('aria-hidden', 'false');
+    sidebarToggle?.setAttribute('aria-expanded', 'false');
+    bodyEl.classList.remove('sidebar-open');
+    updateSidebarToggleLabel();
+    return;
+  }
+  const isOpen = bodyEl.classList.contains('sidebar-open');
+  sidebarEl.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+  sidebarToggle?.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  updateSidebarToggleLabel();
+}
+
+function openSidebar(){
+  if(!isMobile()) return;
+  bodyEl.classList.add('sidebar-open');
+  syncSidebarState();
+  navLinks[0]?.focus();
+}
+
+function closeSidebar({ restoreFocus = true } = {}){
+  if(!isMobile()) return;
+  if(!bodyEl.classList.contains('sidebar-open')){
+    syncSidebarState();
+    return;
+  }
+  bodyEl.classList.remove('sidebar-open');
+  syncSidebarState();
+  if(restoreFocus) sidebarToggle?.focus();
+}
+
+function toggleSidebar(){
+  if(!sidebarToggle || !isMobile()) return;
+  if(bodyEl.classList.contains('sidebar-open')) closeSidebar({ restoreFocus: false });
+  else openSidebar();
+}
+
+sidebarToggle?.addEventListener('click', toggleSidebar);
+navLinks.forEach(link => link.addEventListener('click', () => {
+  if(isMobile()) closeSidebar({ restoreFocus: false });
+}));
+
+document.addEventListener('click', evt => {
+  if(!isMobile() || !bodyEl.classList.contains('sidebar-open')) return;
+  if(sidebarEl?.contains(evt.target) || evt.target === sidebarToggle) return;
+  closeSidebar();
+});
+
+document.addEventListener('keydown', evt => {
+  if(evt.key === 'Escape' && bodyEl.classList.contains('sidebar-open')){
+    closeSidebar();
+  }
+});
+
+const handleViewportChange = () => {
+  if(!isMobile()){
+    bodyEl.classList.remove('sidebar-open');
+  }
+  syncSidebarState();
+};
+
+if(typeof mobileQuery.addEventListener === 'function'){
+  mobileQuery.addEventListener('change', handleViewportChange);
+} else if(typeof mobileQuery.addListener === 'function'){
+  mobileQuery.addListener(handleViewportChange);
+}
+
+syncSidebarState();
+
 function render(route){
   const tplId = routes[route] || routes['/avvio'];
   const tpl = document.getElementById(tplId);
-  const app = document.getElementById('app');
-  app.innerHTML = tpl.innerHTML;
+  if(!tpl || !appEl) return;
+  appEl.innerHTML = tpl.innerHTML;
   afterRender(route);
   highlightActive(route);
+  focusMainHeading();
+  closeSidebar({ restoreFocus: false });
+  syncSidebarState();
 }
 
 function highlightActive(route){
-  document.querySelectorAll('.sidebar nav a').forEach(a=>{
+  navLinks.forEach(a => {
     a.classList.toggle('active', a.getAttribute('href') === `#${route}`);
   });
+}
+
+function focusMainHeading(){
+  if(!appEl) return;
+  const heading = appEl.querySelector('h1');
+  if(heading){
+    heading.setAttribute('tabindex', '-1');
+    heading.focus();
+    heading.addEventListener('blur', () => heading.removeAttribute('tabindex'), { once: true });
+  } else {
+    appEl.focus();
+  }
 }
 
 function afterRender(route){
@@ -195,7 +300,14 @@ function buildOCPicker(){
   if(!picker) return;
   const list = loadOC();
   picker.innerHTML = `<option value="">— nessuno —</option>` + list.map((o,i)=>`<option value="${i}">${o.nome}</option>`).join('');
-  if(state.ocIndex != null) picker.value = state.ocIndex;
+  if(state.ocIndex != null && list[state.ocIndex]) picker.value = state.ocIndex;
+  else {
+    picker.value = '';
+    if(state.ocIndex != null){
+      state.ocIndex = null;
+      saveAppState(state);
+    }
+  }
   picker.onchange = () => {
     if(picker.value === ''){
       state.ocIndex = null;
@@ -203,7 +315,8 @@ function buildOCPicker(){
       return;
     }
     const idx = parseInt(picker.value,10);
-    const oc = list[idx];
+    const oc = loadOC()[idx];
+    if(!oc) return;
     document.getElementById('customTrigger').value = oc.azioni || '';
     document.getElementById('customCosto').value   = oc.prezzo ?? '';
     document.getElementById('customTema').value    = `${oc.slot || '—'} • LI ${oc.li || '—'} • ${oc.rarita || '—'}`;
@@ -213,6 +326,7 @@ function buildOCPicker(){
     state.ocIndex = idx;
     saveAppState(state);
   };
+  if(picker.value !== '') picker.dispatchEvent(new Event('change'));
 }
 
 /*
@@ -253,9 +367,13 @@ function initOggetti(){
 }
 
 function renderOCTable(){
-  const q = (document.getElementById('ocSearch').value || '').toLowerCase();
-  const tbody = document.getElementById('ocTable').querySelector('tbody');
-  const list = loadOC().map((o,idx) => ({...o, idx}));
+  const searchField = document.getElementById('ocSearch');
+  const q = (searchField?.value || '').toLowerCase();
+  const table = document.getElementById('ocTable');
+  if(!table) return;
+  const tbody = table.querySelector('tbody');
+  const ocList = loadOC();
+  const list = ocList.map((o,idx) => ({...o, idx}));
   const filtered = list.filter(o => {
     return [o.nome,o.slot,o.rarita,o.effetto].filter(Boolean).some(s => (s+"").toLowerCase().includes(q));
   });
@@ -269,12 +387,13 @@ function renderOCTable(){
     btn.onclick = () => {
       ocSelectionIndex = parseInt(btn.getAttribute('data-idx'),10);
       const item = loadOC()[ocSelectionIndex];
-      fillOCForm(item);
+      item ? fillOCForm(item) : fillOCForm({});
     };
   });
   if(ocSelectionIndex != null){
-    const current = loadOC()[ocSelectionIndex];
-    current && fillOCForm(current);
+    const current = ocList[ocSelectionIndex];
+    if(current) fillOCForm(current);
+    else ocSelectionIndex = null;
   }
 }
 

@@ -6,16 +6,24 @@
 const KEY_APP = "tc_app_v2";
 const KEY_OC  = "tc_oc_v2";
 
+let appCache = null;
+let ocCache = null;
+let lastAppSerialized = null;
+let lastOCSerialized = null;
+
 /**
  * Carica lo stato completo della scheda/tracker dal localStorage.
  * @returns {Object}
  */
-export function loadAppState(){
+export function loadAppState(force = false){
+  if(appCache && !force) return appCache;
   try {
-    return JSON.parse(localStorage.getItem(KEY_APP) || "{}");
+    appCache = JSON.parse(localStorage.getItem(KEY_APP) || "{}") || {};
   } catch (e) {
-    return {};
+    appCache = {};
   }
+  lastAppSerialized = JSON.stringify(appCache);
+  return appCache;
 }
 
 /**
@@ -23,19 +31,26 @@ export function loadAppState(){
  * @param {Object} state
  */
 export function saveAppState(state){
-  localStorage.setItem(KEY_APP, JSON.stringify(state));
+  const serialized = JSON.stringify(state);
+  if(serialized === lastAppSerialized) return;
+  lastAppSerialized = serialized;
+  appCache = state;
+  localStorage.setItem(KEY_APP, serialized);
 }
 
 /**
  * Carica il catalogo degli oggetti custom.
  * @returns {Array}
  */
-export function loadOC(){
+export function loadOC(force = false){
+  if(ocCache && !force) return ocCache;
   try {
-    return JSON.parse(localStorage.getItem(KEY_OC) || "[]");
+    ocCache = JSON.parse(localStorage.getItem(KEY_OC) || "[]") || [];
   } catch (e) {
-    return [];
+    ocCache = [];
   }
+  lastOCSerialized = JSON.stringify(ocCache);
+  return ocCache;
 }
 
 /**
@@ -43,7 +58,11 @@ export function loadOC(){
  * @param {Array} list
  */
 export function saveOC(list){
-  localStorage.setItem(KEY_OC, JSON.stringify(list));
+  const serialized = JSON.stringify(list);
+  if(serialized === lastOCSerialized) return;
+  lastOCSerialized = serialized;
+  ocCache = list;
+  localStorage.setItem(KEY_OC, serialized);
 }
 
 /**
@@ -73,8 +92,16 @@ export function importAll(file, cb){
   fr.onload = ()=>{
     try{
       const data = JSON.parse(fr.result);
-      if (data.app) localStorage.setItem(KEY_APP, JSON.stringify(data.app));
-      if (data.oc)  localStorage.setItem(KEY_OC,  JSON.stringify(data.oc));
+      if (data.app){
+        localStorage.setItem(KEY_APP, JSON.stringify(data.app));
+        appCache = data.app;
+        lastAppSerialized = JSON.stringify(data.app);
+      }
+      if (data.oc){
+        localStorage.setItem(KEY_OC,  JSON.stringify(data.oc));
+        ocCache = data.oc;
+        lastOCSerialized = JSON.stringify(data.oc);
+      }
       if (cb) cb(true);
     } catch (e){
       if (cb) cb(false);
