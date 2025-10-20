@@ -218,14 +218,39 @@
     <p class="muted">Salvataggio automatico in localStorage • Esporta/Importa JSON • Stampa PDF</p>
   </header>
   <section class="card scheda-tabs-card">
-    <nav class="scheda-tabs__nav" role="tablist">
-      <button type="button" class="scheda-tabs__btn" data-tab-target="scheda-legacy" data-tab-default>📑 Scheda completa</button>
-      <button type="button" class="scheda-tabs__btn" data-tab-target="scheda-generali">🧾 Dati Generali</button>
+    <nav class="scheda-tabs__nav" role="tablist" aria-label="Sottoschede della scheda personaggio">
+      <button
+        type="button"
+        class="scheda-tabs__btn"
+        id="tab-scheda-legacy"
+        data-tab-target="scheda-legacy"
+        data-tab-default
+        role="tab"
+        aria-controls="panel-scheda-legacy"
+        aria-selected="true"
+      >📑 Scheda completa</button>
+      <button
+        type="button"
+        class="scheda-tabs__btn"
+        id="tab-scheda-generali"
+        data-tab-target="scheda-generali"
+        role="tab"
+        aria-controls="panel-scheda-generali"
+        aria-selected="false"
+        tabindex="-1"
+      >🧾 Dati Generali</button>
     </nav>
     <p class="muted small-note">Consulta la scheda completa oppure compila i dati anagrafici attraverso le nuove sottoschede tematiche.</p>
   </section>
   <div class="scheda-panels">
-    <div class="scheda-panel" data-tab-panel="scheda-legacy">
+    <div
+      class="scheda-panel"
+      id="panel-scheda-legacy"
+      data-tab-panel="scheda-legacy"
+      role="tabpanel"
+      aria-labelledby="tab-scheda-legacy"
+      tabindex="0"
+    >
       <section class="card">
         <h2>Dati Anagrafici (legacy)</h2>
         <p class="muted small-note">I campi sono sincronizzati con la scheda "Dati Generali".</p>
@@ -431,7 +456,15 @@
         </div>
       </section>
     </div>
-    <div class="scheda-panel" data-tab-panel="scheda-generali" hidden>
+    <div
+      class="scheda-panel"
+      id="panel-scheda-generali"
+      data-tab-panel="scheda-generali"
+      role="tabpanel"
+      aria-labelledby="tab-scheda-generali"
+      tabindex="-1"
+      hidden
+    >
       <section class="card">
         <header class="scheda-panel__header">
           <h2>Dati Generali</h2>
