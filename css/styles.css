@@ -124,6 +124,8 @@ a:hover{text-decoration:underline}
 .card h2{margin:.2rem 0 .8rem;font-size:1.05rem;}
 .card-subtitle{margin:0 0 6px;font-size:.9rem;color:var(--muted);font-weight:600;}
 .prof-column{display:flex;flex-direction:column;gap:10px;}
+.grid.compact,
+.row.compact{gap:6px;}
 .compact{gap:6px;}
 .small-note{margin:4px 0 0;font-size:.85rem;}
 .defenses-grid{align-items:end;}

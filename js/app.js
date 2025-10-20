@@ -177,6 +177,19 @@ let state = loadAppState();
 const COIN_KEYS = ['pp','gp','sp','cp'];
 
 function initScheda(){
+  const container = document.getElementById('app');
+  const fields = container ? [...container.querySelectorAll('[data-field]')] : [];
+  fields.forEach(el => {
+    const key = el.dataset.field || el.id;
+    if(!key) return;
+    const baseValue = el.defaultValue ?? el.value;
+    if(state[key] != null){
+      el.value = state[key];
+    } else if(baseValue != null && baseValue !== ''){
+      el.value = baseValue;
+    }
+    const persist = debounce(()=>{
+      state[key] = el.value;
   // mappa campi di testo
   const fields = [
     'nome','razzaClassi','livello','allineamento','taglia','altezza',
@@ -202,7 +215,11 @@ function initScheda(){
     el.addEventListener('input', debounce(()=>{
       state[id] = el.value;
       saveAppState(state);
-    }, 250));
+    }, 250);
+    el.addEventListener('input', persist);
+    if(el.tagName === 'SELECT'){
+      el.addEventListener('change', persist);
+    }
   });
   migrateLegacyValute();
   // Stats
@@ -225,6 +242,14 @@ function initScheda(){
 
 function migrateLegacyValute(){
   if(!state.valute) return;
+  const hasNewValues = COIN_KEYS.some(key => state[key] != null && state[key] !== '');
+  if(hasNewValues) return;
+  const parsed = parseLegacyValute(state.valute);
+  let touched = false;
+  const container = document.getElementById('app');
+  COIN_KEYS.forEach(key => {
+    if(parsed[key] == null) return;
+    const el = document.getElementById(key) || container?.querySelector(`[data-field="${key}"]`);
   const hasNewValues = COIN_KEYS.some(key => state[key]);
   if(hasNewValues) return;
   const parsed = parseLegacyValute(state.valute);

@@ -220,22 +220,22 @@
     <section class="card">
       <h2>Dati Anagrafici</h2>
       <div class="grid g2">
-        <div><label>Nome PG</label><input id="nome"/></div>
-        <div><label>Razza / Classi / Archetipi</label><input id="razzaClassi"/></div>
-        <div><label>Livello Totale</label><input id="livello" value="7"/></div>
-        <div><label>Allineamento / Divinità</label><input id="allineamento"/></div>
-        <div><label>Taglia / Età / Sesso</label><input id="taglia"/></div>
-        <div><label>Altezza / Peso</label><input id="altezza"/></div>
+        <div><label>Nome PG</label><input id="nome" data-field="nome"/></div>
+        <div><label>Razza / Classi / Archetipi</label><input id="razzaClassi" data-field="razzaClassi"/></div>
+        <div><label>Livello Totale</label><input id="livello" data-field="livello" value="7"/></div>
+        <div><label>Allineamento / Divinità</label><input id="allineamento" data-field="allineamento"/></div>
+        <div><label>Taglia / Età / Sesso</label><input id="taglia" data-field="taglia"/></div>
+        <div><label>Altezza / Peso</label><input id="altezza" data-field="altezza"/></div>
       </div>
     </section>
     <section class="card">
       <h2>Dati Fisici</h2>
       <div class="grid g3">
-        <div><label>Palette</label><input id="palette"/></div>
-        <div><label>Motto</label><input id="motto"/></div>
-        <div><label>Immagine (URL)</label><input id="imgUrl" placeholder="https://…"/></div>
+        <div><label>Palette</label><input id="palette" data-field="palette"/></div>
+        <div><label>Motto</label><input id="motto" data-field="motto"/></div>
+        <div><label>Immagine (URL)</label><input id="imgUrl" data-field="imgUrl" placeholder="https://…"/></div>
       </div>
-      <div class="grid"><label>Descrizione</label><textarea id="descrizione"></textarea></div>
+      <div class="grid"><label>Descrizione</label><textarea id="descrizione" data-field="descrizione"></textarea></div>
     </section>
     <section class="card stats">
       <h2>Statistiche</h2>
@@ -259,14 +259,23 @@
     <section class="card">
       <h2>Talenti, Tratti & Difetti</h2>
       <div class="grid">
-        <div><label>Talenti (EITR ON)</label><textarea id="talenti"></textarea></div>
-        <div><label>Tratti</label><textarea id="tratti"></textarea></div>
-        <div><label>Difetti</label><textarea id="difetti"></textarea></div>
+        <div><label>Talenti (EITR ON)</label><textarea id="talenti" data-field="talenti"></textarea></div>
+        <div><label>Tratti</label><textarea id="tratti" data-field="tratti"></textarea></div>
+        <div><label>Difetti</label><textarea id="difetti" data-field="difetti"></textarea></div>
       </div>
     </section>
     <section class="card">
       <h2>Difese</h2>
       <div class="grid g3 defenses-grid">
+        <div><label>PF totali</label><input id="pf" data-field="pf"/></div>
+        <div><label>CA Tot / Cont / Sorpr.</label><input id="ca" data-field="ca" placeholder="— / — / —"/></div>
+        <div><label>TS (Temp / Rif / Vol)</label><input id="ts" data-field="ts" placeholder="— / — / —"/></div>
+        <div><label>BAB</label><input id="bab" data-field="bab"/></div>
+        <div><label>CMB / CMD</label><input id="cmbcmd" data-field="cmbcmd" placeholder="— / —"/></div>
+        <div><label>Iniziativa</label><input id="iniziativa" data-field="iniziativa"/></div>
+      </div>
+      <div class="grid">
+        <div><label>Velocità</label><input id="velocita" data-field="velocita"/></div>
         <div><label>PF totali</label><input id="pf"/></div>
         <div><label>CA Tot / Cont / Sorpr.</label><input id="ca" placeholder="— / — / —"/></div>
         <div><label>TS (Temp / Rif / Vol)</label><input id="ts" placeholder="— / — / —"/></div>
@@ -293,7 +302,7 @@
     </section>
     <section class="card">
       <h2>Abilità (principali)</h2>
-      <textarea id="skills" placeholder="Percezione — ; Furtività — ; Sopravvivenza — ; Sapienza Magica — ; Acrobazia — ; Diplomazia — ; Intuizione —."></textarea>
+      <textarea id="skills" data-field="skills" placeholder="Percezione — ; Furtività — ; Sopravvivenza — ; Sapienza Magica — ; Acrobazia — ; Diplomazia — ; Intuizione —."></textarea>
     </section>
     <section class="card">
       <h2>Incantesimi / Capacità</h2>
@@ -315,6 +324,16 @@
         <div class="prof-column">
           <h3 class="card-subtitle">Armi</h3>
           <div class="grid g2 compact">
+            <div><label>Semplici</label><input id="profArmiSemplici" data-field="profArmiSemplici" placeholder="Semplici"/></div>
+            <div><label>Fonte</label><input id="profArmiSempliciFonte" data-field="profArmiSempliciFonte" placeholder="Fonte"/></div>
+          </div>
+          <div class="grid g2 compact">
+            <div><label>Marziali</label><input id="profArmiMarziali" data-field="profArmiMarziali" placeholder="Marziali"/></div>
+            <div><label>Fonte</label><input id="profArmiMarzialiFonte" data-field="profArmiMarzialiFonte" placeholder="Fonte"/></div>
+          </div>
+          <div class="grid g2 compact">
+            <div><label>Esotiche</label><input id="profArmiEsotiche" data-field="profArmiEsotiche" placeholder="Esotiche"/></div>
+            <div><label>Fonte</label><input id="profArmiEsoticheFonte" data-field="profArmiEsoticheFonte" placeholder="Lista e Fonte"/></div>
             <div><label>Semplici</label><input id="profArmiSemplici" value="Semplici"/></div>
             <div><label>Fonte</label><input id="profArmiSempliciFonte" placeholder="Fonte"/></div>
           </div>
@@ -330,6 +349,16 @@
         <div class="prof-column">
           <h3 class="card-subtitle">Armature</h3>
           <div class="grid g2 compact">
+            <div><label>Leggere</label><input id="profArmatureLeggere" data-field="profArmatureLeggere" placeholder="Leggere"/></div>
+            <div><label>Fonte</label><input id="profArmatureLeggereFonte" data-field="profArmatureLeggereFonte" placeholder="Fonte"/></div>
+          </div>
+          <div class="grid g2 compact">
+            <div><label>Medie</label><input id="profArmatureMedie" data-field="profArmatureMedie" placeholder="Medie"/></div>
+            <div><label>Fonte</label><input id="profArmatureMedieFonte" data-field="profArmatureMedieFonte" placeholder="Fonte"/></div>
+          </div>
+          <div class="grid g2 compact">
+            <div><label>Pesanti</label><input id="profArmaturePesanti" data-field="profArmaturePesanti" placeholder="Pesanti"/></div>
+            <div><label>Fonte</label><input id="profArmaturePesantiFonte" data-field="profArmaturePesantiFonte" placeholder="Fonte"/></div>
             <div><label>Leggere</label><input id="profArmatureLeggere" value="Leggere"/></div>
             <div><label>Fonte</label><input id="profArmatureLeggereFonte" placeholder="Fonte"/></div>
           </div>
@@ -345,6 +374,16 @@
         <div class="prof-column">
           <h3 class="card-subtitle">Scudi</h3>
           <div class="grid g2 compact">
+            <div><label>Scudo</label><input id="profScudi" data-field="profScudi" placeholder="Scudo"/></div>
+            <div><label>Fonte</label><input id="profScudiFonte" data-field="profScudiFonte" placeholder="Fonte"/></div>
+          </div>
+          <div class="grid g2 compact">
+            <div><label>Scudo Pesante</label><input id="profScudiPesanti" data-field="profScudiPesanti" placeholder="Scudo Pesante"/></div>
+            <div><label>Fonte</label><input id="profScudiPesantiFonte" data-field="profScudiPesantiFonte" placeholder="Fonte"/></div>
+          </div>
+          <div class="grid g2 compact">
+            <div><label>Torre</label><input id="profScudiTorre" data-field="profScudiTorre" placeholder="Torre"/></div>
+            <div><label>Fonte</label><input id="profScudiTorreFonte" data-field="profScudiTorreFonte" placeholder="Fonte"/></div>
             <div><label>Scudo</label><input id="profScudi" value="Scudo"/></div>
             <div><label>Fonte</label><input id="profScudiFonte" placeholder="Fonte"/></div>
           </div>
@@ -359,6 +398,7 @@
         </div>
       </div>
       <div class="grid">
+        <div><label>Categorie / Tipi aggiuntivi</label><textarea id="profCategorieExtra" data-field="profCategorieExtra"></textarea></div>
         <div><label>Categorie / Tipi aggiuntivi</label><textarea id="profCategorieExtra"></textarea></div>
       </div>
     </section>
@@ -366,6 +406,16 @@
       <h2>Altri Dati (riassunto)</h2>
       <div class="grid g3 summary-grid">
         <div class="grid">
+          <div><label>Razza (tratti chiave)</label><textarea id="riassRazza" data-field="riassRazza"></textarea></div>
+          <div><label>Classi & livelli</label><textarea id="riassClassi" data-field="riassClassi"></textarea></div>
+        </div>
+        <div class="grid">
+          <div><label>Movimento</label><textarea id="riassMovimento" data-field="riassMovimento" placeholder="Terra, Volo, Nuoto, Scavare, Scalare"></textarea></div>
+          <div><label>Visione / Sensi</label><textarea id="riassSensi" data-field="riassSensi" placeholder="Olfatto acuto, percezione cieca..."></textarea></div>
+        </div>
+        <div class="grid">
+          <div><label>RD / Res / Immunità</label><textarea id="riassRD" data-field="riassRD"></textarea></div>
+          <div><label>Capacità di Classe chiave</label><textarea id="riassCapacita" data-field="riassCapacita" placeholder="Nome • Breve effetto"></textarea></div>
           <div><label>Razza (tratti chiave)</label><textarea id="riassRazza"></textarea></div>
           <div><label>Classi & livelli</label><textarea id="riassClassi"></textarea></div>
         </div>
@@ -383,6 +433,22 @@
       <h2>Equipaggiamento & Budget</h2>
       <div class="grid g2 equip-grid">
         <div class="grid">
+          <div><label>Budget rimanente (mo)</label><input id="budget" data-field="budget"/></div>
+          <div class="grid g4 compact">
+            <div><label>PP</label><input id="pp" data-field="pp"/></div>
+            <div><label>GP</label><input id="gp" data-field="gp"/></div>
+            <div><label>SP</label><input id="sp" data-field="sp"/></div>
+            <div><label>CP</label><input id="cp" data-field="cp"/></div>
+          </div>
+        </div>
+        <div class="grid">
+          <div><label>Oggetto Custom su Misura</label><input id="customTema" data-field="customTema" placeholder="Nome / slot / LI…"/></div>
+          <div><label>Scegli dall’Archivio Oggetti</label><select id="ocPicker"></select></div>
+          <div class="grid g2 compact">
+            <div><label>Trigger / Limiti</label><input id="customTrigger" data-field="customTrigger"/></div>
+            <div><label>Prezzo stimato</label><input id="customCosto" data-field="customCosto"/></div>
+          </div>
+          <div><label>Sinergie (classe / tratto / party)</label><input id="customSinergie" data-field="customSinergie"/></div>
           <div><label>Budget rimanente (mo)</label><input id="budget"/></div>
           <div class="grid g4 compact">
             <div><label>PP</label><input id="pp"/></div>
@@ -403,13 +469,15 @@
         </div>
       </div>
       <div class="grid g2 loadout-grid">
+        <div><label>Loadout principale</label><textarea id="loadout" data-field="loadout" placeholder="Armi, armature, utility core..."></textarea></div>
+        <div><label>Altri oggetti / Note</label><textarea id="altro" data-field="altro" placeholder="Consumabili, pozioni, risorse narrative..."></textarea></div>
         <div><label>Loadout principale</label><textarea id="loadout" placeholder="Armi, armature, utility core..."></textarea></div>
         <div><label>Altri oggetti / Note</label><textarea id="altro" placeholder="Consumabili, pozioni, risorse narrative..."></textarea></div>
       </div>
     </section>
     <section class="card">
       <h2>Background & Note di Ruolo</h2>
-      <textarea id="background" placeholder="5–10 righe, motto, stile decisionale, legami chiave, ganci…"></textarea>
+      <textarea id="background" data-field="background" placeholder="5–10 righe, motto, stile decisionale, legami chiave, ganci…"></textarea>
     </section>
   </script>
 
