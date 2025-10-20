@@ -562,31 +562,18 @@ function handleFieldUpdate(key, value){
 }
 
 function setupSchedaTabs(){
-  const buttons = Array.from(document.querySelectorAll('.scheda-tabs__tab'));
+  const buttons = Array.from(document.querySelectorAll('.scheda-tabs__btn'));
   const panels = Array.from(document.querySelectorAll('[data-tab-panel]'));
   if(!buttons.length || !panels.length) return;
 
-  const setActive = (id, persist = false, focusTab = false) => {
+  const setActive = (id, persist = false) => {
     buttons.forEach(btn => {
       const active = btn.dataset.tabTarget === id;
       btn.classList.toggle('is-active', active);
-      btn.setAttribute('aria-selected', active ? 'true' : 'false');
-      btn.setAttribute('tabindex', active ? '0' : '-1');
-      if(active && focusTab){
-        btn.focus();
-      }
     });
     panels.forEach(panel => {
       const match = panel.getAttribute('data-tab-panel') === id;
-      if(match){
-        panel.removeAttribute('hidden');
-        panel.setAttribute('aria-hidden', 'false');
-        panel.setAttribute('tabindex', '0');
-      } else {
-        panel.setAttribute('hidden', '');
-        panel.setAttribute('aria-hidden', 'true');
-        panel.setAttribute('tabindex', '-1');
-      }
+      if(match) panel.removeAttribute('hidden'); else panel.setAttribute('hidden', '');
     });
     if(persist){
       state.lastSchedaTab = id;
@@ -596,28 +583,6 @@ function setupSchedaTabs(){
 
   buttons.forEach(btn => {
     btn.addEventListener('click', () => setActive(btn.dataset.tabTarget, true));
-    btn.addEventListener('keydown', evt => {
-      const { key } = evt;
-      const currentIndex = buttons.indexOf(btn);
-      if(key === 'ArrowRight' || key === 'ArrowLeft'){
-        evt.preventDefault();
-        const delta = key === 'ArrowRight' ? 1 : -1;
-        const nextIndex = (currentIndex + delta + buttons.length) % buttons.length;
-        const targetId = buttons[nextIndex].dataset.tabTarget;
-        setActive(targetId, true, true);
-      } else if(key === 'Home'){
-        evt.preventDefault();
-        const targetId = buttons[0].dataset.tabTarget;
-        setActive(targetId, true, true);
-      } else if(key === 'End'){
-        evt.preventDefault();
-        const targetId = buttons[buttons.length - 1].dataset.tabTarget;
-        setActive(targetId, true, true);
-      } else if(key === 'Enter' || key === ' ' || key === 'Space' || key === 'Spacebar'){
-        evt.preventDefault();
-        setActive(btn.dataset.tabTarget, true);
-      }
-    });
   });
 
   const preferred = state.lastSchedaTab || buttons.find(btn => btn.hasAttribute('data-tab-default'))?.dataset.tabTarget || buttons[0].dataset.tabTarget;
