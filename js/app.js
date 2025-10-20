@@ -174,25 +174,26 @@ render(location.hash.replace('#',''));
   Salva/Carica dati, costruisci tabelle e selettori TC, oggetti custom.
 */
 let state = loadAppState();
+const COIN_KEYS = ['pp','gp','sp','cp'];
 
 function initScheda(){
-  // mappa campi di testo
-  const fields = [
-    'nome','razzaClassi','livello','allineamento','taglia','altezza',
-    'palette','motto','imgUrl','descrizione',
-    'talenti','tratti','difetti','pf','ca','ts','bab','cmbcmd','iniziativa','velocita',
-    'skills','loadout','altro','budget','valute','customTema','customCosto','customTrigger','customSinergie',
-    'background'
-  ];
-  fields.forEach(id => {
-    const el = document.getElementById(id);
-    if(!el) return;
-    el.value = state[id] ?? '';
+  const container = document.getElementById('app');
+  const fields = container ? [...container.querySelectorAll('[data-field]')] : [];
+  fields.forEach(el => {
+    const key = el.dataset.field || el.id;
+    if(!key) return;
+    const baseValue = el.defaultValue ?? el.value;
+    if(state[key] != null){
+      el.value = state[key];
+    } else if(baseValue != null && baseValue !== ''){
+      el.value = baseValue;
+    }
     el.addEventListener('input', debounce(()=>{
-      state[id] = el.value;
+      state[key] = el.value;
       saveAppState(state);
     }, 250));
   });
+  migrateLegacyValute();
   // Stats
   buildStats();
   // Tabelle
@@ -209,6 +210,35 @@ function initScheda(){
   buildTCSelect();
   // Oggetti custom picker
   buildOCPicker();
+}
+
+function migrateLegacyValute(){
+  if(!state.valute) return;
+  const hasNewValues = COIN_KEYS.some(key => state[key] != null && state[key] !== '');
+  if(hasNewValues) return;
+  const parsed = parseLegacyValute(state.valute);
+  let touched = false;
+  const container = document.getElementById('app');
+  COIN_KEYS.forEach(key => {
+    if(parsed[key] == null) return;
+    const el = document.getElementById(key) || container?.querySelector(`[data-field="${key}"]`);
+    if(el && !el.value){
+      el.value = parsed[key];
+    }
+    state[key] = parsed[key];
+    touched = true;
+  });
+  if(touched) saveAppState(state);
+}
+
+function parseLegacyValute(str){
+  const out = {};
+  if(typeof str !== 'string') return out;
+  COIN_KEYS.forEach(key => {
+    const match = str.match(new RegExp(`${key.toUpperCase()}\s*([0-9.,+-]+)`, 'i'));
+    if(match) out[key] = match[1].trim();
+  });
+  return out;
 }
 
 function buildStats(){
