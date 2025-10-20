@@ -9,6 +9,7 @@ const ENDPOINTS = {
 const STUBS = {
   races: 'data/aon-races.stub.json',
   classes: 'data/aon-classes.stub.json',
+  archetypes: 'data/aon-archetypes.stub.json',
   traits: 'data/aon-traits.stub.json'
 };
 
@@ -162,7 +163,7 @@ export async function getClasses(){
   if(classCache) return classCache;
   const [rawClasses, rawArchetypes] = await Promise.all([
     fetchWithFallback(ENDPOINTS.classes, STUBS.classes),
-    fetchWithFallback(ENDPOINTS.archetypes, STUBS.classes)
+    fetchWithFallback(ENDPOINTS.archetypes, STUBS.archetypes)
   ]);
   let classEntries = [];
   if(Array.isArray(rawClasses)) classEntries = rawClasses;

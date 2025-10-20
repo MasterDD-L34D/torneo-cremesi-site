@@ -1010,11 +1010,19 @@ function renderOCTable(){
     return [o.nome,o.slot,o.rarita,o.effetto].filter(Boolean).some(s => (s+"").toLowerCase().includes(q));
   });
   tbody.innerHTML = '';
-  filtered.forEach(o => {
+  if(!filtered.length){
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${o.nome||''}</td><td>${o.slot||'—'}</td><td>${o.li||'—'}</td><td>${o.prezzo||'—'}</td><td>${o.rarita||'—'}</td><td><button class="btn" data-idx="${o.idx}">Modifica</button></td>`;
+    tr.innerHTML = '<td colspan="6" class="muted">Nessun oggetto trovato.</td>';
     tbody.appendChild(tr);
-  });
+  } else {
+    filtered.forEach(o => {
+      const tr = document.createElement('tr');
+      const li = o.li ?? '—';
+      const prezzo = o.prezzo ?? '—';
+      tr.innerHTML = `<td>${o.nome||''}</td><td>${o.slot||'—'}</td><td>${li}</td><td>${prezzo}</td><td>${o.rarita||'—'}</td><td><button class="btn" data-idx="${o.idx}">Modifica</button></td>`;
+      tbody.appendChild(tr);
+    });
+  }
   tbody.querySelectorAll('button[data-idx]').forEach(btn => {
     btn.onclick = () => {
       ocSelectionIndex = parseInt(btn.getAttribute('data-idx'),10);
@@ -1030,15 +1038,15 @@ function renderOCTable(){
 }
 
 function fillOCForm(o){
-  document.getElementById('ocNome').value     = o.nome||'';
-  document.getElementById('ocSlot').value     = o.slot||'';
-  document.getElementById('ocLI').value       = o.li||'';
-  document.getElementById('ocPrezzo').value   = o.prezzo||'';
-  document.getElementById('ocRarita').value   = o.rarita||'Comune';
-  document.getElementById('ocHR').value       = o.hr?'Sì':'No';
-  document.getElementById('ocAzioni').value   = o.azioni||'';
-  document.getElementById('ocTS').value       = o.ts||'';
-  document.getElementById('ocEffetto').value  = o.effetto||'';
+  document.getElementById('ocNome').value     = o.nome ?? '';
+  document.getElementById('ocSlot').value     = o.slot ?? '';
+  document.getElementById('ocLI').value       = o.li ?? '';
+  document.getElementById('ocPrezzo').value   = o.prezzo ?? '';
+  document.getElementById('ocRarita').value   = o.rarita ?? 'Comune';
+  document.getElementById('ocHR').value       = o.hr ? 'Sì' : 'No';
+  document.getElementById('ocAzioni').value   = o.azioni ?? '';
+  document.getElementById('ocTS').value       = o.ts ?? '';
+  document.getElementById('ocEffetto').value  = o.effetto ?? '';
   document.getElementById('ocDettagli').value = (o.dettagli||[]).map(x=>'- '+x).join('\n');
   document.getElementById('ocStatus').textContent = ocSelectionIndex == null ? 'Nuovo oggetto…' : `Modifica #${ocSelectionIndex+1}`;
 }
@@ -1058,11 +1066,15 @@ async function loadOCSeed(){
 
 function saveCurrentOC(){
   const list = loadOC();
+  const liValue = document.getElementById('ocLI').value;
+  const prezzoValue = document.getElementById('ocPrezzo').value;
+  const li = liValue === '' ? null : parseInt(liValue,10);
+  const prezzo = prezzoValue === '' ? null : parseInt(prezzoValue,10);
   const item = {
     nome: document.getElementById('ocNome').value.trim(),
     slot: document.getElementById('ocSlot').value.trim(),
-    li: parseInt(document.getElementById('ocLI').value || '0',10) || null,
-    prezzo: parseInt(document.getElementById('ocPrezzo').value || '0',10) || null,
+    li: Number.isFinite(li) ? li : null,
+    prezzo: Number.isFinite(prezzo) ? prezzo : null,
     rarita: document.getElementById('ocRarita').value,
     hr: document.getElementById('ocHR').value === 'Sì',
     azioni: document.getElementById('ocAzioni').value.trim(),
