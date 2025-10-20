@@ -213,244 +213,337 @@
   </script>
 
   <script type="text/template" id="view-scheda">
-    <header class="page-head">
-      <h1>📝 Scheda Compilabile</h1>
-      <p class="muted">Salvataggio automatico in localStorage • Esporta/Importa JSON • Stampa PDF</p>
-    </header>
-    <section class="card">
-      <h2>Dati Anagrafici</h2>
-      <div class="grid g2">
-        <div><label>Nome PG</label><input id="nome" data-field="nome"/></div>
-        <div><label>Razza / Classi / Archetipi</label><input id="razzaClassi" data-field="razzaClassi"/></div>
-        <div><label>Livello Totale</label><input id="livello" data-field="livello" value="7"/></div>
-        <div><label>Allineamento / Divinità</label><input id="allineamento" data-field="allineamento"/></div>
-        <div><label>Taglia / Età / Sesso</label><input id="taglia" data-field="taglia"/></div>
-        <div><label>Altezza / Peso</label><input id="altezza" data-field="altezza"/></div>
-      </div>
-    </section>
-    <section class="card">
-      <h2>Dati Fisici</h2>
-      <div class="grid g3">
-        <div><label>Palette</label><input id="palette" data-field="palette"/></div>
-        <div><label>Motto</label><input id="motto" data-field="motto"/></div>
-        <div><label>Immagine (URL)</label><input id="imgUrl" data-field="imgUrl" placeholder="https://…"/></div>
-      </div>
-      <div class="grid"><label>Descrizione</label><textarea id="descrizione" data-field="descrizione"></textarea></div>
-    </section>
-    <section class="card stats">
-      <h2>Statistiche</h2>
-      <table>
-        <thead><tr><th>Stat</th><th>Val</th><th>Mod</th></tr></thead>
-        <tbody id="statsBody"></tbody>
-      </table>
-    </section>
-    <section class="card">
-      <h2>Tratto di Campagna</h2>
-      <div class="grid g3">
-        <div><label>Seleziona TC</label><select id="tcSelect"></select></div>
-        <div><label>Codice</label><input id="tcCode" readonly/></div>
-        <div><label>Titolo</label><input id="tcTitle" readonly/></div>
-      </div>
-      <div class="grid g2">
-        <div><label>Narrativa (auto)</label><textarea id="tcNarr" readonly></textarea></div>
-        <div><label>Regole RAW (auto)</label><ul id="tcRaw" class="auto-list"></ul></div>
-      </div>
-    </section>
-    <section class="card">
-      <h2>Talenti, Tratti & Difetti</h2>
-      <div class="grid">
-        <div><label>Talenti (EITR ON)</label><textarea id="talenti" data-field="talenti"></textarea></div>
-        <div><label>Tratti</label><textarea id="tratti" data-field="tratti"></textarea></div>
-        <div><label>Difetti</label><textarea id="difetti" data-field="difetti"></textarea></div>
-      </div>
-    </section>
-    <section class="card">
-      <h2>Difese</h2>
-      <div class="grid g3 defenses-grid">
-        <div><label>PF totali</label><input id="pf" data-field="pf"/></div>
-        <div><label>CA Tot / Cont / Sorpr.</label><input id="ca" data-field="ca" placeholder="— / — / —"/></div>
-        <div><label>TS (Temp / Rif / Vol)</label><input id="ts" data-field="ts" placeholder="— / — / —"/></div>
-        <div><label>BAB</label><input id="bab" data-field="bab"/></div>
-        <div><label>CMB / CMD</label><input id="cmbcmd" data-field="cmbcmd" placeholder="— / —"/></div>
-        <div><label>Iniziativa</label><input id="iniziativa" data-field="iniziativa"/></div>
-      </div>
-      <div class="grid">
-        <div><label>Velocità</label><input id="velocita" data-field="velocita"/></div>
-      </div>
-    </section>
-    <section class="card">
-      <h2>Attacchi & Manovre</h2>
-      <div class="grid">
+  <header class="page-head">
+    <h1>📝 Scheda Compilabile</h1>
+    <p class="muted">Salvataggio automatico in localStorage • Esporta/Importa JSON • Stampa PDF</p>
+  </header>
+  <section class="card scheda-tabs-card">
+    <nav class="scheda-tabs__nav" role="tablist">
+      <button type="button" class="scheda-tabs__btn" data-tab-target="scheda-legacy" data-tab-default>📑 Scheda completa</button>
+      <button type="button" class="scheda-tabs__btn" data-tab-target="scheda-generali">🧾 Dati Generali</button>
+    </nav>
+    <p class="muted small-note">Consulta la scheda completa oppure compila i dati anagrafici attraverso le nuove sottoschede tematiche.</p>
+  </section>
+  <div class="scheda-panels">
+    <div class="scheda-panel" data-tab-panel="scheda-legacy">
+      <section class="card">
+        <h2>Dati Anagrafici (legacy)</h2>
+        <p class="muted small-note">I campi sono sincronizzati con la scheda "Dati Generali".</p>
+        <div class="grid g2">
+          <div><label>Nome PG</label><input id="nome" data-field="nome" readonly/></div>
+          <div><label>Razza / Classi / Archetipi</label><input id="razzaClassi" data-field="razzaClassiSynth" readonly/></div>
+          <div><label>Livello Totale</label><input id="livello" data-field="livello" value="7" readonly/></div>
+          <div><label>Allineamento / Divinità</label><input id="allineamento" data-field="allineamentoSynth" readonly/></div>
+          <div><label>Taglia / Età / Genere</label><input id="taglia" data-field="tagliaSintesi" readonly/></div>
+          <div><label>Altezza / Peso</label><input id="altezza" data-field="misureSintesi" readonly/></div>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Dati Fisici</h2>
+        <div class="grid g3">
+          <div><label>Palette</label><input id="palette" data-field="palette"/></div>
+          <div><label>Motto</label><input id="motto" data-field="motto"/></div>
+          <div><label>Immagine (URL)</label><input id="imgUrl" data-field="imgUrl" placeholder="https://…"/></div>
+        </div>
+        <div class="grid"><label>Descrizione</label><textarea id="descrizione" data-field="descrizione"></textarea></div>
+      </section>
+      <section class="card stats">
+        <h2>Statistiche</h2>
         <table>
-          <thead><tr><th>Arma / Attacco</th><th>Attacco Totale</th><th>Danni</th><th>Critico</th><th>Portata</th><th>Note</th></tr></thead>
-          <tbody id="atkTable"></tbody>
+          <thead><tr><th>Stat</th><th>Val</th><th>Mod</th></tr></thead>
+          <tbody id="statsBody"></tbody>
         </table>
-        <button class="btn" id="btnAddAtkRow">+ riga</button>
-      </div>
-      <div class="muted" style="margin-top:8px">
-        Manovre CMB: Disarm — · Trip — · Grapple — · Bull Rush — · Sunder —
-      </div>
-    </section>
-    <section class="card">
-      <h2>Abilità (principali)</h2>
-      <textarea id="skills" data-field="skills" placeholder="Percezione — ; Furtività — ; Sopravvivenza — ; Sapienza Magica — ; Acrobazia — ; Diplomazia — ; Intuizione —."></textarea>
-    </section>
-    <section class="card">
-      <h2>Incantesimi / Capacità</h2>
-      <div class="grid">
-        <table>
-          <thead><tr><th>Livello</th><th>Slot/giorno</th><th>CD base</th><th>Incantesimi principali</th></tr></thead>
-          <tbody id="spellTable">
-            <tr><td>0°</td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
-            <tr><td>1°</td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
-            <tr><td>2°</td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
-            <tr><td>3°</td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-    <section class="card">
-      <h2>Proficienze</h2>
-      <div class="grid g3 proficienze-grid">
-        <div class="prof-column">
-          <h3 class="card-subtitle">Armi</h3>
-          <div class="grid g2 compact">
-            <div><label>Semplici</label><input id="profArmiSemplici" data-field="profArmiSemplici" placeholder="Semplici"/></div>
-            <div><label>Fonte</label><input id="profArmiSempliciFonte" data-field="profArmiSempliciFonte" placeholder="Fonte"/></div>
-          </div>
-          <div class="grid g2 compact">
-            <div><label>Marziali</label><input id="profArmiMarziali" data-field="profArmiMarziali" placeholder="Marziali"/></div>
-            <div><label>Fonte</label><input id="profArmiMarzialiFonte" data-field="profArmiMarzialiFonte" placeholder="Fonte"/></div>
-          </div>
-          <div class="grid g2 compact">
-            <div><label>Esotiche</label><input id="profArmiEsotiche" data-field="profArmiEsotiche" placeholder="Esotiche"/></div>
-            <div><label>Fonte</label><input id="profArmiEsoticheFonte" data-field="profArmiEsoticheFonte" placeholder="Lista e Fonte"/></div>
-          </div>
-          <div class="grid"><label>Descrizione</label><textarea id="descrizione" data-field="descrizione"></textarea></div>
-        </article>
-        <article class="subcard">
-          <h3>Tratto di Campagna</h3>
-          <div class="grid g3">
-            <div><label>Seleziona TC</label><select id="tcSelect"></select></div>
-            <div><label>Codice</label><input id="tcCode" readonly/></div>
-            <div><label>Titolo</label><input id="tcTitle" readonly/></div>
-          </div>
-          <div class="grid g2">
-            <div><label>Narrativa (auto)</label><textarea id="tcNarr" readonly></textarea></div>
-            <div><label>Regole RAW (auto)</label><ul id="tcRaw" class="auto-list"></ul></div>
-          </div>
-          <div class="grid g2 compact">
-            <div><label>Pesanti</label><input id="profArmaturePesanti" data-field="profArmaturePesanti" placeholder="Pesanti"/></div>
-            <div><label>Fonte</label><input id="profArmaturePesantiFonte" data-field="profArmaturePesantiFonte" placeholder="Fonte"/></div>
-          </div>
-        </article>
-        <article class="subcard">
-          <h3>Attacchi &amp; manovre</h3>
-          <div class="grid">
-            <table>
-              <thead><tr><th>Arma / Attacco</th><th>Attacco Totale</th><th>Danni</th><th>Critico</th><th>Portata</th><th>Note</th></tr></thead>
-              <tbody id="atkTable"></tbody>
-            </table>
-            <button class="btn" id="btnAddAtkRow">+ riga</button>
-          </div>
-          <p class="muted small-note">Manovre CMB: Disarm — · Trip — · Grapple — · Bull Rush — · Sunder —</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="card scheda-group" id="scheda-competenze">
-      <header class="scheda-group__header">
-        <h2>Talenti &amp; Competenze</h2>
-        <p class="muted">Talenti, tratti, difetti, abilità e proficienze consolidate.</p>
-      </header>
-      <div class="scheda-subgrid">
-        <article class="subcard">
-          <h3>Talenti, tratti &amp; difetti</h3>
-          <div class="grid">
-            <div><label>Talenti (EITR ON)</label><textarea id="talenti" data-field="talenti"></textarea></div>
-            <div><label>Tratti</label><textarea id="tratti" data-field="tratti"></textarea></div>
-            <div><label>Difetti</label><textarea id="difetti" data-field="difetti"></textarea></div>
-          </div>
-          <div class="grid g2 compact">
-            <div><label>Torre</label><input id="profScudiTorre" data-field="profScudiTorre" placeholder="Torre"/></div>
-            <div><label>Fonte</label><input id="profScudiTorreFonte" data-field="profScudiTorreFonte" placeholder="Fonte"/></div>
-          </div>
+      </section>
+      <section class="card">
+        <h2>Tratto di Campagna</h2>
+        <div class="grid g3">
+          <div><label>Seleziona TC</label><select id="tcSelect" data-tc-select></select></div>
+          <div><label>Codice</label><input id="tcCode" data-tc-code readonly/></div>
+          <div><label>Titolo</label><input id="tcTitle" data-tc-title readonly/></div>
         </div>
-      </div>
-      <div class="grid">
-        <div><label>Categorie / Tipi aggiuntivi</label><textarea id="profCategorieExtra" data-field="profCategorieExtra"></textarea></div>
-      </div>
-    </section>
-    <section class="card">
-      <h2>Altri Dati (riassunto)</h2>
-      <div class="grid g3 summary-grid">
-        <div class="grid">
-          <div><label>Razza (tratti chiave)</label><textarea id="riassRazza" data-field="riassRazza"></textarea></div>
-          <div><label>Classi & livelli</label><textarea id="riassClassi" data-field="riassClassi"></textarea></div>
+        <div class="grid g2">
+          <div><label>Narrativa (auto)</label><textarea id="tcNarr" data-tc-narr readonly></textarea></div>
+          <div><label>Regole RAW (auto)</label><ul id="tcRaw" data-tc-raw class="auto-list"></ul></div>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Difese</h2>
+        <div class="grid g3 defenses-grid">
+          <div><label>PF totali</label><input id="pf" data-field="pf"/></div>
+          <div><label>CA Tot / Cont / Sorpr.</label><input id="ca" data-field="ca" placeholder="— / — / —"/></div>
+          <div><label>TS (Temp / Rif / Vol)</label><input id="ts" data-field="ts" placeholder="— / — / —"/></div>
+          <div><label>BAB</label><input id="bab" data-field="bab"/></div>
+          <div><label>CMB / CMD</label><input id="cmbcmd" data-field="cmbcmd" placeholder="— / —"/></div>
+          <div><label>Iniziativa</label><input id="iniziativa" data-field="iniziativa"/></div>
         </div>
         <div class="grid">
-          <div><label>Movimento</label><textarea id="riassMovimento" data-field="riassMovimento" placeholder="Terra, Volo, Nuoto, Scavare, Scalare"></textarea></div>
-          <div><label>Visione / Sensi</label><textarea id="riassSensi" data-field="riassSensi" placeholder="Olfatto acuto, percezione cieca..."></textarea></div>
+          <div><label>Velocità</label><input id="velocita" data-field="velocita"/></div>
         </div>
+      </section>
+      <section class="card">
+        <h2>Attacchi &amp; Manovre</h2>
         <div class="grid">
-          <div><label>RD / Res / Immunità</label><textarea id="riassRD" data-field="riassRD"></textarea></div>
-          <div><label>Capacità di Classe chiave</label><textarea id="riassCapacita" data-field="riassCapacita" placeholder="Nome • Breve effetto"></textarea></div>
+          <table>
+            <thead><tr><th>Arma / Attacco</th><th>Attacco Totale</th><th>Danni</th><th>Critico</th><th>Portata</th><th>Note</th></tr></thead>
+            <tbody id="atkTable"></tbody>
+          </table>
+          <button class="btn" id="btnAddAtkRow">+ riga</button>
         </div>
-      </div>
-    </section>
-
-    <section class="card scheda-group" id="scheda-equip">
-      <header class="scheda-group__header">
-        <h2>Equipaggiamento &amp; Risorse</h2>
-        <p class="muted">Budget residuo, valute, oggetto custom e loadout.</p>
-      </header>
-      <div class="scheda-subgrid">
-        <article class="subcard">
-          <h3>Inventario sintetico</h3>
-          <div class="grid g2 equip-grid">
+        <p class="muted small-note">Manovre CMB: Disarm — · Trip — · Grapple — · Bull Rush — · Sunder —</p>
+      </section>
+      <section class="card">
+        <h2>Abilità (principali)</h2>
+        <textarea id="skills" data-field="skills" placeholder="Percezione — ; Furtività — ; Sopravvivenza — ; Sapienza Magica — ; Acrobazia — ; Diplomazia — ; Intuizione —."></textarea>
+      </section>
+      <section class="card">
+        <h2>Incantesimi / Capacità</h2>
+        <div class="grid">
+          <table>
+            <thead><tr><th>Livello</th><th>Slot/giorno</th><th>CD base</th><th>Incantesimi principali</th></tr></thead>
+            <tbody id="spellTable">
+              <tr><td>0°</td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+              <tr><td>1°</td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+              <tr><td>2°</td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+              <tr><td>3°</td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="card scheda-group" id="scheda-competenze">
+        <header class="scheda-group__header">
+          <h2>Talenti &amp; Competenze</h2>
+          <p class="muted">Talenti, tratti, difetti, abilità e proficienze consolidate.</p>
+        </header>
+        <div class="scheda-subgrid">
+          <article class="subcard">
+            <h3>Talenti, tratti &amp; difetti</h3>
             <div class="grid">
-              <div><label>Budget rimanente (mo)</label><input id="budget" data-field="budget"/></div>
-              <div class="grid g4 compact">
-                <div><label>PP</label><input id="pp" data-field="pp"/></div>
-                <div><label>GP</label><input id="gp" data-field="gp"/></div>
-                <div><label>SP</label><input id="sp" data-field="sp"/></div>
-                <div><label>CP</label><input id="cp" data-field="cp"/></div>
+              <div><label>Talenti (EITR ON)</label><textarea id="talenti" data-field="talenti"></textarea></div>
+              <div><label>Tratti</label><textarea id="tratti" data-field="tratti"></textarea></div>
+              <div><label>Difetti</label><textarea id="difetti" data-field="difetti"></textarea></div>
+            </div>
+          </article>
+          <article class="subcard">
+            <h3>Proficienze</h3>
+            <div class="grid g2 compact">
+              <div><label>Armi semplici</label><input id="profArmiSemplici" data-field="profArmiSemplici" placeholder="Semplici"/></div>
+              <div><label>Fonte</label><input id="profArmiSempliciFonte" data-field="profArmiSempliciFonte" placeholder="Fonte"/></div>
+            </div>
+            <div class="grid g2 compact">
+              <div><label>Armi marziali</label><input id="profArmiMarziali" data-field="profArmiMarziali" placeholder="Marziali"/></div>
+              <div><label>Fonte</label><input id="profArmiMarzialiFonte" data-field="profArmiMarzialiFonte" placeholder="Fonte"/></div>
+            </div>
+            <div class="grid g2 compact">
+              <div><label>Armi esotiche</label><input id="profArmiEsotiche" data-field="profArmiEsotiche" placeholder="Esotiche"/></div>
+              <div><label>Fonte</label><input id="profArmiEsoticheFonte" data-field="profArmiEsoticheFonte" placeholder="Fonte"/></div>
+            </div>
+            <div class="grid g2 compact">
+              <div><label>Armature leggere</label><input id="profArmatureLeggere" data-field="profArmatureLeggere" placeholder="Leggere"/></div>
+              <div><label>Fonte</label><input id="profArmatureLeggereFonte" data-field="profArmatureLeggereFonte" placeholder="Fonte"/></div>
+            </div>
+            <div class="grid g2 compact">
+              <div><label>Armature medie</label><input id="profArmatureMedie" data-field="profArmatureMedie" placeholder="Medie"/></div>
+              <div><label>Fonte</label><input id="profArmatureMedieFonte" data-field="profArmatureMedieFonte" placeholder="Fonte"/></div>
+            </div>
+            <div class="grid g2 compact">
+              <div><label>Armature pesanti</label><input id="profArmaturePesanti" data-field="profArmaturePesanti" placeholder="Pesanti"/></div>
+              <div><label>Fonte</label><input id="profArmaturePesantiFonte" data-field="profArmaturePesantiFonte" placeholder="Fonte"/></div>
+            </div>
+            <div class="grid g2 compact">
+              <div><label>Scudi</label><input id="profScudi" data-field="profScudi" placeholder="Scudi"/></div>
+              <div><label>Fonte</label><input id="profScudiFonte" data-field="profScudiFonte" placeholder="Fonte"/></div>
+            </div>
+            <div class="grid g2 compact">
+              <div><label>Scudi pesanti</label><input id="profScudiPesanti" data-field="profScudiPesanti" placeholder="Scudi pesanti"/></div>
+              <div><label>Fonte</label><input id="profScudiPesantiFonte" data-field="profScudiPesantiFonte" placeholder="Fonte"/></div>
+            </div>
+            <div class="grid g2 compact">
+              <div><label>Scudi torre</label><input id="profScudiTorre" data-field="profScudiTorre" placeholder="Scudi torre"/></div>
+              <div><label>Fonte</label><input id="profScudiTorreFonte" data-field="profScudiTorreFonte" placeholder="Fonte"/></div>
+            </div>
+            <div><label>Categorie / Tipi aggiuntivi</label><textarea id="profCategorieExtra" data-field="profCategorieExtra"></textarea></div>
+          </article>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Altri Dati (riassunto)</h2>
+        <div class="grid g3 summary-grid">
+          <div class="grid">
+            <div><label>Razza (tratti chiave)</label><textarea id="riassRazza" data-field="riassRazza"></textarea></div>
+            <div><label>Classi &amp; livelli</label><textarea id="riassClassi" data-field="riassClassi"></textarea></div>
+          </div>
+          <div class="grid">
+            <div><label>Movimento</label><textarea id="riassMovimento" data-field="riassMovimento" placeholder="Terra, Volo, Nuoto, Scavare, Scalare"></textarea></div>
+            <div><label>Visione / Sensi</label><textarea id="riassSensi" data-field="riassSensi" placeholder="Olfatto acuto, percezione cieca..."></textarea></div>
+          </div>
+          <div class="grid">
+            <div><label>RD / Res / Immunità</label><textarea id="riassRD" data-field="riassRD"></textarea></div>
+            <div><label>Capacità di Classe chiave</label><textarea id="riassCapacita" data-field="riassCapacita" placeholder="Nome • Breve effetto"></textarea></div>
+          </div>
+        </div>
+      </section>
+      <section class="card scheda-group" id="scheda-equip">
+        <header class="scheda-group__header">
+          <h2>Equipaggiamento &amp; Risorse</h2>
+          <p class="muted">Budget residuo, valute, oggetto custom e loadout.</p>
+        </header>
+        <div class="scheda-subgrid">
+          <article class="subcard">
+            <h3>Inventario sintetico</h3>
+            <div class="grid g2 equip-grid">
+              <div class="grid">
+                <div><label>Budget rimanente (mo)</label><input id="budget" data-field="budget"/></div>
+                <div class="grid g4 compact">
+                  <div><label>PP</label><input id="pp" data-field="pp"/></div>
+                  <div><label>GP</label><input id="gp" data-field="gp"/></div>
+                  <div><label>SP</label><input id="sp" data-field="sp"/></div>
+                  <div><label>CP</label><input id="cp" data-field="cp"/></div>
+                </div>
+              </div>
+              <div class="grid">
+                <div><label>Oggetto Custom su Misura</label><input id="customTema" data-field="customTema" placeholder="Nome / slot / LI…"/></div>
+                <div><label>Scegli dall’Archivio Oggetti</label><select id="ocPicker"></select></div>
+                <div class="grid g2 compact">
+                  <div><label>Trigger / Limiti</label><input id="customTrigger" data-field="customTrigger"/></div>
+                  <div><label>Prezzo stimato</label><input id="customCosto" data-field="customCosto"/></div>
+                </div>
+                <div><label>Sinergie (classe / tratto / party)</label><input id="customSinergie" data-field="customSinergie"/></div>
+                <p class="muted small-note">Modifica i dettagli in <a href="#/oggetti">Oggetti Custom</a>. Il selettore pesca dal catalogo salvato.</p>
               </div>
             </div>
-            <div class="grid">
-              <div><label>Oggetto Custom su Misura</label><input id="customTema" data-field="customTema" placeholder="Nome / slot / LI…"/></div>
-              <div><label>Scegli dall’Archivio Oggetti</label><select id="ocPicker"></select></div>
-              <div class="grid g2 compact">
-                <div><label>Trigger / Limiti</label><input id="customTrigger" data-field="customTrigger"/></div>
-                <div><label>Prezzo stimato</label><input id="customCosto" data-field="customCosto"/></div>
-              </div>
-              <div><label>Sinergie (classe / tratto / party)</label><input id="customSinergie" data-field="customSinergie"/></div>
-              <p class="muted small-note">Modifica i dettagli in <a href="#/oggetti">Oggetti Custom</a>. Il selettore pesca dal catalogo salvato.</p>
+          </article>
+        </div>
+        <div class="grid g2 loadout-grid">
+          <div><label>Loadout principale</label><textarea id="loadout" data-field="loadout" placeholder="Armi, armature, utility core..."></textarea></div>
+          <div><label>Altri oggetti / Note</label><textarea id="altro" data-field="altro" placeholder="Consumabili, pozioni, risorse narrative..."></textarea></div>
+        </div>
+      </section>
+      <section class="card scheda-group" id="scheda-narrazione">
+        <header class="scheda-group__header">
+          <h2>Narrazione</h2>
+          <p class="muted">Riassunto di ruolo, tono e spunti per il personaggio.</p>
+        </header>
+        <div class="scheda-subgrid">
+          <article class="subcard">
+            <h3>Background &amp; note di ruolo</h3>
+            <textarea id="background" data-field="background" placeholder="5–10 righe, motto, stile decisionale, legami chiave, ganci…"></textarea>
+          </article>
+        </div>
+      </section>
+    </div>
+    <div class="scheda-panel" data-tab-panel="scheda-generali" hidden>
+      <section class="card">
+        <header class="scheda-panel__header">
+          <h2>Dati Generali</h2>
+          <p class="muted">Compila o aggiorna le informazioni anagrafiche con dati collegati al database di Archives of Nethys.</p>
+        </header>
+        <div class="grid g2">
+          <div><label for="dgNome">Nome PG</label><input id="dgNome" data-field="nome" placeholder="Nome del personaggio"/></div>
+          <div><label for="dgLivello">Livello attuale</label><input id="dgLivello" type="number" min="1" max="20" step="1" data-field="livello"/></div>
+        </div>
+        <div class="grid g3">
+          <div><label for="dgAllineamento">Allineamento</label><select id="dgAllineamento" data-field="alignment" data-align-select></select><p class="muted small-note" id="dgAllineamentoNote"></p></div>
+          <div><label for="dgDivinita">Divinità</label><input id="dgDivinita" data-field="divinita" placeholder="Nome della divinità"/></div>
+          <div><label for="dgPatria">Madre Patria</label><input id="dgPatria" data-field="madrePatria" placeholder="Paese / regione"/></div>
+        </div>
+        <div class="grid g2">
+          <div>
+            <label for="dgRazza">Razza</label>
+            <select id="dgRazza" data-field="razzaId"></select>
+            <p class="muted small-note" id="dgRazzaFonte"></p>
+          </div>
+          <div>
+            <label for="dgTaglia">Taglia</label>
+            <select id="dgTaglia" data-field="taglia"></select>
+            <p class="muted small-note" id="dgTagliaNote"></p>
+          </div>
+        </div>
+        <div class="grid g2">
+          <div>
+            <label for="dgTrattiRazza">Tratti Raziali Alternativi</label>
+            <select id="dgTrattiRazza" data-field="raceAltTraits" data-field-type="array" multiple size="5"></select>
+            <p class="muted small-note" id="dgTrattiRazzaNote"></p>
+          </div>
+          <div class="grid g2 compact">
+            <div>
+              <label for="dgAltezza">Altezza</label>
+              <input id="dgAltezza" data-field="altezzaVal" placeholder="cm"/>
+              <p class="muted small-note" id="dgAltezzaRange"></p>
+            </div>
+            <div>
+              <label for="dgPeso">Peso</label>
+              <input id="dgPeso" data-field="pesoVal" placeholder="kg"/>
+              <p class="muted small-note" id="dgPesoRange"></p>
             </div>
           </div>
-          <div><label>Sinergie (classe / tratto / party)</label><input id="customSinergie" data-field="customSinergie"/></div>
-          <p class="muted small-note">Modifica i dettagli in <a href="#/oggetti">Oggetti Custom</a>. Il selettore pesca dal catalogo salvato.</p>
         </div>
-      </div>
-      <div class="grid g2 loadout-grid">
-        <div><label>Loadout principale</label><textarea id="loadout" data-field="loadout" placeholder="Armi, armature, utility core..."></textarea></div>
-        <div><label>Altri oggetti / Note</label><textarea id="altro" data-field="altro" placeholder="Consumabili, pozioni, risorse narrative..."></textarea></div>
-      </div>
-    </section>
+        <div class="grid g2">
+          <div>
+            <label for="dgClasse">Classe</label>
+            <select id="dgClasse" data-field="classeId"></select>
+            <p class="muted small-note" id="dgClasseFonte"></p>
+          </div>
+          <div>
+            <label for="dgArchetipi">Archetipi</label>
+            <select id="dgArchetipi" data-field="archetypes" data-field-type="array" multiple size="5"></select>
+            <p class="muted small-note" id="dgArchetipiNote"></p>
+          </div>
+        </div>
+        <div class="grid g3">
+          <div><label for="dgEta">Età</label><input id="dgEta" data-field="eta" placeholder="Anni"/></div>
+          <div><label for="dgEtaStage">Fascia d'età</label><select id="dgEtaStage" data-field="etaStage"></select><p class="muted small-note" id="dgEtaBonus"></p></div>
+          <div><label for="dgGenere">Genere</label><input id="dgGenere" data-field="genere" placeholder="Identità / pronome"/></div>
+        </div>
+        <div class="grid g3">
+          <div><label for="dgCapelli">Capelli</label><input id="dgCapelli" data-field="capelli"/></div>
+          <div><label for="dgOcchi">Occhi</label><input id="dgOcchi" data-field="occhi"/></div>
+          <div><label for="dgPalette">Palette</label><input id="dgPalette" data-field="palette"/></div>
+        </div>
+        <div class="grid g2">
+          <div>
+            <label for="dgTCSelect">Tratto di Campagna</label>
+            <select id="dgTCSelect" data-tc-select></select>
+            <div class="grid g2 compact" style="margin-top:10px;">
+              <div><label>Codice</label><input data-tc-code readonly/></div>
+              <div><label>Titolo</label><input data-tc-title readonly/></div>
+            </div>
+          </div>
+          <div>
+            <label>Regole opzionali</label>
+            <div class="toggle-grid">
+              <label class="toggle"><input type="checkbox" id="dgEitr" data-field="toggleEitr" checked/> <span>Elephant in the Room</span></label>
+              <label class="toggle"><input type="checkbox" id="dgAbp" data-field="toggleAbp" checked/> <span>Automatic Bonus Progression</span></label>
+            </div>
+            <p class="muted small-note" id="dgRuleSummary"></p>
+          </div>
+        </div>
+        <div class="grid g2">
+          <div>
+            <label>Tratti (AON)</label>
+            <select id="dgTrattiGenerali" data-field="traitsList" data-field-type="array" multiple size="6"></select>
+            <p class="muted small-note" id="dgTrattiNote"></p>
+          </div>
+          <div>
+            <label>Difetti (AON)</label>
+            <select id="dgDifetti" data-field="drawbackList" data-field-type="array" multiple size="6"></select>
+            <p class="muted small-note" id="dgDifettiNote"></p>
+          </div>
+        </div>
+        <div class="grid g2">
+          <div>
+            <label>Narrativa TC</label>
+            <textarea data-tc-narr readonly></textarea>
+          </div>
+          <div>
+            <label>Regole TC</label>
+            <ul data-tc-raw class="auto-list"></ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</script>
 
-    <section class="card scheda-group" id="scheda-narrazione">
-      <header class="scheda-group__header">
-        <h2>Narrazione</h2>
-        <p class="muted">Riassunto di ruolo, tono e spunti per il personaggio.</p>
-      </header>
-      <div class="scheda-subgrid">
-        <article class="subcard">
-          <h3>Background &amp; note di ruolo</h3>
-          <textarea id="background" data-field="background" placeholder="5–10 righe, motto, stile decisionale, legami chiave, ganci…"></textarea>
-        </article>
-      </div>
-    </section>
-  </script>
 
   <script type="text/template" id="view-tracker">
     <header class="page-head">
