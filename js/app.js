@@ -6,6 +6,20 @@ import { TC_DATA, STATS, ALIGNMENTS, AGE_STAGES } from './data.js';
 import { getRaces, getClasses, getTraitsAndDrawbacks } from './aon.js';
 
 /*
+  Stato applicativo condiviso
+  Queste variabili devono essere inizializzate prima di render() perché il
+  routing può subito portare alla scheda (es. caricando #/scheda direttamente).
+*/
+let state = loadAppState();
+const COIN_KEYS = ['pp','gp','sp','cp'];
+let fieldBindings = new Map();
+let raceCatalog = [];
+let classCatalog = [];
+let traitCatalog = { traits: [], drawbacks: [] };
+const SIZE_ORDER = ['Minuscola','Piccola','Media','Grande','Enorme','Mastodontica'];
+const ARRAY_FIELD = 'array';
+
+/*
   Router
   Definisce il mapping hash→template. Quando cambia l’hash (#/avvio, etc.),
   viene cercato il template e renderizzato in #app. Alcune viste necessitano
@@ -174,20 +188,12 @@ render(location.hash.replace('#',''));
   Gestione Scheda (parte B)
   Salva/Carica dati, costruisci tabelle e selettori TC, oggetti custom.
 */
-let state = loadAppState();
-const COIN_KEYS = ['pp','gp','sp','cp'];
-let fieldBindings = new Map();
-let raceCatalog = [];
-let classCatalog = [];
-let traitCatalog = { traits: [], drawbacks: [] };
-const SIZE_ORDER = ['Minuscola','Piccola','Media','Grande','Enorme','Mastodontica'];
-const ARRAY_FIELD = 'array';
 
-const toArray = value => {
+function toArray(value){
   if(Array.isArray(value)) return value;
   if(value == null || value === '') return [];
   return Array.isArray(value) ? value : [value];
-};
+}
 
 function registerBinding(key, el){
   if(!fieldBindings.has(key)) fieldBindings.set(key, new Set());
