@@ -326,31 +326,50 @@
             <div><label>Esotiche</label><input id="profArmiEsotiche" data-field="profArmiEsotiche" placeholder="Esotiche"/></div>
             <div><label>Fonte</label><input id="profArmiEsoticheFonte" data-field="profArmiEsoticheFonte" placeholder="Lista e Fonte"/></div>
           </div>
-        </div>
-        <div class="prof-column">
-          <h3 class="card-subtitle">Armature</h3>
-          <div class="grid g2 compact">
-            <div><label>Leggere</label><input id="profArmatureLeggere" data-field="profArmatureLeggere" placeholder="Leggere"/></div>
-            <div><label>Fonte</label><input id="profArmatureLeggereFonte" data-field="profArmatureLeggereFonte" placeholder="Fonte"/></div>
+          <div class="grid"><label>Descrizione</label><textarea id="descrizione" data-field="descrizione"></textarea></div>
+        </article>
+        <article class="subcard">
+          <h3>Tratto di Campagna</h3>
+          <div class="grid g3">
+            <div><label>Seleziona TC</label><select id="tcSelect"></select></div>
+            <div><label>Codice</label><input id="tcCode" readonly/></div>
+            <div><label>Titolo</label><input id="tcTitle" readonly/></div>
           </div>
-          <div class="grid g2 compact">
-            <div><label>Medie</label><input id="profArmatureMedie" data-field="profArmatureMedie" placeholder="Medie"/></div>
-            <div><label>Fonte</label><input id="profArmatureMedieFonte" data-field="profArmatureMedieFonte" placeholder="Fonte"/></div>
+          <div class="grid g2">
+            <div><label>Narrativa (auto)</label><textarea id="tcNarr" readonly></textarea></div>
+            <div><label>Regole RAW (auto)</label><ul id="tcRaw" class="auto-list"></ul></div>
           </div>
           <div class="grid g2 compact">
             <div><label>Pesanti</label><input id="profArmaturePesanti" data-field="profArmaturePesanti" placeholder="Pesanti"/></div>
             <div><label>Fonte</label><input id="profArmaturePesantiFonte" data-field="profArmaturePesantiFonte" placeholder="Fonte"/></div>
           </div>
-        </div>
-        <div class="prof-column">
-          <h3 class="card-subtitle">Scudi</h3>
-          <div class="grid g2 compact">
-            <div><label>Scudo</label><input id="profScudi" data-field="profScudi" placeholder="Scudo"/></div>
-            <div><label>Fonte</label><input id="profScudiFonte" data-field="profScudiFonte" placeholder="Fonte"/></div>
+        </article>
+        <article class="subcard">
+          <h3>Attacchi &amp; manovre</h3>
+          <div class="grid">
+            <table>
+              <thead><tr><th>Arma / Attacco</th><th>Attacco Totale</th><th>Danni</th><th>Critico</th><th>Portata</th><th>Note</th></tr></thead>
+              <tbody id="atkTable"></tbody>
+            </table>
+            <button class="btn" id="btnAddAtkRow">+ riga</button>
           </div>
-          <div class="grid g2 compact">
-            <div><label>Scudo Pesante</label><input id="profScudiPesanti" data-field="profScudiPesanti" placeholder="Scudo Pesante"/></div>
-            <div><label>Fonte</label><input id="profScudiPesantiFonte" data-field="profScudiPesantiFonte" placeholder="Fonte"/></div>
+          <p class="muted small-note">Manovre CMB: Disarm — · Trip — · Grapple — · Bull Rush — · Sunder —</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="card scheda-group" id="scheda-competenze">
+      <header class="scheda-group__header">
+        <h2>Talenti &amp; Competenze</h2>
+        <p class="muted">Talenti, tratti, difetti, abilità e proficienze consolidate.</p>
+      </header>
+      <div class="scheda-subgrid">
+        <article class="subcard">
+          <h3>Talenti, tratti &amp; difetti</h3>
+          <div class="grid">
+            <div><label>Talenti (EITR ON)</label><textarea id="talenti" data-field="talenti"></textarea></div>
+            <div><label>Tratti</label><textarea id="tratti" data-field="tratti"></textarea></div>
+            <div><label>Difetti</label><textarea id="difetti" data-field="difetti"></textarea></div>
           </div>
           <div class="grid g2 compact">
             <div><label>Torre</label><input id="profScudiTorre" data-field="profScudiTorre" placeholder="Torre"/></div>
@@ -379,24 +398,35 @@
         </div>
       </div>
     </section>
-    <section class="card">
-      <h2>Equipaggiamento & Budget</h2>
-      <div class="grid g2 equip-grid">
-        <div class="grid">
-          <div><label>Budget rimanente (mo)</label><input id="budget" data-field="budget"/></div>
-          <div class="grid g4 compact">
-            <div><label>PP</label><input id="pp" data-field="pp"/></div>
-            <div><label>GP</label><input id="gp" data-field="gp"/></div>
-            <div><label>SP</label><input id="sp" data-field="sp"/></div>
-            <div><label>CP</label><input id="cp" data-field="cp"/></div>
-          </div>
-        </div>
-        <div class="grid">
-          <div><label>Oggetto Custom su Misura</label><input id="customTema" data-field="customTema" placeholder="Nome / slot / LI…"/></div>
-          <div><label>Scegli dall’Archivio Oggetti</label><select id="ocPicker"></select></div>
-          <div class="grid g2 compact">
-            <div><label>Trigger / Limiti</label><input id="customTrigger" data-field="customTrigger"/></div>
-            <div><label>Prezzo stimato</label><input id="customCosto" data-field="customCosto"/></div>
+
+    <section class="card scheda-group" id="scheda-equip">
+      <header class="scheda-group__header">
+        <h2>Equipaggiamento &amp; Risorse</h2>
+        <p class="muted">Budget residuo, valute, oggetto custom e loadout.</p>
+      </header>
+      <div class="scheda-subgrid">
+        <article class="subcard">
+          <h3>Inventario sintetico</h3>
+          <div class="grid g2 equip-grid">
+            <div class="grid">
+              <div><label>Budget rimanente (mo)</label><input id="budget" data-field="budget"/></div>
+              <div class="grid g4 compact">
+                <div><label>PP</label><input id="pp" data-field="pp"/></div>
+                <div><label>GP</label><input id="gp" data-field="gp"/></div>
+                <div><label>SP</label><input id="sp" data-field="sp"/></div>
+                <div><label>CP</label><input id="cp" data-field="cp"/></div>
+              </div>
+            </div>
+            <div class="grid">
+              <div><label>Oggetto Custom su Misura</label><input id="customTema" data-field="customTema" placeholder="Nome / slot / LI…"/></div>
+              <div><label>Scegli dall’Archivio Oggetti</label><select id="ocPicker"></select></div>
+              <div class="grid g2 compact">
+                <div><label>Trigger / Limiti</label><input id="customTrigger" data-field="customTrigger"/></div>
+                <div><label>Prezzo stimato</label><input id="customCosto" data-field="customCosto"/></div>
+              </div>
+              <div><label>Sinergie (classe / tratto / party)</label><input id="customSinergie" data-field="customSinergie"/></div>
+              <p class="muted small-note">Modifica i dettagli in <a href="#/oggetti">Oggetti Custom</a>. Il selettore pesca dal catalogo salvato.</p>
+            </div>
           </div>
           <div><label>Sinergie (classe / tratto / party)</label><input id="customSinergie" data-field="customSinergie"/></div>
           <p class="muted small-note">Modifica i dettagli in <a href="#/oggetti">Oggetti Custom</a>. Il selettore pesca dal catalogo salvato.</p>
@@ -407,9 +437,18 @@
         <div><label>Altri oggetti / Note</label><textarea id="altro" data-field="altro" placeholder="Consumabili, pozioni, risorse narrative..."></textarea></div>
       </div>
     </section>
-    <section class="card">
-      <h2>Background & Note di Ruolo</h2>
-      <textarea id="background" data-field="background" placeholder="5–10 righe, motto, stile decisionale, legami chiave, ganci…"></textarea>
+
+    <section class="card scheda-group" id="scheda-narrazione">
+      <header class="scheda-group__header">
+        <h2>Narrazione</h2>
+        <p class="muted">Riassunto di ruolo, tono e spunti per il personaggio.</p>
+      </header>
+      <div class="scheda-subgrid">
+        <article class="subcard">
+          <h3>Background &amp; note di ruolo</h3>
+          <textarea id="background" data-field="background" placeholder="5–10 righe, motto, stile decisionale, legami chiave, ganci…"></textarea>
+        </article>
+      </div>
     </section>
   </script>
 
