@@ -198,6 +198,13 @@ function initScheda(){
   // Tabelle
   buildAtkTable();
   buildSpellTable();
+  const btnAddAtkRow = document.getElementById('btnAddAtkRow');
+  if(btnAddAtkRow){
+    btnAddAtkRow.addEventListener('click', () => {
+      addRow('atkTable');
+      saveTables();
+    });
+  }
   // TC selector e auto-fill
   buildTCSelect();
   // Oggetti custom picker
@@ -246,11 +253,14 @@ function buildSpellTable(){
 }
 
 function saveTables(){
+  const atkTable = document.getElementById('atkTable');
+  const spellTable = document.getElementById('spellTable');
+  if(!atkTable || !spellTable) return;
   // Attacchi
-  const atkRows = [...document.getElementById('atkTable').rows].map(r=>[...r.cells].map(c=>c.innerText));
+  const atkRows = [...atkTable.rows].map(r=>[...r.cells].map(c=>c.innerText));
   state.attacchi = atkRows;
   // Spells
-  const spellRows = [...document.getElementById('spellTable').rows].map(r=>[...r.cells].map(c=>c.innerText));
+  const spellRows = [...spellTable.rows].map(r=>[...r.cells].map(c=>c.innerText));
   state.spells = spellRows;
   saveAppState(state);
 }
@@ -346,10 +356,19 @@ function initTracker(){
   const tb = document.getElementById('partyTable');
   tb.innerHTML = '';
   (state.party || []).forEach(row => addRow('partyTable', row));
-  tb.addEventListener('input', debounce(() => {
+  const syncParty = () => {
     state.party = [...tb.rows].map(r=>[...r.cells].map(c=>c.innerText));
     saveAppState(state);
-  }, 250));
+  };
+  const debouncedSyncParty = debounce(syncParty, 250);
+  tb.addEventListener('input', debouncedSyncParty);
+  const btnAddPartyRow = document.getElementById('btnAddPartyRow');
+  if(btnAddPartyRow){
+    btnAddPartyRow.addEventListener('click', () => {
+      addRow('partyTable',['',' ',' / ','','']);
+      syncParty();
+    });
+  }
 }
 
 /*
