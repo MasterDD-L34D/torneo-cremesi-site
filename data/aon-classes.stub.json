@@ -162,17 +162,192 @@
         {
           "id": "fighter-archer",
           "name": "Arciere",
-          "summary": "Maestro degli archi"
+          "summary": "Specialista di archi e tiri a distanza",
+          "replaces": [
+            "Bravery (1)",
+            "Bravery (2)",
+            "Bravery (3)",
+            "Bravery (4)",
+            "Armor Training (1)",
+            "Armor Training (2)",
+            "Armor Training (3)",
+            "Armor Training (4)",
+            "Weapon Training (1)",
+            "Weapon Training (2)",
+            "Weapon Training (3)",
+            "Weapon Training (4)"
+          ],
+          "modifies": [
+            "Weapon Mastery"
+          ]
         },
         {
-          "id": "fighter-two-weapon-warrior",
-          "name": "Guerriero a Due Armi",
-          "summary": "Specialista in doppie armi"
+          "id": "fighter-armiger",
+          "name": "Armigero",
+          "summary": "Allievo di ordini cavallereschi",
+          "replaces": [
+            "Bonus Feat (1)",
+            "Bonus Feat (10)",
+            "Bravery (1)"
+          ],
+          "modifies": [
+            "Class Skills",
+            "Skill Ranks",
+            "Bonus Feat (2)",
+            "Bonus Feat (4)",
+            "Bonus Feat (6)",
+            "Bonus Feat (8)",
+            "Bonus Feat (12)",
+            "Bonus Feat (14)",
+            "Bonus Feat (16)",
+            "Bonus Feat (18)",
+            "Bonus Feat (20)"
+          ]
         },
         {
-          "id": "fighter-lore-warden",
-          "name": "Custode delle Tradizioni",
-          "summary": "Combatte con manovre e conoscenze"
+          "id": "fighter-armor-master",
+          "name": "Maestro dell'Armatura",
+          "summary": "Spinge la difesa al massimo",
+          "replaces": [
+            "Bravery (1)",
+            "Armor Training (1)",
+            "Armor Training (2)",
+            "Armor Training (3)",
+            "Armor Training (4)",
+            "Weapon Training (1)",
+            "Weapon Training (2)",
+            "Weapon Training (3)",
+            "Weapon Training (4)",
+            "Armor Mastery",
+            "Weapon Mastery"
+          ]
+        },
+        {
+          "id": "fighter-aquanaut",
+          "name": "Acquanauta",
+          "summary": "Combattente adattato agli ambienti acquatici",
+          "replaces": [
+            "Bravery (1)",
+            "Bravery (2)",
+            "Bravery (3)",
+            "Bravery (4)",
+            "Armor Training (1)",
+            "Armor Training (2)",
+            "Armor Training (3)",
+            "Armor Training (4)",
+            "Weapon Training (1)",
+            "Weapon Training (2)",
+            "Weapon Training (3)",
+            "Weapon Training (4)"
+          ],
+          "modifies": [
+            "Weapon & Armor",
+            "Weapon Mastery"
+          ]
+        },
+        {
+          "id": "fighter-blackjack",
+          "name": "Blackjack",
+          "summary": "Duellante dalle tattiche imprevedibili",
+          "replaces": [
+            "Bonus Feat (2)",
+            "Bonus Feat (6)",
+            "Bonus Feat (10)",
+            "Bonus Feat (14)",
+            "Bonus Feat (18)"
+          ]
+        },
+        {
+          "id": "fighter-border-defender",
+          "name": "Difensore di Frontiera",
+          "summary": "Guardiano delle terre di confine",
+          "replaces": [
+            "Bravery (1)",
+            "Bravery (2)",
+            "Bravery (3)",
+            "Bravery (4)"
+          ]
+        },
+        {
+          "id": "fighter-brawler",
+          "name": "Pugnatore",
+          "summary": "Focalizzato sul combattimento corpo a corpo brutale",
+          "replaces": [
+            "Bravery (1)",
+            "Bravery (2)",
+            "Bravery (3)",
+            "Bravery (4)",
+            "Armor Training (1)",
+            "Armor Training (2)",
+            "Armor Training (3)",
+            "Armor Training (4)",
+            "Weapon Training (1)",
+            "Weapon Training (2)",
+            "Weapon Training (3)",
+            "Weapon Training (4)"
+          ],
+          "modifies": [
+            "Weapon Mastery"
+          ]
+        },
+        {
+          "id": "fighter-buckler-duelist",
+          "name": "Duellante con Brocchiere",
+          "summary": "Stile schermistico con piccolo scudo",
+          "replaces": [
+            "Bravery (1)",
+            "Bravery (2)",
+            "Bravery (3)",
+            "Bravery (4)",
+            "Weapon Training (2)"
+          ],
+          "modifies": [
+            "Weapon Training (1)"
+          ]
+        },
+        {
+          "id": "fighter-cad",
+          "name": "Mascalzone",
+          "summary": "Sfrutta colpi bassi e trucci",
+          "replaces": [
+            "Class Skills",
+            "Bonus Feat (8)",
+            "Bonus Feat (10)",
+            "Bonus Feat (12)",
+            "Bonus Feat (14)",
+            "Bonus Feat (16)",
+            "Bonus Feat (18)",
+            "Bonus Feat (20)",
+            "Weapon Training (4)"
+          ],
+          "modifies": [
+            "Weapon & Armor",
+            "Bravery (1)"
+          ]
+        },
+        {
+          "id": "fighter-child-of-war",
+          "name": "Figlio della Guerra",
+          "summary": "Prodigio cresciuto sul campo di battaglia",
+          "replaces": [
+            "Bonus Feat (1)",
+            "Bonus Feat (2)",
+            "Bonus Feat (6)",
+            "Bonus Feat (8)",
+            "Bonus Feat (10)",
+            "Bonus Feat (12)",
+            "Bonus Feat (14)",
+            "Bravery (1)",
+            "Bravery (2)",
+            "Bravery (3)",
+            "Bravery (4)"
+          ],
+          "modifies": [
+            "Class Skills",
+            "Skill Ranks",
+            "Weapon & Armor",
+            "Bonus Feat (4)"
+          ]
         }
       ]
     },

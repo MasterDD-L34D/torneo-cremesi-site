@@ -526,94 +526,123 @@
           <div><label for="dgNome">Nome PG</label><input id="dgNome" data-field="nome" placeholder="Nome del personaggio"/></div>
           <div><label for="dgLivello">Livello attuale</label><input id="dgLivello" type="number" min="1" max="20" step="1" data-field="livello"/></div>
         </div>
-        <div class="grid g3">
-          <div><label for="dgAllineamento">Allineamento</label><select id="dgAllineamento" data-field="alignment" data-align-select></select><p class="muted small-note" id="dgAllineamentoNote"></p></div>
-          <div><label for="dgDivinita">Divinità</label><input id="dgDivinita" data-field="divinita" placeholder="Nome della divinità"/></div>
-          <div><label for="dgPatria">Madre Patria</label><input id="dgPatria" data-field="madrePatria" placeholder="Paese / regione"/></div>
-        </div>
-        <div class="grid g2">
-          <div>
-            <label for="dgRazza">Razza</label>
-            <select id="dgRazza" data-field="razzaId"></select>
-            <p class="muted small-note" id="dgRazzaFonte"></p>
+        <fieldset class="scheda-fieldset">
+          <legend>Identità &amp; Aspetto</legend>
+          <div class="grid g3">
+            <div><label for="dgEta">Età</label><input id="dgEta" data-field="eta" placeholder="Anni"/></div>
+            <div><label for="dgEtaStage">Fascia d'età</label><select id="dgEtaStage" data-field="etaStage" data-age-stage-select></select><p class="muted small-note" id="dgEtaBonus"></p></div>
+            <div><label for="dgGenere">Genere</label><input id="dgGenere" data-field="genere" placeholder="Identità / pronome"/></div>
           </div>
-          <div>
-            <label for="dgTaglia">Taglia</label>
-            <select id="dgTaglia" data-field="taglia"></select>
-            <p class="muted small-note" id="dgTagliaNote"></p>
+          <div class="grid g3">
+            <div><label for="dgCapelli">Capelli</label><input id="dgCapelli" data-field="capelli"/></div>
+            <div><label for="dgOcchi">Occhi</label><input id="dgOcchi" data-field="occhi"/></div>
+            <div><label for="dgPalette">Palette</label><input id="dgPalette" data-field="palette"/></div>
           </div>
-        </div>
-        <div class="grid g2">
-          <div>
-            <label for="dgTrattiRazza">Tratti Raziali Alternativi</label>
-            <select id="dgTrattiRazza" data-field="raceAltTraits" data-field-type="array" multiple size="5"></select>
-            <p class="muted small-note" id="dgTrattiRazzaNote"></p>
+        </fieldset>
+        <fieldset class="scheda-fieldset">
+          <legend>Fede &amp; Origini</legend>
+          <div class="grid g3">
+            <div><label for="dgAllineamento">Allineamento</label><select id="dgAllineamento" data-field="alignment" data-align-select></select><p class="muted small-note" id="dgAllineamentoNote"></p></div>
+            <div><label for="dgDivinita">Divinità</label><input id="dgDivinita" data-field="divinita" placeholder="Nome della divinità"/></div>
+            <div><label for="dgPatria">Madre Patria</label><input id="dgPatria" data-field="madrePatria" placeholder="Paese / regione"/></div>
           </div>
-          <div class="grid g2 compact">
+        </fieldset>
+        <fieldset class="scheda-fieldset">
+          <legend>Retaggio &amp; Corpo</legend>
+          <div class="grid g2">
             <div>
-              <label for="dgAltezza">Altezza</label>
-              <input id="dgAltezza" data-field="altezzaVal" placeholder="cm"/>
-              <p class="muted small-note" id="dgAltezzaRange"></p>
+              <label for="dgRazza">Razza</label>
+              <select id="dgRazza" data-field="razzaId"></select>
+              <p class="muted small-note" id="dgRazzaFonte"></p>
             </div>
             <div>
-              <label for="dgPeso">Peso</label>
-              <input id="dgPeso" data-field="pesoVal" placeholder="kg"/>
-              <p class="muted small-note" id="dgPesoRange"></p>
+              <label for="dgTaglia">Taglia</label>
+              <select id="dgTaglia" data-field="taglia"></select>
+              <p class="muted small-note" id="dgTagliaNote"></p>
             </div>
           </div>
-        </div>
-        <div class="grid g2">
-          <div>
-            <label for="dgClasse">Classe</label>
-            <select id="dgClasse" data-field="classeId"></select>
-            <p class="muted small-note" id="dgClasseFonte"></p>
-          </div>
-          <div>
-            <label for="dgArchetipi">Archetipi</label>
-            <select id="dgArchetipi" data-field="archetypes" data-field-type="array" multiple size="5"></select>
-            <p class="muted small-note" id="dgArchetipiNote"></p>
-          </div>
-        </div>
-        <div class="grid g3">
-          <div><label for="dgEta">Età</label><input id="dgEta" data-field="eta" placeholder="Anni"/></div>
-          <div><label for="dgEtaStage">Fascia d'età</label><select id="dgEtaStage" data-field="etaStage" data-age-stage-select></select><p class="muted small-note" id="dgEtaBonus"></p></div>
-          <div><label for="dgGenere">Genere</label><input id="dgGenere" data-field="genere" placeholder="Identità / pronome"/></div>
-        </div>
-        <div class="grid g3">
-          <div><label for="dgCapelli">Capelli</label><input id="dgCapelli" data-field="capelli"/></div>
-          <div><label for="dgOcchi">Occhi</label><input id="dgOcchi" data-field="occhi"/></div>
-          <div><label for="dgPalette">Palette</label><input id="dgPalette" data-field="palette"/></div>
-        </div>
-        <div class="grid g2">
-          <div>
-            <label for="dgTCSelect">Tratto di Campagna</label>
-            <select id="dgTCSelect" data-tc-select></select>
-            <div class="grid g2 compact" style="margin-top:10px;">
-              <div><label>Codice</label><input data-tc-code readonly/></div>
-              <div><label>Titolo</label><input data-tc-title readonly/></div>
+          <div class="grid g2">
+            <div>
+              <label for="dgTrattiRazza">Tratti Raziali Alternativi</label>
+              <select id="dgTrattiRazza" data-field="raceAltTraits" data-field-type="array" multiple size="5"></select>
+              <p class="muted small-note" id="dgTrattiRazzaNote"></p>
+            </div>
+            <div class="grid g2 compact">
+              <div>
+                <label for="dgAltezza">Altezza</label>
+                <input id="dgAltezza" data-field="altezzaVal" placeholder="cm"/>
+                <p class="muted small-note" id="dgAltezzaRange"></p>
+              </div>
+              <div>
+                <label for="dgPeso">Peso</label>
+                <input id="dgPeso" data-field="pesoVal" placeholder="kg"/>
+                <p class="muted small-note" id="dgPesoRange"></p>
+              </div>
             </div>
           </div>
-          <div>
-            <label>Regole opzionali</label>
-            <div class="toggle-grid">
-              <label class="toggle"><input type="checkbox" id="dgEitr" data-field="toggleEitr" checked/> <span>Elephant in the Room</span></label>
-              <label class="toggle"><input type="checkbox" id="dgAbp" data-field="toggleAbp" checked/> <span>Automatic Bonus Progression</span></label>
+        </fieldset>
+        <fieldset class="scheda-fieldset">
+          <legend>Percorso &amp; Archetipi</legend>
+          <div class="scheda-multiclass__toolbar">
+            <button type="button" class="btn" id="dgToggleMulticlass" aria-pressed="false">Attiva Multiclasse</button>
+            <button type="button" class="btn" id="dgAddClass" disabled>+ Aggiungi classe</button>
+            <p class="muted small-note" id="dgMulticlassStatus" aria-live="polite"></p>
+          </div>
+          <div class="multiclass-single" data-multiclass-single>
+            <div class="grid g2">
+              <div>
+                <label for="dgClasse">Classe</label>
+                <select id="dgClasse" data-field="classeId"></select>
+                <p class="muted small-note" id="dgClasseFonte"></p>
+              </div>
+              <div>
+                <label for="dgArchetipi">Archetipi</label>
+                <select id="dgArchetipi" data-field="archetypes" data-field-type="array" multiple size="5"></select>
+                <p class="muted small-note" id="dgArchetipiNote"></p>
+              </div>
             </div>
-            <p class="muted small-note" id="dgRuleSummary"></p>
           </div>
-        </div>
-        <div class="grid g2">
-          <div>
-            <label>Tratti (AON)</label>
-            <select id="dgTrattiGenerali" data-field="traitsList" data-field-type="array" multiple size="6"></select>
-            <p class="muted small-note" id="dgTrattiNote"></p>
+          <div class="multiclass-panel" data-multiclass-panel hidden>
+            <p class="muted small-note">Distribuisci i livelli complessivi nelle diverse classi e seleziona archetipi compatibili per ogni voce.</p>
+            <div id="dgMulticlassList" class="multiclass-list"></div>
           </div>
-          <div>
-            <label>Difetti (AON)</label>
-            <select id="dgDifetti" data-field="drawbackList" data-field-type="array" multiple size="6"></select>
-            <p class="muted small-note" id="dgDifettiNote"></p>
+        </fieldset>
+        <fieldset class="scheda-fieldset">
+          <legend>Campagna &amp; Regole</legend>
+          <div class="grid g2">
+            <div>
+              <label for="dgTCSelect">Tratto di Campagna</label>
+              <select id="dgTCSelect" data-tc-select></select>
+              <div class="grid g2 compact" style="margin-top:10px;">
+                <div><label>Codice</label><input data-tc-code readonly/></div>
+                <div><label>Titolo</label><input data-tc-title readonly/></div>
+              </div>
+            </div>
+            <div>
+              <label>Regole opzionali</label>
+              <div class="toggle-grid">
+                <label class="toggle"><input type="checkbox" id="dgEitr" data-field="toggleEitr" checked/> <span>Elephant in the Room</span></label>
+                <label class="toggle"><input type="checkbox" id="dgAbp" data-field="toggleAbp" checked/> <span>Automatic Bonus Progression</span></label>
+              </div>
+              <p class="muted small-note" id="dgRuleSummary"></p>
+            </div>
           </div>
-        </div>
+        </fieldset>
+        <fieldset class="scheda-fieldset">
+          <legend>Tratti Narrativi</legend>
+          <div class="grid g2">
+            <div>
+              <label>Tratti (AON)</label>
+              <select id="dgTrattiGenerali" data-field="traitsList" data-field-type="array" multiple size="6"></select>
+              <p class="muted small-note" id="dgTrattiNote"></p>
+            </div>
+            <div>
+              <label>Difetti (AON)</label>
+              <select id="dgDifetti" data-field="drawbackList" data-field-type="array" multiple size="6"></select>
+              <p class="muted small-note" id="dgDifettiNote"></p>
+            </div>
+          </div>
+        </fieldset>
         <div class="grid g2">
           <div>
             <label>Narrativa TC</label>

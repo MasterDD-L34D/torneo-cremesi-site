@@ -231,6 +231,84 @@ function toArray(value){
   return Array.isArray(value) ? value : [value];
 }
 
+const createMulticlassUid = (() => {
+  let counter = Date.now();
+  return () => `mc_${counter++}`;
+})();
+
+function createClassEntry(classId = '', level = 0, archetypes = []){
+  return {
+    uid: createMulticlassUid(),
+    classId: classId || '',
+    level: Number.isFinite(Number(level)) ? Math.max(0, Number(level)) : 0,
+    archetypes: toArray(archetypes)
+  };
+}
+
+function cloneProgression(list){
+  if(!Array.isArray(list)) return [];
+  return list.map(entry => ({
+    uid: entry.uid || createMulticlassUid(),
+    classId: entry.classId || entry.id || '',
+    level: Number.isFinite(Number(entry.level)) ? Math.max(0, Number(entry.level)) : 0,
+    archetypes: toArray(entry.archetypes)
+  }));
+}
+
+function normaliseClassProgression(list){
+  if(!Array.isArray(list)) return [];
+  return list.map(entry => ({
+    uid: entry.uid || createMulticlassUid(),
+    classId: entry.classId || entry.id || entry.classeId || '',
+    level: Number.isFinite(Number(entry.level ?? entry.lv ?? entry.livello))
+      ? Math.max(0, Number(entry.level ?? entry.lv ?? entry.livello))
+      : 0,
+    archetypes: toArray(entry.archetypes || entry.archetypeIds || [])
+  }));
+}
+
+function sumProgressionLevels(list){
+  if(!Array.isArray(list)) return 0;
+  return list.reduce((acc, entry) => acc + (Number.isFinite(Number(entry.level)) ? Number(entry.level) : 0), 0);
+}
+
+function getPrimaryProgressionEntry(){
+  if(!Array.isArray(state.classProgression) || !state.classProgression.length) return null;
+  const sorted = [...state.classProgression].sort((a, b) => (Number(b.level) || 0) - (Number(a.level) || 0));
+  return sorted.find(entry => entry.classId && Number(entry.level) > 0) || sorted[0] || null;
+}
+
+function syncPrimaryClassFromProgression(){
+  const primary = getPrimaryProgressionEntry();
+  if(primary){
+    state.classeId = primary.classId || state.classeId || '';
+    state.archetypes = toArray(primary.archetypes);
+  } else {
+    state.classeId = state.classeId || '';
+    state.archetypes = toArray(state.archetypes || []);
+  }
+}
+
+function syncProgressionFromPrimary(){
+  if(!Array.isArray(state.classProgression) || !state.classProgression.length){
+    state.classProgression = [createClassEntry(state.classeId || '', Number(state.livello) || 0, state.archetypes)];
+    return;
+  }
+  const first = state.classProgression[0];
+  first.classId = state.classeId || '';
+  first.archetypes = toArray(state.archetypes);
+  if(!state.multiClassEnabled){
+    first.level = Number.isFinite(Number(state.livello)) ? Number(state.livello) : first.level;
+  }
+}
+
+function persistClassProgression(){
+  if(state.multiClassEnabled){
+    state.lastMulticlassPlan = cloneProgression(state.classProgression);
+  }
+  saveAppState(state);
+}
+
 function registerBinding(key, el){
   if(!fieldBindings.has(key)) fieldBindings.set(key, new Set());
   fieldBindings.get(key).add(el);
@@ -304,6 +382,18 @@ function initScheda(){
   state.traitsList = toArray(state.traitsList ?? []);
   state.drawbackList = toArray(state.drawbackList ?? []);
   state.tagliaManual = state.tagliaManual ?? false;
+  state.multiClassEnabled = state.multiClassEnabled === true;
+  state.lastMulticlassPlan = normaliseClassProgression(state.lastMulticlassPlan || []);
+  state.classProgression = normaliseClassProgression(state.classProgression || []);
+  if(!state.classProgression.length){
+    const baseLevel = Number.isFinite(Number(state.livello)) ? Number(state.livello) : 0;
+    state.classProgression = [createClassEntry(state.classeId || '', baseLevel, state.archetypes)];
+  }
+  if(!state.multiClassEnabled && state.classProgression.length > 1){
+    state.lastMulticlassPlan = cloneProgression(state.classProgression);
+    state.classProgression = [state.classProgression[0]];
+  }
+  syncPrimaryClassFromProgression();
 
   const bindField = (el, key) => {
     if(!el || !key) return;
@@ -719,11 +809,17 @@ function handleFieldUpdate(key, value){
     case 'classeId':
     case 'archetypes':
       applyClassDetails(state.classeId);
+      syncProgressionFromPrimary();
       updateRazzaClassiSummary();
+      if(state.multiClassEnabled) renderMulticlassList();
+      updateMulticlassStatus();
+      if(state.multiClassEnabled) persistClassProgression();
       break;
     case 'livello':
+      syncProgressionFromPrimary();
       updateRazzaClassiSummary();
       updateRuleSummary();
+      updateMulticlassStatus();
       break;
     case 'taglia':
       state.tagliaManual = !!value;
@@ -951,7 +1047,286 @@ async function initSchedaGenerali(){
   updateTraitNotes();
   updateDrawbackNotes();
   updateRazzaClassiSummary();
+  initMulticlassUI();
+  updateMulticlassStatus();
   if(sizeAdjusted || traitAdjusted) saveAppState(state);
+}
+
+function initMulticlassUI(){
+  const toggleBtn = document.getElementById('dgToggleMulticlass');
+  const addBtn = document.getElementById('dgAddClass');
+  const statusEl = document.getElementById('dgMulticlassStatus');
+  const singleBlock = document.querySelector('[data-multiclass-single]');
+  const panel = document.querySelector('[data-multiclass-panel]');
+  const classSelect = document.getElementById('dgClasse');
+  const archSelect = document.getElementById('dgArchetipi');
+  if(!toggleBtn || !addBtn || !statusEl || !singleBlock || !panel) return;
+
+  const applyMode = ({ focusUid } = {}) => {
+    const multi = state.multiClassEnabled === true;
+    toggleBtn.setAttribute('aria-pressed', multi ? 'true' : 'false');
+    toggleBtn.textContent = multi ? 'Disattiva Multiclasse' : 'Attiva Multiclasse';
+    addBtn.disabled = !multi;
+    singleBlock.hidden = multi;
+    panel.hidden = !multi;
+    if(classSelect) classSelect.disabled = multi;
+    if(archSelect) archSelect.disabled = multi;
+    if(multi){
+      renderMulticlassList({ focusUid });
+    }
+    updateMulticlassStatus();
+  };
+
+  toggleBtn.addEventListener('click', () => {
+    const currently = state.multiClassEnabled === true;
+    if(currently){
+      state.lastMulticlassPlan = cloneProgression(state.classProgression);
+      const primary = getPrimaryProgressionEntry();
+      state.classProgression = primary
+        ? [createClassEntry(primary.classId, primary.level, primary.archetypes)]
+        : [createClassEntry(state.classeId || '', Number(state.livello) || 0, state.archetypes)];
+      state.multiClassEnabled = false;
+    } else {
+      state.multiClassEnabled = true;
+      if(state.lastMulticlassPlan?.length){
+        state.classProgression = cloneProgression(state.lastMulticlassPlan);
+      } else if(!state.classProgression.length){
+        state.classProgression = [createClassEntry(state.classeId || '', Number(state.livello) || 0, state.archetypes)];
+      }
+    }
+    syncPrimaryClassFromProgression();
+    updateRazzaClassiSummary();
+    const focusUid = state.multiClassEnabled ? (state.classProgression[0]?.uid || null) : null;
+    applyMode({ focusUid });
+    applyClassDetails(state.classeId);
+    persistClassProgression();
+  });
+
+  addBtn.addEventListener('click', () => {
+    if(!state.multiClassEnabled) return;
+    const newEntry = createClassEntry('', 0, []);
+    state.classProgression.push(newEntry);
+    renderMulticlassList({ focusUid: newEntry.uid });
+    updateRazzaClassiSummary();
+    persistClassProgression();
+  });
+
+  applyMode();
+}
+
+function renderMulticlassList({ focusUid = null } = {}){
+  const listEl = document.getElementById('dgMulticlassList');
+  if(!listEl) return;
+  listEl.innerHTML = '';
+  if(!Array.isArray(state.classProgression) || !state.classProgression.length){
+    state.classProgression = [createClassEntry(state.classeId || '', Number(state.livello) || 0, state.archetypes)];
+  }
+  state.classProgression.forEach(entry => { if(!entry.uid) entry.uid = createMulticlassUid(); });
+  let focusTarget = null;
+  state.classProgression.forEach(entry => {
+    const item = document.createElement('article');
+    item.className = 'multiclass-item';
+    item.dataset.uid = entry.uid;
+    item.innerHTML = `
+      <div class="multiclass-item__header">
+        <div>
+          <label>Classe</label>
+          <select data-mc-class></select>
+          <p class="muted small-note" data-mc-source></p>
+        </div>
+        <div>
+          <label>Livelli assegnati</label>
+          <input type="number" min="0" max="20" step="1" data-mc-level />
+        </div>
+        <div class="multiclass-item__actions">
+          <button type="button" class="btn" data-mc-remove>Rimuovi</button>
+        </div>
+      </div>
+      <div class="multiclass-item__archetypes">
+        <label>Archetipi compatibili</label>
+        <select multiple size="5" data-mc-archetypes></select>
+        <p class="multiclass-item__note" data-mc-note></p>
+      </div>
+    `;
+    bindMulticlassItem(item, entry);
+    if(entry.uid === focusUid){
+      focusTarget = item.querySelector('[data-mc-class]');
+    }
+    listEl.appendChild(item);
+  });
+  if(focusTarget){
+    const focus = () => focusTarget.focus();
+    if(typeof requestAnimationFrame === 'function') requestAnimationFrame(focus);
+    else setTimeout(focus, 0);
+  }
+  updateMulticlassStatus();
+}
+
+function bindMulticlassItem(container, entry){
+  const classSelect = container.querySelector('[data-mc-class]');
+  const levelInput = container.querySelector('[data-mc-level]');
+  const removeBtn = container.querySelector('[data-mc-remove]');
+  const sourceEl = container.querySelector('[data-mc-source]');
+  const archetypeSelect = container.querySelector('[data-mc-archetypes]');
+  const noteEl = container.querySelector('[data-mc-note]');
+
+  const refresh = () => {
+    if(classSelect){
+      classSelect.innerHTML = buildClassOptions();
+      classSelect.value = entry.classId || '';
+    }
+    const cls = getClassById(entry.classId);
+    if(sourceEl) sourceEl.textContent = cls?.source ? `Fonte: ${cls.source}` : '';
+    if(levelInput) levelInput.value = Number.isFinite(Number(entry.level)) ? Number(entry.level) : 0;
+    if(removeBtn) removeBtn.disabled = state.classProgression.length <= 1;
+    if(archetypeSelect){
+      const valid = populateArchetypeOptions(archetypeSelect, cls, entry.archetypes);
+      if(valid.length !== entry.archetypes.length){
+        entry.archetypes = valid;
+      }
+      const evaluation = evaluateArchetypeCompatibility(cls, entry.archetypes);
+      writeArchetypeNote(noteEl, cls, entry.archetypes, evaluation);
+    }
+  };
+
+  refresh();
+
+  classSelect?.addEventListener('change', () => {
+    entry.classId = classSelect.value || '';
+    entry.archetypes = [];
+    if(entry.classId && (!entry.level || entry.level === 0)){
+      entry.level = 1;
+    }
+    refresh();
+    syncPrimaryClassFromProgression();
+    updateRazzaClassiSummary();
+    persistClassProgression();
+    updateMulticlassStatus();
+  });
+
+  const commitLevel = debounce(() => {
+    const value = Number.parseInt(levelInput.value, 10);
+    entry.level = Number.isFinite(value) && value >= 0 ? value : 0;
+    refresh();
+    syncPrimaryClassFromProgression();
+    updateRazzaClassiSummary();
+    persistClassProgression();
+    updateMulticlassStatus();
+  }, 200);
+  levelInput?.addEventListener('input', commitLevel);
+  levelInput?.addEventListener('change', commitLevel);
+
+  archetypeSelect?.addEventListener('change', () => {
+    const cls = getClassById(entry.classId);
+    if(!cls){
+      entry.archetypes = [];
+      refresh();
+      persistClassProgression();
+      return;
+    }
+    const selected = Array.from(archetypeSelect.selectedOptions || []).map(opt => opt.value);
+    const evaluation = evaluateArchetypeCompatibility(cls, selected);
+    if(!evaluation.valid){
+      populateArchetypeOptions(archetypeSelect, cls, entry.archetypes);
+      writeArchetypeNote(noteEl, cls, entry.archetypes, evaluation);
+      return;
+    }
+    entry.archetypes = selected;
+    writeArchetypeNote(noteEl, cls, entry.archetypes, evaluation);
+    syncPrimaryClassFromProgression();
+    updateRazzaClassiSummary();
+    persistClassProgression();
+  });
+
+  removeBtn?.addEventListener('click', () => {
+    if(state.classProgression.length <= 1) return;
+    state.classProgression = state.classProgression.filter(item => item.uid !== entry.uid);
+    if(!state.classProgression.length){
+      state.classProgression.push(createClassEntry('', 0, []));
+    }
+    syncPrimaryClassFromProgression();
+    updateRazzaClassiSummary();
+    persistClassProgression();
+    renderMulticlassList();
+  });
+}
+
+function updateMulticlassStatus(){
+  const statusEl = document.getElementById('dgMulticlassStatus');
+  if(!statusEl) return;
+  statusEl.classList.remove('status--warning', 'status--error');
+  if(state.multiClassEnabled){
+    const total = sumProgressionLevels(state.classProgression);
+    const target = Number.isFinite(Number(state.livello)) ? Number(state.livello) : 0;
+    const entries = Array.isArray(state.classProgression) ? state.classProgression : [];
+    let message = '';
+    const extraErrors = [];
+    const extraWarnings = [];
+    let classlessWithLevels = 0;
+    let archetypesWithoutClass = 0;
+    const levellessLabels = new Set();
+
+    entries.forEach(entry => {
+      const level = Number.isFinite(Number(entry.level)) ? Number(entry.level) : 0;
+      const cls = getClassById(entry.classId);
+      const hasClass = !!cls;
+      const archetypes = toArray(entry.archetypes);
+      if(level > 0 && !hasClass){
+        classlessWithLevels += 1;
+      }
+      if(archetypes.length && !hasClass){
+        archetypesWithoutClass += 1;
+      }
+      if(hasClass && level === 0){
+        levellessLabels.add(cls?.name || 'una classe selezionata');
+      }
+    });
+
+    if(!target){
+      message = 'Imposta il livello totale per distribuire i livelli di classe.';
+      statusEl.classList.add('status--warning');
+    } else if(total === target){
+      message = `Livelli assegnati: ${total}/${target}.`;
+    } else if(total < target){
+      message = `Livelli assegnati ${total}/${target}: ne restano ${target - total}.`;
+      statusEl.classList.add('status--warning');
+    } else {
+      message = `Livelli assegnati ${total}/${target}: riduci di ${total - target}.`;
+      statusEl.classList.add('status--error');
+    }
+
+    if(classlessWithLevels === 1){
+      extraErrors.push('Assegna una classe alla voce che ha livelli distribuiti.');
+    } else if(classlessWithLevels > 1){
+      extraErrors.push(`Assegna una classe alle ${classlessWithLevels} voci che hanno livelli distribuiti.`);
+    }
+
+    if(archetypesWithoutClass === 1){
+      extraErrors.push('Rimuovi gli archetipi dalla voce senza classe.');
+    } else if(archetypesWithoutClass > 1){
+      extraErrors.push('Rimuovi gli archetipi dalle voci senza classe.');
+    }
+
+    if(levellessLabels.size){
+      const labels = Array.from(levellessLabels);
+      const joined = labels.length === 1 ? labels[0] : labels.join(', ');
+      extraWarnings.push(`Aggiungi livelli a ${joined}.`);
+    }
+
+    if(extraErrors.length){
+      statusEl.classList.add('status--error');
+      message = [message, ...extraErrors].filter(Boolean).join(' • ');
+    } else if(extraWarnings.length){
+      if(!statusEl.classList.contains('status--error')){
+        statusEl.classList.add('status--warning');
+      }
+      message = [message, ...extraWarnings].filter(Boolean).join(' • ');
+    }
+
+    statusEl.textContent = message;
+  } else {
+    statusEl.textContent = 'Modalità classe singola attiva.';
+  }
 }
 
 function setupAlignmentSelect(){
@@ -997,11 +1372,151 @@ function renderRaceSelect(){
   restoreFieldValue('razzaId');
 }
 
+function getClassById(id){
+  if(!id) return null;
+  return classCatalog.find(c => c.id === id) || null;
+}
+
+function getArchetypeById(classId, archetypeId){
+  if(!classId || !archetypeId) return null;
+  const cls = getClassById(classId);
+  return cls?.archetypes?.find(a => a.id === archetypeId) || null;
+}
+
+function buildClassOptions(){
+  const options = ['<option value="">— seleziona —</option>'];
+  classCatalog.forEach(cls => {
+    options.push(`<option value="${cls.id}">${cls.name}</option>`);
+  });
+  return options.join('');
+}
+
 function renderClassSelect(){
   const select = document.getElementById('dgClasse');
   if(!select) return;
-  select.innerHTML = `<option value="">— seleziona —</option>` + classCatalog.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  select.innerHTML = buildClassOptions();
   restoreFieldValue('classeId');
+}
+
+function normaliseFeatureKey(str){
+  return (str || '')
+    .toString()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function populateArchetypeOptions(selectEl, cls, selectedIds){
+  if(!selectEl) return [];
+  if(!cls){
+    selectEl.innerHTML = '';
+    selectEl.disabled = true;
+    return [];
+  }
+  const archetypes = Array.isArray(cls?.archetypes) ? cls.archetypes : [];
+  if(!archetypes.length){
+    selectEl.innerHTML = '';
+    selectEl.disabled = true;
+    return [];
+  }
+  selectEl.disabled = false;
+  selectEl.innerHTML = archetypes.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+  const valid = toArray(selectedIds).filter(id => archetypes.some(a => a.id === id));
+  Array.from(selectEl.options).forEach(opt => {
+    opt.selected = valid.includes(opt.value);
+  });
+  return valid;
+}
+
+function evaluateArchetypeCompatibility(cls, selectedIds){
+  const archetypes = Array.isArray(cls?.archetypes) ? cls.archetypes : [];
+  const selected = toArray(selectedIds).map(id => archetypes.find(a => a.id === id)).filter(Boolean);
+  const featureOwners = new Map();
+  const conflicts = [];
+  const declaredConflicts = [];
+  const missing = [];
+  const isMulti = selected.length > 1;
+  selected.forEach(arch => {
+    const features = [...toArray(arch.replaces), ...toArray(arch.modifies)];
+    const normalised = features.map(normaliseFeatureKey).filter(Boolean);
+    if(!normalised.length && isMulti && !missing.includes(arch.name)) missing.push(arch.name);
+    normalised.forEach((featureKey, idx) => {
+      const owner = featureOwners.get(featureKey);
+      if(owner && owner.id !== arch.id){
+        conflicts.push({
+          first: owner,
+          second: arch,
+          feature: featureKey,
+          featureLabel: features[idx] || features.find(f => normaliseFeatureKey(f) === featureKey) || featureKey
+        });
+      } else {
+        featureOwners.set(featureKey, arch);
+      }
+    });
+    const declared = toArray(arch.conflictsWith).map(val => normaliseFeatureKey(val));
+    declared.forEach(declaredId => {
+      const conflicting = selected.find(item => normaliseFeatureKey(item.id) === declaredId);
+      if(conflicting){
+        const key = `${[arch.id, conflicting.id].sort().join('#')}`;
+        if(!declaredConflicts.find(entry => entry.key === key)){
+          declaredConflicts.push({ first: arch, second: conflicting, key });
+        }
+      }
+    });
+  });
+  return {
+    valid: conflicts.length === 0 && declaredConflicts.length === 0,
+    conflicts,
+    declaredConflicts,
+    missing
+  };
+}
+
+function writeArchetypeNote(noteEl, cls, selectedIds, evaluation){
+  if(!noteEl) return;
+  noteEl.classList.remove('is-error', 'is-warning');
+  if(!cls){
+    noteEl.textContent = 'Seleziona una classe per visualizzare gli archetipi.';
+    return;
+  }
+  const archetypes = Array.isArray(cls?.archetypes) ? cls.archetypes : [];
+  if(!archetypes.length){
+    noteEl.textContent = 'La classe selezionata non ha archetipi collegati nel dataset corrente.';
+    return;
+  }
+  const selected = toArray(selectedIds);
+  if(evaluation?.conflicts?.length){
+    noteEl.classList.add('is-error');
+    noteEl.textContent = evaluation.conflicts.map(conflict => `${conflict.first.name} e ${conflict.second.name} confliggono su ${conflict.featureLabel || conflict.feature}.`).join(' • ');
+    return;
+  }
+  if(evaluation?.declaredConflicts?.length){
+    noteEl.classList.add('is-error');
+    noteEl.textContent = evaluation.declaredConflicts.map(item => `${item.first.name} e ${item.second.name} sono dichiarati incompatibili.`).join(' • ');
+    return;
+  }
+  if(!selected.length){
+    noteEl.textContent = 'Nessun archetipo selezionato.';
+    return;
+  }
+  const lines = selected.map(id => {
+    const arch = archetypes.find(a => a.id === id);
+    if(!arch) return null;
+    const replaces = toArray(arch.replaces);
+    const modifies = toArray(arch.modifies);
+    const parts = [];
+    if(replaces.length) parts.push(`sostituisce ${replaces.join(', ')}`);
+    if(modifies.length) parts.push(`modifica ${modifies.join(', ')}`);
+    return `${arch.name}${parts.length ? ` — ${parts.join(' e ')}` : ''}`;
+  }).filter(Boolean);
+  let text = lines.join(' • ');
+  if(evaluation?.missing?.length){
+    noteEl.classList.add('is-warning');
+    const warning = `Verifica manualmente la compatibilità di ${evaluation.missing.join(', ')}.`;
+    text = text ? `${text} • ${warning}` : warning;
+  }
+  noteEl.textContent = text || 'Nessun archetipo selezionato.';
 }
 
 function renderTraitsSelect(){
@@ -1131,33 +1646,23 @@ function applyRaceDetails(raceId){
 }
 
 function applyClassDetails(classId){
-  const cls = classCatalog.find(c => c.id === classId) || null;
+  const cls = getClassById(classId);
   const fonteEl = document.getElementById('dgClasseFonte');
   const archSelect = document.getElementById('dgArchetipi');
   const archNote = document.getElementById('dgArchetipiNote');
   if(cls){
     if(fonteEl) fonteEl.textContent = cls.source ? `Fonte: ${cls.source}` : '';
-    const archetypes = cls.archetypes || [];
-    if(archSelect){
-      if(archetypes.length){
-        archSelect.innerHTML = archetypes.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-        archSelect.disabled = false;
-      } else {
-        archSelect.innerHTML = '';
-        archSelect.disabled = true;
-      }
-      restoreFieldValue('archetypes');
+    const selected = toArray(state.archetypes);
+    const valid = populateArchetypeOptions(archSelect, cls, selected);
+    if(valid.length !== selected.length){
+      state.archetypes = valid;
+      syncProgressionFromPrimary();
+      if(state.multiClassEnabled) persistClassProgression();
     }
+    if(archSelect && state.multiClassEnabled) archSelect.disabled = true;
     if(archNote){
-      if(archetypes.length){
-        const details = toArray(state.archetypes).map(id => {
-          const archetype = archetypes.find(a => a.id === id);
-          return archetype ? `${archetype.name}: ${archetype.summary || '—'}` : null;
-        }).filter(Boolean);
-        archNote.textContent = details.length ? details.join(' • ') : 'Nessun archetipo selezionato.';
-      } else {
-        archNote.textContent = 'La classe selezionata non ha archetipi collegati nel dataset corrente.';
-      }
+      const evaluation = evaluateArchetypeCompatibility(cls, toArray(state.archetypes));
+      writeArchetypeNote(archNote, cls, toArray(state.archetypes), evaluation);
     }
   } else {
     if(fonteEl) fonteEl.textContent = '';
@@ -1240,19 +1745,28 @@ function updateMisureSummary(){
 
 function updateRazzaClassiSummary(){
   const raceName = raceCatalog.find(r => r.id === state.razzaId)?.name || '';
-  const className = classCatalog.find(c => c.id === state.classeId)?.name || '';
-  const archetypeNames = toArray(state.archetypes).map(id => {
-    const cls = classCatalog.find(c => c.id === state.classeId);
-    return cls?.archetypes?.find(a => a.id === id)?.name || null;
-  }).filter(Boolean);
-  const level = state.livello ? `Lv ${state.livello}` : '';
+  const entries = Array.isArray(state.classProgression) && state.classProgression.length
+    ? state.classProgression
+    : [createClassEntry(state.classeId || '', state.livello || 0, state.archetypes)];
+  const classSummary = entries
+    .map(entry => {
+      const cls = getClassById(entry.classId);
+      const classLabel = cls?.name || (entry.classId || '').toString();
+      const levelLabel = Number(entry.level) ? `Lv ${Number(entry.level)}` : '';
+      const archetypeNames = toArray(entry.archetypes)
+        .map(id => getArchetypeById(entry.classId, id)?.name || null)
+        .filter(Boolean);
+      const fragments = [];
+      if(classLabel) fragments.push(classLabel.trim());
+      if(levelLabel) fragments.push(levelLabel);
+      if(archetypeNames.length) fragments.push(archetypeNames.join(', '));
+      return fragments.join(' ');
+    })
+    .filter(Boolean)
+    .join(' + ');
   const parts = [];
   if(raceName) parts.push(raceName);
-  const classParts = [];
-  if(className) classParts.push(className);
-  if(archetypeNames.length) classParts.push(archetypeNames.join(', '));
-  if(level) classParts.push(level);
-  if(classParts.length) parts.push(classParts.join(' • '));
+  if(classSummary) parts.push(classSummary);
   updateComputedField('razzaClassiSynth', parts.join(' / '));
 }
 
