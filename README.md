@@ -54,6 +54,17 @@ Tutti i dati compilati dall’utente sono conservati nel browser tramite `localS
 - Cambia l’aspetto del sito modificando `css/styles.css`.
 - Se desideri importare materiale di riferimento (handout PDF, documenti), salvali in `docs/` (assicurati di rispettare i diritti d’autore).
 
+
+### Dataset archetipi del Guerriero
+
+Per aggiungere rapidamente le sostituzioni/modifiche degli archetipi del guerriero puoi modificare l'elenco in `scripts/build-fighter-archetypes.py` (formato leggibile con sigle `bfX`, `brX`, `atX`, `wtX`, `am`, `wm`). Esegui poi:
+
+```bash
+python scripts/build-fighter-archetypes.py
+```
+
+Il comando aggiorna `data/fighter-archetypes.json` e popola il blocco del guerriero in `data/aon-classes.stub.json` con gli stessi dati, così da avere coerenza tra dataset e interfaccia.
+
 ## Aggiornare i dati da Archive of Nethys
 
 Il progetto include uno script per scaricare e normalizzare i dati pubblici di Archive of Nethys (razze, classi, archetipi, tratti e tratti razziali alternativi) in formato JSON compatibile con il sito.

@@ -42,6 +42,23 @@ export function normaliseAltTrait(entry){
   };
 }
 
+function parseStringList(value){
+  if(value == null) return [];
+  if(Array.isArray(value)){
+    return value.flatMap(item => parseStringList(item));
+  }
+  if(typeof value === 'object'){
+    return Object.values(value).flatMap(item => parseStringList(item));
+  }
+  if(typeof value === 'string'){
+    return value
+      .split(/[,;/]|\band\b|\be\b/gi)
+      .map(str => str.trim())
+      .filter(Boolean);
+  }
+  return [String(value).trim()].filter(Boolean);
+}
+
 export function normaliseRace(entry){
   if(!entry) return null;
   const id = entry.id || entry.slug || slugify(entry.name || entry.Name);
@@ -70,10 +87,16 @@ export function normaliseArchetype(entry){
   if(!entry) return null;
   const id = entry.id || entry.slug || slugify(entry.name || entry.Name);
   if(!id) return null;
+  const replaces = parseStringList(entry.replaces || entry.Replaces || entry.replace || entry.Replace || entry.replaced || entry.Replaced);
+  const modifies = parseStringList(entry.modifies || entry.Modifies || entry.alters || entry.Alters || entry.modify || entry.Modify);
+  const conflictsRaw = parseStringList(entry.conflicts || entry.Conflicts || entry.conflictsWith || entry.ConflictsWith || entry.incompatible || entry.Incompatible);
   return {
     id,
     name: entry.name || entry.Name || id,
-    summary: entry.summary || entry.Summary || entry.description || entry.Description || ''
+    summary: entry.summary || entry.Summary || entry.description || entry.Description || '',
+    replaces,
+    modifies,
+    conflictsWith: conflictsRaw.map(val => slugify(val)).filter(Boolean)
   };
 }
 
