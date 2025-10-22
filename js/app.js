@@ -3,6 +3,7 @@
 
 import { loadAppState, saveAppState, exportAll, importAll, loadOC, saveOC } from './store.js';
 import { TC_DATA, STATS, ALIGNMENTS, AGE_STAGES } from './data.js';
+import { ensureAllRuleVariants, getRuleVariant, formatAbpSummary } from './rules.js';
 import { getRaces, getClasses, getTraitsAndDrawbacks } from './aon.js';
 
 /*
@@ -25,6 +26,19 @@ let traitCatalogPromise = null;
 let schedaMenusPromise = null;
 const SIZE_ORDER = ['Minuscola','Piccola','Media','Grande','Enorme','Mastodontica'];
 const ARRAY_FIELD = 'array';
+const ABP_FALLBACK_ORDER = ['potency','resilience','resistance','deflection','ability'];
+const ruleDataReady = ensureAllRuleVariants()
+  .catch(err => {
+    console.error('[Regole] Impossibile caricare i dataset EITR/ABP.', err);
+    return null;
+  })
+  .then(() => {
+    try {
+      updateRuleSummary();
+    } catch (err) {
+      console.error('[Scheda] Impossibile aggiornare il riepilogo regole dopo il caricamento.', err);
+    }
+  });
 
 /*
   Router
@@ -180,6 +194,7 @@ function afterRender(route){
     case '/scheda': initScheda(); break;
     case '/tracker': initTracker(); break;
     case '/oggetti': initOggetti(); break;
+    case '/regole': renderRulesPage(); break;
     default: break;
   }
 }
@@ -538,6 +553,158 @@ function buildOCPicker(){
   if(picker.value !== '') picker.dispatchEvent(new Event('change'));
 }
 
+function renderRulesPage(){
+  ruleDataReady.then(() => {
+    renderEitrRules();
+    renderAbpSection();
+  });
+}
+
+function renderEitrRules(){
+  const data = getRuleVariant('eitr');
+  const loading = !data;
+  const summaryEl = document.querySelector('[data-eitr-summary]');
+  if(summaryEl){
+    if(loading){
+      summaryEl.innerHTML = '<li>Dati EITR in caricamento…</li>';
+    } else {
+      summaryEl.innerHTML = (data.summary || []).map(line => `<li>${line}</li>`).join('');
+    }
+  }
+  const freeEl = document.querySelector('[data-eitr-free]');
+  if(freeEl){
+    if(loading){
+      freeEl.innerHTML = '<li>Dati EITR in caricamento…</li>';
+    } else {
+      freeEl.innerHTML = (data.freeFeats || []).map(item => `<li><b>${item.name}</b>: ${item.detail}</li>`).join('');
+    }
+  }
+  const adjustedEl = document.querySelector('[data-eitr-adjusted]');
+  if(adjustedEl){
+    if(loading){
+      adjustedEl.innerHTML = '<li>Dati EITR in caricamento…</li>';
+    } else {
+      adjustedEl.innerHTML = (data.adjustedFeats || []).map(item => `<li><b>${item.name}</b>: ${item.detail}</li>`).join('');
+    }
+  }
+  const classEl = document.querySelector('[data-eitr-classes]');
+  if(classEl){
+    if(loading){
+      classEl.innerHTML = '<li>Dati EITR in caricamento…</li>';
+    } else {
+      const classes = (data.classAdjustments || []).map(entry => {
+        const changes = (entry.changes || []).map(change => `<li>${change}</li>`).join('');
+        return `<li><b>${entry.target}</b><ul>${changes}</ul></li>`;
+      }).join('');
+      classEl.innerHTML = classes || '<li>Nessun adattamento di classe registrato.</li>';
+    }
+  }
+  const otherEl = document.querySelector('[data-eitr-other]');
+  if(otherEl){
+    if(loading){
+      otherEl.innerHTML = '<li>Dati EITR in caricamento…</li>';
+    } else {
+      const other = (data.otherRules || []).map(item => `<li>${item}</li>`).join('');
+      otherEl.innerHTML = other || '<li>Nessuna regola aggiuntiva nel dataset.</li>';
+    }
+  }
+  const notesEl = document.querySelector('[data-eitr-notes]');
+  if(notesEl){
+    notesEl.innerHTML = loading ? 'Dati EITR in caricamento…' : (data.notes || []).map(note => `<span>${note}</span>`).join('<br>');
+  }
+  const sourceEl = document.querySelector('[data-eitr-sources]');
+  if(sourceEl){
+    if(loading){
+      sourceEl.textContent = 'In caricamento…';
+    } else {
+      const sources = (data.sources || []).join(' • ');
+      sourceEl.textContent = sources || '—';
+    }
+  }
+}
+
+function renderAbpSection(){
+  const data = getRuleVariant('abp');
+  const loading = !data;
+  const summaryEl = document.querySelector('[data-abp-summary]');
+  if(summaryEl){
+    summaryEl.innerHTML = loading ? '<li>Dati ABP in caricamento…</li>' : (data.summary || []).map(line => `<li>${line}</li>`).join('');
+  }
+  const noteEl = document.querySelector('[data-abp-note]');
+  if(noteEl){
+    if(loading){
+      noteEl.textContent = 'Dati ABP in caricamento…';
+    } else {
+      const note = data.notes?.[0] || data.note || '';
+      noteEl.textContent = note;
+    }
+  }
+  const table = document.querySelector('[data-abp-table]');
+  if(!table) return;
+  const tbody = table.querySelector('tbody');
+  if(!tbody) return;
+  const currentLevel = parseInt(state.livello || 7, 10) || 0;
+  const order = data?.order || ABP_FALLBACK_ORDER;
+  const rows = (data?.progression || []).map(row => {
+    const active = currentLevel >= row.level ? ' class="is-active"' : '';
+    const rowBonuses = row.bonuses || {};
+    const bonuses = order.filter(id => rowBonuses[id] != null)
+      .map(id => {
+        const value = rowBonuses[id];
+        const label = (data?.labels && data.labels[id]) || id;
+        const detail = (data?.details && data.details[id]) || '';
+        const valueText = id === 'ability' ? `+${value} (caratteristica a scelta)` : `+${value}`;
+        const detailHtml = detail ? `<small class="muted">${detail}</small>` : '';
+        return `<div class="abp-table__item"><span><b>${label}</b>: ${valueText}</span>${detailHtml}</div>`;
+      }).join('');
+    const note = row.note ? `<div class="abp-table__note">${row.note}</div>` : '';
+    return `<tr${active}><td>${row.level}</td><td class="abp-table__cell">${bonuses}${note}</td></tr>`;
+  }).join('');
+  tbody.innerHTML = rows || (loading ? '<tr><td colspan="2">Dati ABP in caricamento…</td></tr>' : '<tr><td colspan="2">Nessun dato di progressione disponibile.</td></tr>');
+  const conversionPotency = document.querySelector('[data-abp-conversion="potency"]');
+  if(conversionPotency){
+    if(loading){
+      conversionPotency.innerHTML = '<li>Dati ABP in caricamento…</li>';
+    } else {
+      conversionPotency.innerHTML = (data.conversion?.potency || []).map(entry => {
+        const options = (entry.options || []).join(', ');
+        const note = entry.note ? `<small class="muted">${entry.note}</small>` : '';
+        return `<li><b>Spendi +${entry.cost}</b>: ${options}${note ? `<br>${note}` : ''}</li>`;
+      }).join('') || '<li>Nessuna opzione di conversione disponibile.</li>';
+    }
+  }
+  const conversionResilience = document.querySelector('[data-abp-conversion="resilience"]');
+  if(conversionResilience){
+    if(loading){
+      conversionResilience.innerHTML = '<li>Dati ABP in caricamento…</li>';
+    } else {
+      conversionResilience.innerHTML = (data.conversion?.resilience || []).map(entry => {
+        const options = (entry.options || []).join(', ');
+        const note = entry.note ? `<small class="muted">${entry.note}</small>` : '';
+        return `<li><b>Spendi +${entry.cost}</b>: ${options}${note ? `<br>${note}` : ''}</li>`;
+      }).join('') || '<li>Nessuna opzione di conversione disponibile.</li>';
+    }
+  }
+  const lootEl = document.querySelector('[data-abp-loot]');
+  if(lootEl){
+    if(loading){
+      lootEl.innerHTML = '<li>Dati ABP in caricamento…</li>';
+    } else {
+      const loot = (data.lootGuidelines || []).map(item => `<li>${item}</li>`).join('');
+      lootEl.innerHTML = loot || '<li>Nessuna linea guida aggiuntiva nel dataset.</li>';
+    }
+  }
+  const extraNotes = document.querySelector('[data-abp-notes]');
+  if(extraNotes){
+    if(loading){
+      extraNotes.innerHTML = '<li>Dati ABP in caricamento…</li>';
+    } else {
+      const listNotes = Array.isArray(data.notes) ? data.notes.slice(1) : [];
+      extraNotes.innerHTML = listNotes.length ? listNotes.map(note => `<li>${note}</li>`).join('') : '<li>Nessuna nota supplementare.</li>';
+    }
+  }
+}
+
 function handleFieldUpdate(key, value){
   switch(key){
     case 'alignment':
@@ -556,6 +723,7 @@ function handleFieldUpdate(key, value){
       break;
     case 'livello':
       updateRazzaClassiSummary();
+      updateRuleSummary();
       break;
     case 'taglia':
       state.tagliaManual = !!value;
@@ -1093,7 +1261,15 @@ function updateRuleSummary(){
   if(!note) return;
   const eitr = state.toggleEitr !== false;
   const abp = state.toggleAbp !== false;
-  note.textContent = `${eitr ? 'EITR attivo' : 'EITR disattivato'} • ${abp ? 'ABP attivo' : 'ABP disattivato'}`;
+  const level = state.livello || 7;
+  const eitrText = eitr ? 'EITR attivo' : 'EITR disattivato';
+  let abpText = abp ? 'ABP attivo' : 'ABP disattivato';
+  if(abp){
+    const summary = formatAbpSummary(level);
+    if(summary) abpText = `ABP attivo — ${summary}`;
+  }
+  note.textContent = `${eitrText} • ${abpText}`;
+  renderAbpSection();
 }
 
 function updateTraitNotes(){

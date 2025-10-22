@@ -85,3 +85,4 @@ export const AGE_STAGES = [
   { id: 'old', label: 'Anziano', summary: '–2 For, –2 Des, –2 Cos; +1 Int, +1 Sag, +1 Car.' },
   { id: 'venerable', label: 'Venerabile', summary: '–3 For, –3 Des, –3 Cos; +1 Int, +1 Sag, +1 Car.' }
 ];
+
