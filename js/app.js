@@ -62,6 +62,21 @@ const routes = {
   '/tracker': 'view-tracker',
 };
 
+const PROFICIENCY_FIELD_CONFIG = [
+  { key: 'profArmiSemplici', label: 'Armi semplici', sourceKey: 'profArmiSempliciFonte' },
+  { key: 'profArmiMarziali', label: 'Armi marziali', sourceKey: 'profArmiMarzialiFonte' },
+  { key: 'profArmiEsotiche', label: 'Armi esotiche', sourceKey: 'profArmiEsoticheFonte' },
+  { key: 'profArmatureLeggere', label: 'Armature leggere', sourceKey: 'profArmatureLeggereFonte' },
+  { key: 'profArmatureMedie', label: 'Armature medie', sourceKey: 'profArmatureMedieFonte' },
+  { key: 'profArmaturePesanti', label: 'Armature pesanti', sourceKey: 'profArmaturePesantiFonte' },
+  { key: 'profScudi', label: 'Scudi', sourceKey: 'profScudiFonte' },
+  { key: 'profScudiPesanti', label: 'Scudi pesanti', sourceKey: 'profScudiPesantiFonte' },
+  { key: 'profScudiTorre', label: 'Scudi torre', sourceKey: 'profScudiTorreFonte' },
+  { key: 'profCategorieExtra', label: 'Categorie aggiuntive', sourceKey: null }
+];
+
+const CAPABILITY_NOTE_FIELDS = ['talenti', 'tratti', 'difetti', 'riassCapacita'];
+
 function parseRoute(rawRoute = ''){
   const routeInfo = {
     base: '/avvio',
@@ -476,6 +491,9 @@ function initScheda(context = {}){
   updateRazzaClassiSummary();
   updateTraitNotes();
   updateDrawbackNotes();
+  renderClassCapabilities();
+  renderProficiencySummary();
+  renderCapabilityNotes();
 
   buildStats();
   buildAtkTable();
@@ -816,6 +834,8 @@ function renderAbpSection(){
 }
 
 function handleFieldUpdate(key, value){
+  const isProficiencyField = PROFICIENCY_FIELD_CONFIG.some(cfg => cfg.key === key || cfg.sourceKey === key);
+  const isCapabilityNoteField = CAPABILITY_NOTE_FIELDS.includes(key);
   switch(key){
     case 'alignment':
     case 'divinita':
@@ -831,6 +851,9 @@ function handleFieldUpdate(key, value){
       applyClassDetails(state.classeId);
       syncProgressionFromPrimary();
       updateRazzaClassiSummary();
+      renderClassCapabilities();
+      renderProficiencySummary();
+      renderCapabilityNotes();
       if(state.multiClassEnabled) renderMulticlassList();
       updateMulticlassStatus();
       if(state.multiClassEnabled) persistClassProgression();
@@ -840,6 +863,8 @@ function handleFieldUpdate(key, value){
       updateRazzaClassiSummary();
       updateRuleSummary();
       updateMulticlassStatus();
+      renderClassCapabilities();
+      renderCapabilityNotes();
       break;
     case 'taglia':
       state.tagliaManual = !!value;
@@ -867,6 +892,12 @@ function handleFieldUpdate(key, value){
       break;
     default:
       break;
+  }
+  if(isProficiencyField){
+    renderProficiencySummary();
+  }
+  if(isCapabilityNoteField){
+    renderCapabilityNotes();
   }
 }
 
@@ -1166,6 +1197,9 @@ function initMulticlassUI(){
     applyMode({ focusUid });
     applyClassDetails(state.classeId);
     persistClassProgression();
+    renderClassCapabilities();
+    renderProficiencySummary();
+    renderCapabilityNotes();
   });
 
   addBtn.addEventListener('click', () => {
@@ -1263,6 +1297,9 @@ function renderMulticlassList({ focusUid = null } = {}){
     else setTimeout(focus, 0);
   }
   updateMulticlassStatus();
+  renderClassCapabilities();
+  renderProficiencySummary();
+  renderCapabilityNotes();
 }
 
 function bindMulticlassItem(container, entry){
@@ -1308,6 +1345,9 @@ function bindMulticlassItem(container, entry){
     updateRazzaClassiSummary();
     persistClassProgression();
     updateMulticlassStatus();
+    renderClassCapabilities();
+    renderProficiencySummary();
+    renderCapabilityNotes();
   });
 
   const commitLevel = debounce(() => {
@@ -1318,6 +1358,8 @@ function bindMulticlassItem(container, entry){
     updateRazzaClassiSummary();
     persistClassProgression();
     updateMulticlassStatus();
+    renderClassCapabilities();
+    renderCapabilityNotes();
   }, 200);
   levelInput?.addEventListener('input', commitLevel);
   levelInput?.addEventListener('change', commitLevel);
@@ -1342,6 +1384,8 @@ function bindMulticlassItem(container, entry){
     syncPrimaryClassFromProgression();
     updateRazzaClassiSummary();
     persistClassProgression();
+    renderClassCapabilities();
+    renderCapabilityNotes();
   });
 
 }
@@ -1767,6 +1811,9 @@ function applyClassDetails(classId){
     }
     if(archNote) archNote.textContent = 'Seleziona una classe per visualizzare gli archetipi.';
   }
+  renderClassCapabilities();
+  renderProficiencySummary();
+  renderCapabilityNotes();
 }
 
 function renderSizeOptions(select, recommended){
@@ -1909,6 +1956,298 @@ function updateDrawbackNotes(){
     return item ? `${item.name}: ${item.summary || '—'}` : null;
   }).filter(Boolean);
   note.textContent = lines.join(' • ');
+}
+
+function splitUserEntries(value){
+  if(typeof value !== 'string') return [];
+  return value
+    .split(/[\n;•]+/)
+    .map(str => str.replace(/^[\s\-–—•]+/, '').trim())
+    .filter(Boolean);
+}
+
+function renderTextList(listEl, items, emptyEl){
+  if(!listEl) return;
+  listEl.innerHTML = '';
+  const normalised = (items || [])
+    .map(item => typeof item === 'string' ? item : item?.text)
+    .map(text => (text || '').toString().trim())
+    .filter(Boolean);
+  if(!normalised.length){
+    if(emptyEl) emptyEl.hidden = false;
+    return;
+  }
+  if(emptyEl) emptyEl.hidden = true;
+  normalised.forEach(text => {
+    const li = document.createElement('li');
+    li.textContent = text;
+    listEl.appendChild(li);
+  });
+}
+
+function renderLabeledList(listEl, items, emptyEl){
+  if(!listEl) return;
+  listEl.innerHTML = '';
+  const normalised = (items || [])
+    .map(item => {
+      if(!item || !item.label) return null;
+      const values = Array.isArray(item.values) ? item.values.filter(Boolean) : [];
+      const text = values.length ? values.join(' • ') : '';
+      return text ? { label: item.label, text } : null;
+    })
+    .filter(Boolean);
+  if(!normalised.length){
+    if(emptyEl) emptyEl.hidden = false;
+    return;
+  }
+  if(emptyEl) emptyEl.hidden = true;
+  normalised.forEach(item => {
+    const li = document.createElement('li');
+    const strong = document.createElement('strong');
+    strong.textContent = `${item.label}:`;
+    li.appendChild(strong);
+    li.appendChild(document.createTextNode(` ${item.text}`));
+    listEl.appendChild(li);
+  });
+}
+
+function getEffectiveClassEntries(){
+  if(Array.isArray(state.classProgression) && state.classProgression.length){
+    return state.classProgression;
+  }
+  return [createClassEntry(state.classeId || '', Number(state.livello) || 0, state.archetypes)];
+}
+
+function mergeClassProficiencies(bucket, cls, profs){
+  if(!profs) return;
+  const classLabel = cls?.name || cls?.id || '';
+  const pushMany = (target, values, prefix = null) => {
+    values.forEach(text => {
+      if(!text) return;
+      const label = prefix ? `${prefix}: ${classLabel}` : classLabel;
+      target.push({ className: classLabel, text: text.toString(), label });
+    });
+  };
+  const armour = profs.armor || { light: [], medium: [], heavy: [] };
+  pushMany(bucket.weapons, toArray(profs.weapons || []));
+  pushMany(bucket.armorLight, toArray(armour.light || []));
+  pushMany(bucket.armorMedium, toArray(armour.medium || []));
+  pushMany(bucket.armorHeavy, toArray(armour.heavy || []));
+  pushMany(bucket.shields, toArray(profs.shields || []));
+  pushMany(bucket.other, toArray(profs.other || []));
+}
+
+function collectClassCapabilityInfo(){
+  const entries = getEffectiveClassEntries();
+  const info = {
+    features: [],
+    replaced: [],
+    focus: [],
+    bonusFeats: [],
+    proficiencies: {
+      weapons: [],
+      armorLight: [],
+      armorMedium: [],
+      armorHeavy: [],
+      shields: [],
+      other: []
+    }
+  };
+  entries.forEach(entry => {
+    const cls = getClassById(entry.classId);
+    if(!cls) return;
+    const classLabel = cls.name || entry.classId || 'Classe selezionata';
+    const levelCap = Number.isFinite(Number(entry.level)) ? Number(entry.level) : null;
+    const archetypes = toArray(entry.archetypes).map(id => getArchetypeById(entry.classId, id)).filter(Boolean);
+    const replacedMap = new Map();
+    const modifiedMap = new Map();
+    archetypes.forEach(arch => {
+      toArray(arch.replaces).forEach(name => {
+        const key = normaliseFeatureKey(name);
+        if(key) replacedMap.set(key, arch);
+      });
+      toArray(arch.modifies).forEach(name => {
+        const key = normaliseFeatureKey(name);
+        if(key) modifiedMap.set(key, arch);
+      });
+      if(arch.summary){
+        info.features.push({
+          className: classLabel,
+          name: arch.name,
+          level: null,
+          summary: arch.summary,
+          status: 'archetype'
+        });
+      }
+    });
+    const features = Array.isArray(cls.features) ? cls.features : [];
+    features.forEach(feature => {
+      const name = feature?.name || feature?.id;
+      if(!name) return;
+      if(levelCap != null && feature?.level != null && Number(feature.level) > levelCap) return;
+      const key = normaliseFeatureKey(name);
+      if(replacedMap.has(key)){
+        const arch = replacedMap.get(key);
+        info.replaced.push({
+          className: classLabel,
+          name,
+          level: feature.level ?? null,
+          summary: feature.summary || feature.description || '',
+          archetype: arch?.name || ''
+        });
+        return;
+      }
+      const modified = modifiedMap.get(key);
+      const summaryParts = [feature.summary || feature.description || ''];
+      if(modified){
+        summaryParts.push(`Modificato da ${modified.name}.`);
+      }
+      info.features.push({
+        className: classLabel,
+        name,
+        level: feature.level ?? null,
+        summary: summaryParts.filter(Boolean).join(' '),
+        status: modified ? 'modified' : 'active'
+      });
+    });
+    const focusOptions = Array.isArray(cls.focusOptions) ? cls.focusOptions : [];
+    focusOptions.forEach(option => {
+      info.focus.push({
+        className: classLabel,
+        label: option.label || option.name || option.type || 'Selezione',
+        count: option.count || null,
+        options: toArray(option.options || []),
+        summary: option.summary || ''
+      });
+    });
+    const bonusFeats = toArray(cls.bonusFeats);
+    bonusFeats.forEach(text => {
+      info.bonusFeats.push({ className: classLabel, text: text.toString() });
+    });
+    mergeClassProficiencies(info.proficiencies, cls, cls.proficiencies);
+  });
+  return info;
+}
+
+function renderClassCapabilities(){
+  const activeList = document.querySelector('[data-cap-features]');
+  const activeEmpty = document.querySelector('[data-cap-features-empty]');
+  const replacedList = document.querySelector('[data-cap-replaced]');
+  const replacedEmpty = document.querySelector('[data-cap-replaced-empty]');
+  const focusList = document.querySelector('[data-cap-focus]');
+  const focusEmpty = document.querySelector('[data-cap-focus-empty]');
+  if(!activeList && !replacedList && !focusList) return;
+  const info = collectClassCapabilityInfo();
+  const featureItems = info.features.map(item => {
+    const parts = [];
+    if(item.className) parts.push(item.className);
+    if(item.name) parts.push(item.name);
+    const label = item.level != null ? `${parts.join(' · ')} (Lv ${item.level})` : parts.join(' · ');
+    return { label, text: item.summary, status: item.status };
+  });
+  if(activeList){
+    activeList.innerHTML = '';
+    if(!featureItems.length){
+      if(activeEmpty) activeEmpty.hidden = false;
+    } else {
+      if(activeEmpty) activeEmpty.hidden = true;
+      featureItems.forEach(item => {
+        const li = document.createElement('li');
+        const strong = document.createElement('strong');
+        strong.textContent = item.label;
+        li.appendChild(strong);
+        if(item.text){
+          const detail = document.createElement('div');
+          detail.textContent = item.text;
+          li.appendChild(detail);
+        }
+        if(item.status === 'modified') li.classList.add('is-modified');
+        if(item.status === 'archetype') li.classList.add('is-archetype');
+        activeList.appendChild(li);
+      });
+    }
+  }
+  if(replacedList){
+    const replacedItems = info.replaced.map(item => {
+      const base = item.level != null ? `${item.className} · ${item.name} (Lv ${item.level})` : `${item.className} · ${item.name}`;
+      const detail = item.archetype ? `Sostituito da ${item.archetype}. ${item.summary || ''}`.trim() : item.summary || '';
+      return detail ? `${base}: ${detail}` : base;
+    });
+    renderTextList(replacedList, replacedItems, replacedEmpty);
+  }
+  if(focusList){
+    const focusItems = info.focus.map(option => {
+      const countLabel = option.count ? ` (scegli ${option.count})` : '';
+      const prefix = `${option.className} · ${option.label}${countLabel}`;
+      const detailParts = [];
+      if(option.options.length) detailParts.push(option.options.join(', '));
+      if(option.summary) detailParts.push(option.summary);
+      return `${prefix}: ${detailParts.filter(Boolean).join(' — ')}`.trim();
+    });
+    renderTextList(focusList, focusItems, focusEmpty);
+  }
+}
+
+function renderProficiencySummary(){
+  const recordedList = document.querySelector('[data-cap-profs-recorded]');
+  const recordedEmpty = document.querySelector('[data-cap-profs-recorded-empty]');
+  const databaseList = document.querySelector('[data-cap-profs-database]');
+  const databaseEmpty = document.querySelector('[data-cap-profs-database-empty]');
+  if(recordedList){
+    const items = PROFICIENCY_FIELD_CONFIG.map(cfg => {
+      const value = state[cfg.key];
+      if(!value) return null;
+      const values = cfg.key === 'profCategorieExtra' ? splitUserEntries(value) : [value];
+      const formatted = values.filter(Boolean).join(' • ');
+      if(!formatted) return null;
+      const source = cfg.sourceKey ? (state[cfg.sourceKey] || '').trim() : '';
+      const label = source ? `${cfg.label}: ${formatted} (${source})` : `${cfg.label}: ${formatted}`;
+      return label;
+    }).filter(Boolean);
+    renderTextList(recordedList, items, recordedEmpty);
+  }
+  if(databaseList){
+    const info = collectClassCapabilityInfo();
+    const parts = [];
+    const push = (label, entries) => {
+      entries.forEach(item => {
+        const owner = item.className ? `${item.className}: ` : '';
+        parts.push(`${label} — ${owner}${item.text}`);
+      });
+    };
+    push('Armi', info.proficiencies.weapons);
+    push('Armature leggere', info.proficiencies.armorLight);
+    push('Armature medie', info.proficiencies.armorMedium);
+    push('Armature pesanti', info.proficiencies.armorHeavy);
+    push('Scudi', info.proficiencies.shields);
+    push('Altro', info.proficiencies.other);
+    renderTextList(databaseList, parts, databaseEmpty);
+  }
+}
+
+function renderCapabilityNotes(){
+  const notesList = document.querySelector('[data-cap-notes]');
+  const notesEmpty = document.querySelector('[data-cap-notes-empty]');
+  const bonusList = document.querySelector('[data-cap-bonus]');
+  const bonusEmpty = document.querySelector('[data-cap-bonus-empty]');
+  const summaryEl = document.querySelector('[data-cap-riassunto]');
+  if(notesList){
+    const items = [
+      { label: 'Talenti', values: splitUserEntries(state.talenti) },
+      { label: 'Tratti', values: splitUserEntries(state.tratti) },
+      { label: 'Difetti', values: splitUserEntries(state.difetti) }
+    ];
+    renderLabeledList(notesList, items, notesEmpty);
+  }
+  if(bonusList){
+    const info = collectClassCapabilityInfo();
+    const bonusItems = info.bonusFeats.map(item => `${item.className}: ${item.text}`);
+    renderTextList(bonusList, bonusItems, bonusEmpty);
+  }
+  if(summaryEl){
+    const text = (state.riassCapacita || '').toString().trim();
+    summaryEl.textContent = text || 'Compila il campo "Capacità di Classe chiave" nella scheda completa per una nota rapida.';
+  }
 }
 
 /*

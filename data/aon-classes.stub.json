@@ -20,7 +20,31 @@
           "name": "Vivisezionista",
           "summary": "Sostituisce le bombe con furtivi"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "alchemist-bombs", "name": "Bombe", "level": 1, "summary": "Crea e lancia bombe alchemiche che infliggono danni da spargimento." },
+          { "id": "alchemist-mutiny", "name": "Mutageno", "level": 1, "summary": "Prepara mutageni che migliorano caratteristiche fisiche a costo di difese mentali." },
+          { "id": "alchemist-throw-anything", "name": "Lanciare Qualsiasi Cosa", "level": 1, "summary": "Tratta le armi improvvisate come competenze e riduce le penalità al lancio." },
+          { "id": "alchemist-discovery", "name": "Scoperte", "level": 2, "summary": "Scegli miglioramenti alchemici speciali come ala alchemica o bomba congelante." },
+          { "id": "alchemist-poison-res", "name": "Resistenza ai Veleni", "level": 2, "summary": "Ottiene bonus ai tiri salvezza contro i veleni che aumentano con i livelli." },
+          { "id": "alchemist-swift-alchemy", "name": "Alchimia Rapida", "level": 3, "summary": "Prepara veleni e oggetti alchemici in metà tempo." }
+        ],
+        "focusOptions": [
+          { "label": "Scoperte", "summary": "Scegli una nuova scoperta al 2° livello e successivamente ogni 2 livelli." }
+        ],
+        "bonusFeats": [
+          "Può selezionare talenti di creazione oggetti magici anche se non soddisfa i requisiti di incantatore."
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Bombe", "Balestra leggera", "Balestra a ripetizione", "Arco corto", "Spada corta"],
+          "armor": {
+            "light": ["Armature leggere"]
+          },
+          "shields": [],
+          "other": ["Nessuna penalità al lanciare bombe in armatura leggera"]
+        }
+      }
     },
     {
       "id": "antipaladin",
@@ -42,7 +66,33 @@
           "name": "Torturatore",
           "summary": "Infligge dolore debilitante"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "antipaladin-aura-evil", "name": "Aura del Male", "level": 1, "summary": "Emana un'aura malvagia tanto potente quanto il suo grado." },
+          { "id": "antipaladin-detect-good", "name": "Individuazione del Bene", "level": 1, "summary": "Rileva creature e oggetti buoni come capacità a volontà." },
+          { "id": "antipaladin-smite", "name": "Punire il Bene", "level": 1, "summary": "Dichiara un nemico buono per ottenere bonus a colpire e danni." },
+          { "id": "antipaladin-touch", "name": "Tocco della Corruzione", "level": 2, "summary": "Infligge danni negativi o cura non morti con tocchi consumando utilizzi giornalieri." },
+          { "id": "antipaladin-cruelties", "name": "Crudeltà", "level": 3, "summary": "Aggiunge condizioni debilitanti quando usa il tocco della corruzione." },
+          { "id": "antipaladin-aura-cowardice", "name": "Aura di Codardia", "level": 3, "summary": "Penalizza i tiri salvezza contro la paura degli avversari vicini." },
+          { "id": "antipaladin-fiendish-boon", "name": "Dono Infernale", "level": 5, "summary": "Imbuesce l'arma con poteri empî o ottiene una cavalcatura demoniaca." }
+        ],
+        "focusOptions": [
+          { "label": "Crudeltà", "summary": "Scegli una nuova crudeltà ogni pochi livelli per espandere gli effetti del tocco della corruzione." }
+        ],
+        "bonusFeats": [
+          "Il dono infernale concede potenziamenti equivalenti a talenti focalizzati sull'arma o evoca una cavalcatura empia."
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Armi marziali"],
+          "armor": {
+            "light": ["Armature leggere"],
+            "medium": ["Armature medie"],
+            "heavy": ["Armature pesanti"]
+          },
+          "shields": ["Scudi (tranne torre)"]
+        }
+      }
     },
     {
       "id": "arcanist",
@@ -64,7 +114,32 @@
           "name": "Mago Bianco",
           "summary": "Focalizzato sulla guarigione"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "arcanist-reservoir", "name": "Serbatoio Arcano", "level": 1, "summary": "Accumula punti energia per potenziare incantesimi o attivare imprese." },
+          { "id": "arcanist-exploits", "name": "Imprese Arcane", "level": 1, "summary": "Scegli capacità versatili come metamagia improvvisata o barriere." },
+          { "id": "arcanist-consume", "name": "Consumare Incantesimo", "level": 1, "summary": "Sacrifica uno slot preparato per ricaricare il serbatoio arcano." },
+          { "id": "arcanist-prepare", "name": "Preparazione Flessibile", "level": 1, "summary": "Prepara un set ridotto ma può convertire gli slot lanciando come stregone." },
+          { "id": "arcanist-greater-exploit", "name": "Imprese Maggiori", "level": 11, "summary": "Sblocca versioni potenziate delle imprese scelte." }
+        ],
+        "focusOptions": [
+          { "label": "Imprese", "summary": "Seleziona una nuova impresa al 1° livello e ulteriori ai livelli dispari successivi." }
+        ],
+        "bonusFeats": [
+          "Ottiene talenti di metamagia o focalizzati sugli incantesimi al 5°, 10°, 15° e 20° livello."
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici"],
+          "armor": {
+            "light": [],
+            "medium": [],
+            "heavy": []
+          },
+          "shields": [],
+          "other": ["Indossare armature provoca fallimento degli incantesimi arcani"]
+        }
+      }
     },
     {
       "id": "barbarian",
@@ -86,7 +161,30 @@
           "name": "Barbaro Urbano",
           "summary": "Raffina la furia in disciplina"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "barbarian-rage", "name": "Ira", "level": 1, "summary": "Entra in uno stato di furia che aumenta Forza e Costituzione ma riduce la CA." },
+          { "id": "barbarian-fast-movement", "name": "Movimento Rapido", "level": 1, "summary": "Ottiene +3 metri alla velocità base quando non indossa armature pesanti." },
+          { "id": "barbarian-uncanny-dodge", "name": "Schivare Prodigioso", "level": 2, "summary": "Non viene colto impreparato e mantiene il bonus di Destrezza alla CA." },
+          { "id": "barbarian-rage-powers", "name": "Poteri d'Ira", "level": 2, "summary": "Sceglie potenziamenti come furia animalesca o resistenze elementali." },
+          { "id": "barbarian-trap-sense", "name": "Senso delle Trappole", "level": 3, "summary": "Bonus ai tiri salvezza e alla CA contro trappole." },
+          { "id": "barbarian-damage-reduction", "name": "Riduzione del Danno", "level": 7, "summary": "Riduce i danni fisici grazie alla resistenza acquisita." }
+        ],
+        "focusOptions": [
+          { "label": "Poteri d'Ira", "summary": "Seleziona un potere al 2° livello e ogni due livelli successivi." }
+        ],
+        "bonusFeats": [],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Armi marziali", "Armi da guerra tribali"],
+          "armor": {
+            "light": ["Armature leggere"],
+            "medium": ["Armature medie"]
+          },
+          "shields": ["Scudi (tranne torre)"],
+          "other": ["Mantenere ira richiede azione gratuita ogni round"]
+        }
+      }
     },
     {
       "id": "bard",
@@ -108,7 +206,31 @@
           "name": "Sonnacchioso",
           "summary": "Ipnotizza con le esibizioni"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "bard-performance", "name": "Esibizione Bardica", "level": 1, "summary": "Ispirazioni musicali che forniscono bonus o effetti debilitanti spendendo round." },
+          { "id": "bard-cantrips", "name": "Trucchetti", "level": 1, "summary": "Lancia incantesimi di livello 0 a volontà." },
+          { "id": "bard-knowledge", "name": "Conoscenze Bardiche", "level": 1, "summary": "Somma il bonus di metà livello ai tiri di conoscenze." },
+          { "id": "bard-versatile", "name": "Prestazione Versatile", "level": 2, "summary": "Sostituisce prove di abilità con esibizioni appropriate." },
+          { "id": "bard-well-versed", "name": "Ben Informato", "level": 2, "summary": "Bonus ai tiri salvezza contro suoni, linguaggi e compulsioni." },
+          { "id": "bard-lore-master", "name": "Maestro del Sapere", "level": 5, "summary": "Identifica oggetti e risponde a domande di conoscenza con prove garantite." }
+        ],
+        "focusOptions": [
+          { "label": "Esibizioni", "summary": "Nuove esibizioni diventano disponibili ai livelli 1, 3, 6, 9, 12 e successivi." }
+        ],
+        "bonusFeats": [
+          "Può selezionare talenti di prestazione come bonus quando ottiene nuove esibizioni." 
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Spada lunga", "Spada corta", "Rapiera", "Frusta", "Arco corto", "Bastone ferrato"],
+          "armor": {
+            "light": ["Armature leggere"]
+          },
+          "shields": ["Brocchiere"],
+          "other": ["Lanciare incantesimi bardici in armatura leggera non provoca fallimento" ]
+        }
+      }
     },
     {
       "id": "cleric",
@@ -130,7 +252,31 @@
           "name": "Separatista",
           "summary": "Domini disallineati"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "cleric-aura", "name": "Aura", "level": 1, "summary": "L'allineamento del chierico genera un'aura forte come quella della sua divinità." },
+          { "id": "cleric-channel-energy", "name": "Canalizzare Energia", "level": 1, "summary": "Rilascia energia positiva o negativa per curare alleati o danneggiare non morti." },
+          { "id": "cleric-domain", "name": "Dominio", "level": 1, "summary": "Accesso a poteri e incantesimi bonus forniti dai domini selezionati." },
+          { "id": "cleric-spontaneous", "name": "Lancio Spontaneo", "level": 1, "summary": "Converti incantesimi preparati in cura o ferite in base all'allineamento." },
+          { "id": "cleric-armor-training", "name": "Addestramento Divino", "level": 1, "summary": "Ottiene competenza nelle armature e scudi concessi dalla fede." }
+        ],
+        "focusOptions": [
+          { "label": "Domini", "count": 2, "options": ["Bene", "Guarigione", "Guerra", "Protezione", "Sole", "Magia"], "summary": "Scegli due domini concessi dalla divinità per ottenere poteri e incantesimi aggiuntivi." }
+        ],
+        "bonusFeats": [
+          "Ottieni incantesimi bonus da dominio in base alla divinità e alla scelta effettuata."
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Arma da guerra preferita dalla divinità"],
+          "armor": {
+            "light": ["Armature leggere"],
+            "medium": ["Armature medie"],
+            "heavy": ["Armature pesanti"]
+          },
+          "shields": ["Scudi (tranne torre)"]
+        }
+      }
     },
     {
       "id": "druid",
@@ -152,7 +298,32 @@
           "name": "Druido del Cielo",
           "summary": "Alleati alati e tempeste"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "druid-nature-sense", "name": "Senso della Natura", "level": 1, "summary": "Bonus alle prove di Conoscenze (natura) e Sopravvivenza." },
+          { "id": "druid-wild-empathy", "name": "Empatia Selvatica", "level": 1, "summary": "Influenza l'atteggiamento degli animali come una prova di Diplomazia." },
+          { "id": "druid-nature-bond", "name": "Legame con la Natura", "level": 1, "summary": "Scegli un compagno animale o un dominio della natura." },
+          { "id": "druid-spontaneous", "name": "Lancio Spontaneo", "level": 1, "summary": "Può convertire gli incantesimi preparati in Evoca Alleato Naturale." },
+          { "id": "druid-wild-shape", "name": "Forma Selvatica", "level": 4, "summary": "Si trasforma in animali e altre forme naturali con potenza crescente." },
+          { "id": "druid-resist-nature", "name": "Resistenza alla Natura", "level": 9, "summary": "Immunità a veleni, mille malanni e resistenza agli elementi naturali." }
+        ],
+        "focusOptions": [
+          { "label": "Legame con la Natura", "summary": "Scegli tra compagno animale e dominio; alcuni archetipi aggiungono altre opzioni." }
+        ],
+        "bonusFeats": [
+          "Può selezionare talenti di metamagia o focalizzati sugli incantesimi della natura quando ottiene nuovi ranghi." 
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Bastone", "Randello", "Pugnale", "Falcetto", "Lancia corta", "Lancia", "Dardo", "Fionda", "Scimitarra"],
+          "armor": {
+            "light": ["Armature leggere (non metalliche)"],
+            "medium": ["Armature medie (non metalliche)"]
+          },
+          "shields": ["Scudi in legno"],
+          "other": ["Perde capacità se indossa armature metalliche" ]
+        }
+      }
     },
     {
       "id": "fighter",
@@ -349,7 +520,33 @@
             "Bonus Feat (4)"
           ]
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "fighter-bonus-feats", "name": "Talenti Bonus", "level": 1, "summary": "Ottiene un talento di combattimento bonus al 1° livello e successivamente ogni due livelli." },
+          { "id": "fighter-bravery", "name": "Coraggio", "level": 2, "summary": "Bonus crescente contro effetti di paura." },
+          { "id": "fighter-armor-training", "name": "Addestramento nelle Armature", "level": 3, "summary": "Riduce le penalità di armatura e aumenta la velocità in armature medie e pesanti." },
+          { "id": "fighter-weapon-training", "name": "Addestramento nelle Armi", "level": 5, "summary": "Seleziona gruppi di armi a cui applicare bonus a colpire e danni." },
+          { "id": "fighter-armor-mastery", "name": "Maestria nelle Armature", "level": 19, "summary": "Ottiene RD 5/- quando indossa armature." },
+          { "id": "fighter-weapon-mastery", "name": "Maestria nelle Armi", "level": 20, "summary": "Sceglie un'arma per ottenere minaccia e danni critici migliorati permanenti." }
+        ],
+        "focusOptions": [
+          { "label": "Gruppi d'Armi", "summary": "Ogni addestramento nelle armi richiede di scegliere un nuovo gruppo (es. lame leggere, asce)." }
+        ],
+        "bonusFeats": [
+          "Seleziona talenti di combattimento bonus ai livelli pari a partire dal 2°."
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Armi marziali"],
+          "armor": {
+            "light": ["Armature leggere"],
+            "medium": ["Armature medie"],
+            "heavy": ["Armature pesanti"]
+          },
+          "shields": ["Scudi (incluso torre)"],
+          "other": ["Addestramento nelle armature riduce la penalità di movimento"]
+        }
+      }
     },
     {
       "id": "rogue",
@@ -371,7 +568,31 @@
           "name": "Mascalzone",
           "summary": "Combattente elegante e sociale"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "rogue-sneak-attack", "name": "Attacco Furtivo", "level": 1, "summary": "Infligge danni extra quando coglie il bersaglio impreparato o flanca." },
+          { "id": "rogue-trapfinding", "name": "Cercare Trappole", "level": 1, "summary": "Bonus alle prove di Percezione e Disattivare Congegni per individuare trappole." },
+          { "id": "rogue-evasion", "name": "Schivare Prodigioso", "level": 2, "summary": "Evita completamente gli effetti di area con un tiro salvezza riuscito." },
+          { "id": "rogue-talents", "name": "Talenti da Ladro", "level": 2, "summary": "Sceglie trucchi speciali come attacco debilitante o addestramento in abilità." },
+          { "id": "rogue-uncanny-dodge", "name": "Schivare Prodigioso", "level": 4, "summary": "Non viene colto impreparato dai nemici comuni." },
+          { "id": "rogue-trap-sense", "name": "Senso delle Trappole", "level": 3, "summary": "Bonus alla CA e ai tiri salvezza contro trappole." }
+        ],
+        "focusOptions": [
+          { "label": "Talenti da Ladro", "summary": "Seleziona nuovi talenti ai livelli pari; al 10° livello può scegliere talenti avanzati." }
+        ],
+        "bonusFeats": [
+          "I talenti avanzati permettono di selezionare talenti di combattimento o furtivi aggiuntivi." 
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Balestra a mano", "Balestra leggera", "Rapiera", "Randello", "Spada corta", "Arco corto", "Frusta"],
+          "armor": {
+            "light": ["Armature leggere"]
+          },
+          "shields": [],
+          "other": ["Può usare Disattivare Congegni per trappole magiche" ]
+        }
+      }
     },
     {
       "id": "monk",
@@ -393,7 +614,34 @@
           "name": "Tetori",
           "summary": "Maestro delle prese"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "monk-ac-bonus", "name": "Bonus alla CA", "level": 1, "summary": "Somma Saggezza alla CA e ottiene bonus che aumentano con il livello quando è senza armature." },
+          { "id": "monk-flurry", "name": "Raffica di Colpi", "level": 1, "summary": "Esegue attacchi extra con armi da monaco o a mani nude." },
+          { "id": "monk-stunning-fist", "name": "Pugno Stordente", "level": 1, "summary": "Può stordire i nemici con un colpo a mani nude." },
+          { "id": "monk-evasion", "name": "Schivare Prodigioso", "level": 2, "summary": "Evita completamente gli attacchi ad area con un tiro salvezza riuscito." },
+          { "id": "monk-ki-pool", "name": "Riserva di Ki", "level": 3, "summary": "Spende punti ki per ottenere movimento extra, colpi elementali o nuovi talenti." },
+          { "id": "monk-slow-fall", "name": "Caduta Lenta", "level": 4, "summary": "Riduce i danni da caduta quando vicino a una parete." },
+          { "id": "monk-quivering-palm", "name": "Palmo Tremante", "level": 15, "summary": "Imposta una vibrazione mortale che può uccidere un avversario." }
+        ],
+        "focusOptions": [
+          { "label": "Talenti Bonus", "summary": "Seleziona talenti da monaco ai livelli 1, 2, 6, 10, 14 e 18 da una lista dedicata." }
+        ],
+        "bonusFeats": [
+          "Può scegliere talenti di stile e miglioramenti ai colpi senz'armi come talenti bonus." 
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Kama", "Nunchaku", "Sai", "Shuriken", "Bastone", "Siangham"],
+          "armor": {
+            "light": [],
+            "medium": [],
+            "heavy": []
+          },
+          "shields": [],
+          "other": ["Indossare armature o scudi sopprime molte capacità da monaco" ]
+        }
+      }
     },
     {
       "id": "paladin",
@@ -415,7 +663,32 @@
           "name": "Guerriero della Luce",
           "summary": "Sostituisce gli incantesimi con luce sacra"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "paladin-smite", "name": "Punire il Male", "level": 1, "summary": "Aggiungi bonus ai tiri per colpire e ai danni contro un bersaglio malvagio dichiarato." },
+          { "id": "paladin-lay-on-hands", "name": "Imposizione delle Mani", "level": 2, "summary": "Cura rapida per sé e alleati con utilizzi giornalieri basati sul Carisma." },
+          { "id": "paladin-mercies", "name": "Misericordie", "level": 3, "summary": "Rimuovi condizioni negative quando usi imposizione delle mani." },
+          { "id": "paladin-aura-courage", "name": "Aura di Coraggio", "level": 3, "summary": "Immunità alla paura per il paladino e bonus ai tiri salvezza degli alleati vicini." },
+          { "id": "paladin-divine-bond", "name": "Legame Divino", "level": 5, "summary": "Potenzia l'arma o ottieni una cavalcatura sacra." },
+          { "id": "paladin-spells", "name": "Incantesimi di Paladino", "level": 4, "summary": "Accedi a incantesimi divini di 1°-4° livello con lista limitata." }
+        ],
+        "focusOptions": [
+          { "label": "Misericordie", "options": ["Affaticato", "Accecato", "Infermo", "Malattia", "Paralizzato"], "summary": "Seleziona una misericordia disponibile ogni volta che ottieni il privilegio." }
+        ],
+        "bonusFeats": [
+          "Il legame divino concede potenziamenti equivalenti a talenti focalizzati sull'arma o consente una cavalcatura sacra."
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Armi marziali"],
+          "armor": {
+            "light": ["Armature leggere"],
+            "medium": ["Armature medie"],
+            "heavy": ["Armature pesanti"]
+          },
+          "shields": ["Scudi (tranne torre)"]
+        }
+      }
     },
     {
       "id": "ranger",
@@ -437,7 +710,35 @@
           "name": "Cacciatore di Demoni",
           "summary": "Nemici prescelti infernali"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "ranger-favored-enemy", "name": "Nemico Prescelto", "level": 1, "summary": "Sceglie creature specifiche contro cui ottiene bonus a colpire, danni e abilità." },
+          { "id": "ranger-track", "name": "Tracciare", "level": 1, "summary": "Può seguire tracce usando Sopravvivenza con bonus." },
+          { "id": "ranger-combat-style", "name": "Stile di Combattimento", "level": 2, "summary": "Ottiene talenti bonus legati a uno stile come arco o due armi." },
+          { "id": "ranger-endurance", "name": "Resistenza", "level": 3, "summary": "Ottiene il talento Resistenza come capacità bonus." },
+          { "id": "ranger-favored-terrain", "name": "Terreno Prescelto", "level": 3, "summary": "Sceglie ambienti dove ottiene bonus a iniziativa, Conoscenze e Sopravvivenza." },
+          { "id": "ranger-hunters-bond", "name": "Legame del Cacciatore", "level": 4, "summary": "Condivide bonus con il gruppo o ottiene un compagno animale." },
+          { "id": "ranger-quarry", "name": "Preda", "level": 11, "summary": "Designa una creatura per ottenere bonus aggiuntivi e colpi critici automatici." }
+        ],
+        "focusOptions": [
+          { "label": "Nemici Prescelti", "summary": "Scegli un nuovo nemico al 1°, 5°, 10°, 15° e 20° livello." },
+          { "label": "Stile di Combattimento", "summary": "Definisce quali talenti bonus ricevi ai livelli pari." },
+          { "label": "Legame del Cacciatore", "summary": "Decidi se supportare il gruppo o allevare un compagno animale." }
+        ],
+        "bonusFeats": [
+          "Gli stili di combattimento concedono talenti bonus senza richiedere prerequisiti." 
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Armi marziali"],
+          "armor": {
+            "light": ["Armature leggere"],
+            "medium": ["Armature medie"]
+          },
+          "shields": ["Scudi (tranne torre)"],
+          "other": ["Può lanciare incantesimi ranger in armature leggere o medie"]
+        }
+      }
     },
     {
       "id": "sorcerer",
@@ -459,7 +760,32 @@
           "name": "Saggio",
           "summary": "Lancia usando Intelligenza"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "sorcerer-spells", "name": "Incantesimi Arcani Innati", "level": 1, "summary": "Lancia incantesimi spontanei dalla lista dello stregone con Carisma." },
+          { "id": "sorcerer-bloodline", "name": "Lignaggio", "level": 1, "summary": "Sceglie un lignaggio che concede poteri tematici e incantesimi bonus." },
+          { "id": "sorcerer-bloodline-arcana", "name": "Arcano di Lignaggio", "level": 1, "summary": "Ogni lignaggio fornisce un bonus permanente agli incantesimi." },
+          { "id": "sorcerer-eschew", "name": "Materiali Superflui", "level": 1, "summary": "Ottiene Escludere Materiali come talento bonus." },
+          { "id": "sorcerer-bonus-feats", "name": "Talenti Bonus", "level": 7, "summary": "Ottiene talenti bonus specifici del lignaggio a vari livelli." }
+        ],
+        "focusOptions": [
+          { "label": "Lignaggi", "summary": "Definisce poteri, incantesimi bonus e talenti disponibili al 1°, 3°, 7°, 11°, 15° e 19° livello." }
+        ],
+        "bonusFeats": [
+          "Ogni lignaggio elenca talenti bonus tra cui scegliere quando ottieni i livelli appropriati." 
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici"],
+          "armor": {
+            "light": [],
+            "medium": [],
+            "heavy": []
+          },
+          "shields": [],
+          "other": ["Indossare armature provoca fallimento degli incantesimi arcani" ]
+        }
+      }
     },
     {
       "id": "wizard",
@@ -481,7 +807,33 @@
           "name": "Specialista della Traslocazione",
           "summary": "Teletrasporti rapidi"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "wizard-spellbook", "name": "Libro degli Incantesimi", "level": 1, "summary": "Tiene traccia degli incantesimi preparati e può copiarne di nuovi." },
+          { "id": "wizard-arcane-school", "name": "Scuola Arcana", "level": 1, "summary": "Sceglie una scuola di magia per ottenere poteri e incantesimi bonus." },
+          { "id": "wizard-arcane-bond", "name": "Legame Arcano", "level": 1, "summary": "Ottiene un famiglio o un oggetto legato che funge da catalizzatore." },
+          { "id": "wizard-scribe-scroll", "name": "Trascrivere Pergamene", "level": 1, "summary": "Ottiene il talento Creare Pergamene come bonus." },
+          { "id": "wizard-bonus-feats", "name": "Talenti Bonus", "level": 5, "summary": "Seleziona talenti di creazione oggetti o metamagia ai livelli 5, 10, 15 e 20." }
+        ],
+        "focusOptions": [
+          { "label": "Scuole Arcane", "summary": "Decidi una scuola specializzata o resta universale; influenza poteri e incantesimi bonus." },
+          { "label": "Scoperta Arcana", "summary": "Dal 11° livello può scegliere scoperte arcane al posto dei talenti bonus." }
+        ],
+        "bonusFeats": [
+          "I talenti bonus devono essere di metamagia, creazione oggetti o scoperte arcane." 
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici"],
+          "armor": {
+            "light": [],
+            "medium": [],
+            "heavy": []
+          },
+          "shields": [],
+          "other": ["Indossare armature provoca fallimento degli incantesimi arcani"]
+        }
+      }
     },
     {
       "id": "cavalier",
@@ -503,7 +855,33 @@
           "name": "Alfiere",
           "summary": "Supporto tramite stendardi"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "cavalier-challenge", "name": "Sfida", "level": 1, "summary": "Dichiara un avversario e ottiene bonus a danni e difesa contro di lui." },
+          { "id": "cavalier-mount", "name": "Cavalcatura", "level": 1, "summary": "Ottiene una cavalcatura addestrata che scala con il livello." },
+          { "id": "cavalier-order", "name": "Ordine", "level": 1, "summary": "Sceglie un ordine cavalleresco che fornisce poteri e privilegi." },
+          { "id": "cavalier-tactician", "name": "Tattico", "level": 1, "summary": "Condivide talenti di lavoro di squadra con gli alleati." },
+          { "id": "cavalier-banner", "name": "Stendardo", "level": 5, "summary": "Il suo vessillo fornisce bonus morali agli alleati vicini." },
+          { "id": "cavalier-charge", "name": "Carica del Cavaliere", "level": 3, "summary": "Ottiene bonus ai danni e alla precisione durante le cariche." }
+        ],
+        "focusOptions": [
+          { "label": "Ordini", "summary": "Ogni ordine concede abilità specifiche, talenti bonus e un codice di condotta." }
+        ],
+        "bonusFeats": [
+          "Attraverso Tattico condivide e ottiene talenti di lavoro di squadra." 
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Armi marziali"],
+          "armor": {
+            "light": ["Armature leggere"],
+            "medium": ["Armature medie"],
+            "heavy": ["Armature pesanti"]
+          },
+          "shields": ["Scudi (incluso torre)"],
+          "other": ["Competenza in cavalcare e manovre montate" ]
+        }
+      }
     },
     {
       "id": "gunslinger",
@@ -525,7 +903,31 @@
           "name": "Duellante Pistolero",
           "summary": "Colpi rapidi e parate"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "gunslinger-grit", "name": "Grinta", "level": 1, "summary": "Risorsa usata per alimentare prodezze e recuperata con colpi critici." },
+          { "id": "gunslinger-deeds", "name": "Prodezze", "level": 1, "summary": "Accesso a manovre come Tiro Fulmineo e Parata con Pistola." },
+          { "id": "gunslinger-gun-training", "name": "Addestramento alle Armi da Fuoco", "level": 5, "summary": "Somma Destrezza ai danni e riduce malfunzionamenti con un tipo di arma da fuoco." },
+          { "id": "gunslinger-nimble", "name": "Agile", "level": 2, "summary": "Bonus schivata alla CA quando non indossa armatura pesante." },
+          { "id": "gunslinger-quick-clear", "name": "Sgancio Rapido", "level": 1, "summary": "Rimuove inceppamenti come azione veloce spendendo grinta." }
+        ],
+        "focusOptions": [
+          { "label": "Prodezze", "summary": "Sblocca nuove prodezze ai livelli 1, 3, 7, 11, 15 e 19." }
+        ],
+        "bonusFeats": [
+          "Ottiene talenti di combattimento basati sulle armi da fuoco ai livelli 4, 8, 12 e 16." 
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Armi da fuoco"],
+          "armor": {
+            "light": ["Armature leggere"],
+            "medium": []
+          },
+          "shields": [],
+          "other": ["Competente con tutte le forme di polvere nera e manutenzione delle armi" ]
+        }
+      }
     },
     {
       "id": "inquisitor",
@@ -547,7 +949,33 @@
           "name": "Cacciatore di Streghe",
           "summary": "Contro la magia arcana"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "inquisitor-judgment", "name": "Giudizio", "level": 1, "summary": "Attiva bonus tematici come giustizia, distruzione o guarigione spendendo un'azione rapida." },
+          { "id": "inquisitor-stern-gaze", "name": "Sguardo Inesorabile", "level": 1, "summary": "Bonus alle prove di Intimidire e Intuizione." },
+          { "id": "inquisitor-monster-lore", "name": "Conoscenza dei Mostri", "level": 1, "summary": "Somma Saggezza ai tiri di Conoscenze per identificare creature." },
+          { "id": "inquisitor-cunning-init", "name": "Iniziativa Astuta", "level": 2, "summary": "Somma Saggezza ai tiri di iniziativa." },
+          { "id": "inquisitor-bane", "name": "Flagello", "level": 5, "summary": "Imbuesce l'arma con potere contro un tipo di creatura selezionato." },
+          { "id": "inquisitor-second-judgment", "name": "Secondo Giudizio", "level": 8, "summary": "Mantiene due giudizi simultanei." }
+        ],
+        "focusOptions": [
+          { "label": "Inquisizioni", "summary": "Sceglie un dominio o inquisizione che concede poteri e incantesimi bonus." },
+          { "label": "Giudizi", "summary": "Decide quale giudizio attivare in base alla situazione." }
+        ],
+        "bonusFeats": [
+          "Può selezionare talenti di lavoro di squadra e condividerli tramite tattiche." 
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Arma preferita della divinità", "Balestra leggera", "Balestra pesante"],
+          "armor": {
+            "light": ["Armature leggere"],
+            "medium": ["Armature medie"]
+          },
+          "shields": ["Scudi (tranne torre)"],
+          "other": ["Può lanciare incantesimi inquisitore in armatura leggera o media" ]
+        }
+      }
     },
     {
       "id": "magus",
@@ -569,7 +997,32 @@
           "name": "Danzatore di Incantesimi",
           "summary": "Combina danza e scherma"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "magus-arcane-pool", "name": "Riserva Arcana", "level": 1, "summary": "Punti da spendere per potenziare l'arma o alimentare arcani." },
+          { "id": "magus-spell-combat", "name": "Combattere con gli Incantesimi", "level": 1, "summary": "Può lanciare incantesimi e attaccare nello stesso round." },
+          { "id": "magus-spellstrike", "name": "Colpo Incantato", "level": 2, "summary": "Conduce incantesimi a contatto attraverso le armi." },
+          { "id": "magus-arcana", "name": "Arcani del Magus", "level": 3, "summary": "Sceglie personalizzazioni come potenziamenti elementali o incantesimi aggiuntivi." },
+          { "id": "magus-spell-recall", "name": "Richiamo degli Incantesimi", "level": 4, "summary": "Spende punti riserva per recuperare incantesimi appena lanciati." },
+          { "id": "magus-fighter-training", "name": "Addestramento Marziale", "level": 10, "summary": "Conta come guerriero di metà livello per soddisfare i requisiti dei talenti." }
+        ],
+        "focusOptions": [
+          { "label": "Arcani del Magus", "summary": "Seleziona un arcano al 3° livello e ogni tre livelli successivi." }
+        ],
+        "bonusFeats": [
+          "Ottiene accesso anticipato a talenti da guerriero grazie all'addestramento marziale." 
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Armi marziali"],
+          "armor": {
+            "light": ["Armature leggere"],
+            "medium": ["Armature medie (dal 7° livello)"]
+          },
+          "shields": ["Scudi leggeri"],
+          "other": ["Può lanciare incantesimi magus in armatura leggera o media senza fallimento" ]
+        }
+      }
     },
     {
       "id": "oracle",
@@ -591,7 +1044,32 @@
           "name": "Astrologo",
           "summary": "Legge il futuro nelle stelle"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "oracle-mystery", "name": "Mistero", "level": 1, "summary": "Sceglie un mistero che fornisce rivelazioni e incantesimi bonus." },
+          { "id": "oracle-curse", "name": "Maledizione", "level": 1, "summary": "Subisce un difetto sovrannaturale che conferisce anche benefici." },
+          { "id": "oracle-revelation", "name": "Rivelazioni", "level": 1, "summary": "Ottiene poteri tematici legati al mistero scelto." },
+          { "id": "oracle-spontaneous", "name": "Lancio Spontaneo", "level": 1, "summary": "Può convertire gli incantesimi preparati in Cura o Ferire." },
+          { "id": "oracle-mystery-spells", "name": "Incantesimi di Mistero", "level": 2, "summary": "Ottiene incantesimi bonus unici ai livelli pari." }
+        ],
+        "focusOptions": [
+          { "label": "Misteri", "summary": "Determinano quali rivelazioni e incantesimi bonus sono disponibili." },
+          { "label": "Rivelazioni", "summary": "Sceglie una rivelazione al 1° livello e ulteriori ai livelli pari." }
+        ],
+        "bonusFeats": [
+          "Alcune rivelazioni concedono talenti bonus o contano come prerequisiti." 
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Arma preferita della divinità"],
+          "armor": {
+            "light": ["Armature leggere"],
+            "medium": ["Armature medie"]
+          },
+          "shields": ["Scudi (tranne torre)"],
+          "other": ["Può lanciare incantesimi oracolari in armature leggere o medie" ]
+        }
+      }
     },
     {
       "id": "summoner",
@@ -613,7 +1091,31 @@
           "name": "Discepolo del Dio del Sangue",
           "summary": "Eidolon alimentato da sacrifici"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "summoner-eidolon", "name": "Eidolon", "level": 1, "summary": "Compagno extraplanare personalizzabile con evoluzioni." },
+          { "id": "summoner-summon-monster", "name": "Evoca Mostri", "level": 1, "summary": "Evoca creature come capacità magica 1/minuto." },
+          { "id": "summoner-life-link", "name": "Legame Vitale", "level": 2, "summary": "Può assorbire danni destinati al proprio eidolon." },
+          { "id": "summoner-bond-senses", "name": "Condivisione dei Sensi", "level": 2, "summary": "Percepisce attraverso i sensi dell'eidolon." },
+          { "id": "summoner-shield-ally", "name": "Scudo Alleato", "level": 4, "summary": "Condivide bonus difensivi con l'eidolon e gli alleati evocati." },
+          { "id": "summoner-aspect", "name": "Aspetto", "level": 10, "summary": "Trasferisce evoluzioni dell'eidolon su di sé temporaneamente." }
+        ],
+        "focusOptions": [
+          { "label": "Evoluzioni", "summary": "Spendi punti evoluzione per personalizzare l'eidolon a ogni livello." }
+        ],
+        "bonusFeats": [
+          "Può scegliere talenti che migliorano evocazioni e legami planari." 
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici"],
+          "armor": {
+            "light": ["Armature leggere"]
+          },
+          "shields": ["Scudi (tranne torre)"],
+          "other": ["Può lanciare incantesimi invocatore in armatura leggera" ]
+        }
+      }
     },
     {
       "id": "witch",
@@ -635,7 +1137,33 @@
           "name": "Strega del Mare",
           "summary": "Richiama tempeste"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "witch-familiar", "name": "Famiglio", "level": 1, "summary": "Famiglio che custodisce gli incantesimi e fornisce bonus alle abilità." },
+          { "id": "witch-hexes", "name": "Malefici", "level": 1, "summary": "Poteri magici ripetibili come Addormentare o Malocchio." },
+          { "id": "witch-patron", "name": "Patrono", "level": 1, "summary": "Fonte sovrannaturale che concede incantesimi bonus ai livelli pari." },
+          { "id": "witch-major-hex", "name": "Malefici Maggiori", "level": 10, "summary": "Sblocca malefici più potenti come marchio di dolore." },
+          { "id": "witch-grand-hex", "name": "Malefici Supremi", "level": 18, "summary": "Accesso ai malefici più devastanti come metamorfosi maligna." }
+        ],
+        "focusOptions": [
+          { "label": "Malefici", "summary": "Sceglie nuovi malefici al 1° livello e ogni due livelli successivi." },
+          { "label": "Patroni", "summary": "Determinano gli incantesimi bonus ricevuti." }
+        ],
+        "bonusFeats": [
+          "I malefici possono replicare effetti di talenti senza spendere slot." 
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Bastone", "Randello", "Pugnale"],
+          "armor": {
+            "light": [],
+            "medium": [],
+            "heavy": []
+          },
+          "shields": [],
+          "other": ["Indossare armature provoca fallimento degli incantesimi" ]
+        }
+      }
     }
   ]
 }
