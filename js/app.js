@@ -1180,9 +1180,46 @@ function initMulticlassUI(){
   applyMode();
 }
 
+let multiclassListRoot = null;
+
+function handleMulticlassListClick(evt){
+  const listEl = multiclassListRoot;
+  if(!listEl) return;
+  const removeBtn = evt.target.closest('[data-mc-remove]');
+  if(!removeBtn || !listEl.contains(removeBtn)) return;
+  evt.preventDefault();
+  const itemEl = removeBtn.closest('.multiclass-item');
+  if(!itemEl) return;
+  const uid = itemEl.dataset.uid;
+  if(!uid || !Array.isArray(state.classProgression)) return;
+  if(state.classProgression.length <= 1) return;
+  const next = state.classProgression.filter(entry => entry.uid !== uid);
+  state.classProgression = next.length ? next : [createClassEntry('', 0, [])];
+  syncPrimaryClassFromProgression();
+  updateRazzaClassiSummary();
+  persistClassProgression();
+  renderMulticlassList();
+}
+
+function ensureMulticlassListEvents(listEl){
+  if(!listEl || listEl === multiclassListRoot) return;
+  if(multiclassListRoot){
+    multiclassListRoot.removeEventListener('click', handleMulticlassListClick);
+  }
+  multiclassListRoot = listEl;
+  multiclassListRoot.addEventListener('click', handleMulticlassListClick);
+}
+
 function renderMulticlassList({ focusUid = null } = {}){
   const listEl = document.getElementById('dgMulticlassList');
-  if(!listEl) return;
+  if(!listEl){
+    if(multiclassListRoot){
+      multiclassListRoot.removeEventListener('click', handleMulticlassListClick);
+      multiclassListRoot = null;
+    }
+    return;
+  }
+  ensureMulticlassListEvents(listEl);
   listEl.innerHTML = '';
   if(!Array.isArray(state.classProgression) || !state.classProgression.length){
     state.classProgression = [createClassEntry(state.classeId || '', Number(state.livello) || 0, state.archetypes)];
@@ -1244,7 +1281,10 @@ function bindMulticlassItem(container, entry){
     const cls = getClassById(entry.classId);
     if(sourceEl) sourceEl.textContent = cls?.source ? `Fonte: ${cls.source}` : '';
     if(levelInput) levelInput.value = Number.isFinite(Number(entry.level)) ? Number(entry.level) : 0;
-    if(removeBtn) removeBtn.disabled = state.classProgression.length <= 1;
+    if(removeBtn){
+      removeBtn.disabled = state.classProgression.length <= 1;
+      removeBtn.dataset.uid = entry.uid || '';
+    }
     if(archetypeSelect){
       const valid = populateArchetypeOptions(archetypeSelect, cls, entry.archetypes);
       if(valid.length !== entry.archetypes.length){
@@ -1304,17 +1344,6 @@ function bindMulticlassItem(container, entry){
     persistClassProgression();
   });
 
-  removeBtn?.addEventListener('click', () => {
-    if(state.classProgression.length <= 1) return;
-    state.classProgression = state.classProgression.filter(item => item.uid !== entry.uid);
-    if(!state.classProgression.length){
-      state.classProgression.push(createClassEntry('', 0, []));
-    }
-    syncPrimaryClassFromProgression();
-    updateRazzaClassiSummary();
-    persistClassProgression();
-    renderMulticlassList();
-  });
 }
 
 function updateMulticlassStatus(){
