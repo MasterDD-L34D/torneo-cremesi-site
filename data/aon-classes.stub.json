@@ -130,7 +130,31 @@
           "name": "Separatista",
           "summary": "Domini disallineati"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "cleric-aura", "name": "Aura", "level": 1, "summary": "L'allineamento del chierico genera un'aura forte come quella della sua divinità." },
+          { "id": "cleric-channel-energy", "name": "Canalizzare Energia", "level": 1, "summary": "Rilascia energia positiva o negativa per curare alleati o danneggiare non morti." },
+          { "id": "cleric-domain", "name": "Dominio", "level": 1, "summary": "Accesso a poteri e incantesimi bonus forniti dai domini selezionati." },
+          { "id": "cleric-spontaneous", "name": "Lancio Spontaneo", "level": 1, "summary": "Converti incantesimi preparati in cura o ferite in base all'allineamento." },
+          { "id": "cleric-armor-training", "name": "Addestramento Divino", "level": 1, "summary": "Ottiene competenza nelle armature e scudi concessi dalla fede." }
+        ],
+        "focusOptions": [
+          { "label": "Domini", "count": 2, "options": ["Bene", "Guarigione", "Guerra", "Protezione", "Sole", "Magia"], "summary": "Scegli due domini concessi dalla divinità per ottenere poteri e incantesimi aggiuntivi." }
+        ],
+        "bonusFeats": [
+          "Ottieni incantesimi bonus da dominio in base alla divinità e alla scelta effettuata."
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Arma da guerra preferita dalla divinità"],
+          "armor": {
+            "light": ["Armature leggere"],
+            "medium": ["Armature medie"],
+            "heavy": ["Armature pesanti"]
+          },
+          "shields": ["Scudi (tranne torre)"]
+        }
+      }
     },
     {
       "id": "druid",
@@ -415,7 +439,32 @@
           "name": "Guerriero della Luce",
           "summary": "Sostituisce gli incantesimi con luce sacra"
         }
-      ]
+      ],
+      "capabilities": {
+        "features": [
+          { "id": "paladin-smite", "name": "Punire il Male", "level": 1, "summary": "Aggiungi bonus ai tiri per colpire e ai danni contro un bersaglio malvagio dichiarato." },
+          { "id": "paladin-lay-on-hands", "name": "Imposizione delle Mani", "level": 2, "summary": "Cura rapida per sé e alleati con utilizzi giornalieri basati sul Carisma." },
+          { "id": "paladin-mercies", "name": "Misericordie", "level": 3, "summary": "Rimuovi condizioni negative quando usi imposizione delle mani." },
+          { "id": "paladin-aura-courage", "name": "Aura di Coraggio", "level": 3, "summary": "Immunità alla paura per il paladino e bonus ai tiri salvezza degli alleati vicini." },
+          { "id": "paladin-divine-bond", "name": "Legame Divino", "level": 5, "summary": "Potenzia l'arma o ottieni una cavalcatura sacra." },
+          { "id": "paladin-spells", "name": "Incantesimi di Paladino", "level": 4, "summary": "Accedi a incantesimi divini di 1°-4° livello con lista limitata." }
+        ],
+        "focusOptions": [
+          { "label": "Misericordie", "options": ["Affaticato", "Accecato", "Infermo", "Malattia", "Paralizzato"], "summary": "Seleziona una misericordia disponibile ogni volta che ottieni il privilegio." }
+        ],
+        "bonusFeats": [
+          "Il legame divino concede potenziamenti equivalenti a talenti focalizzati sull'arma o consente una cavalcatura sacra."
+        ],
+        "proficiencies": {
+          "weapons": ["Armi semplici", "Armi marziali"],
+          "armor": {
+            "light": ["Armature leggere"],
+            "medium": ["Armature medie"],
+            "heavy": ["Armature pesanti"]
+          },
+          "shields": ["Scudi (tranne torre)"]
+        }
+      }
     },
     {
       "id": "ranger",

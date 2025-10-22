@@ -293,6 +293,17 @@
         aria-selected="false"
         tabindex="-1"
       >🧾 Dati Generali</button>
+      <button
+        type="button"
+        class="scheda-tabs__btn"
+        id="tab-scheda-capacita"
+        data-tab-target="scheda-capacita"
+        data-tab-route="capacita"
+        role="tab"
+        aria-controls="panel-scheda-capacita"
+        aria-selected="false"
+        tabindex="-1"
+      >🛡️ Capacità</button>
     </nav>
     <p class="muted small-note">Consulta la scheda completa oppure compila i dati anagrafici attraverso le nuove sottoschede tematiche.</p>
   </section>
@@ -654,6 +665,81 @@
             <label>Regole TC</label>
             <ul data-tc-raw class="auto-list"></ul>
           </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="scheda-panel"
+      id="panel-scheda-capacita"
+      data-tab-panel="scheda-capacita"
+      role="tabpanel"
+      aria-labelledby="tab-scheda-capacita"
+      tabindex="-1"
+      hidden
+    >
+      <section class="card">
+        <header class="scheda-panel__header">
+          <h2>Privilegi di Classe &amp; Archetipi</h2>
+          <p class="muted small-note">Riepilogo automatico basato su classe, archetipi e livelli selezionati.</p>
+        </header>
+        <div class="grid g2">
+          <div>
+            <h3>Capacità attive</h3>
+            <ul class="list" data-cap-features></ul>
+            <p class="muted small-note" data-cap-features-empty>Seleziona una classe e assegna i livelli per mostrare i privilegi disponibili.</p>
+          </div>
+          <div>
+            <h3>Sostituzioni / modifiche</h3>
+            <ul class="list" data-cap-replaced></ul>
+            <p class="muted small-note" data-cap-replaced-empty>Gli archetipi selezionati non sostituiscono capacità nel dataset corrente.</p>
+          </div>
+        </div>
+        <div class="hr"></div>
+        <div>
+          <h3>Selezioni richieste</h3>
+          <ul class="list" data-cap-focus></ul>
+          <p class="muted small-note" data-cap-focus-empty>Nessuna scelta aggiuntiva richiesta dalla classe nel dataset corrente.</p>
+        </div>
+      </section>
+      <section class="card">
+        <header class="scheda-panel__header">
+          <h2>Proficienze consolidate</h2>
+          <p class="muted small-note">Confronta i dati inseriti nella scheda completa con le proficienze suggerite dal database.</p>
+        </header>
+        <div class="grid g2">
+          <div>
+            <h3>Registrate in scheda completa</h3>
+            <ul class="list" data-cap-profs-recorded></ul>
+            <p class="muted small-note" data-cap-profs-recorded-empty>Compila la sezione "Talenti &amp; Competenze" nella scheda completa per popolare questo elenco.</p>
+          </div>
+          <div>
+            <h3>Dal database AoN</h3>
+            <ul class="list" data-cap-profs-database></ul>
+            <p class="muted small-note" data-cap-profs-database-empty>La classe selezionata non offre proficienze aggiuntive nel dataset caricato.</p>
+          </div>
+        </div>
+      </section>
+      <section class="card">
+        <header class="scheda-panel__header">
+          <h2>Talenti, Tratti &amp; Capacità Bonus</h2>
+          <p class="muted small-note">Sincronizzato con la scheda completa e arricchito con i dati del database.</p>
+        </header>
+        <div class="grid g2">
+          <div>
+            <h3>Annotazioni dalla scheda</h3>
+            <ul class="list" data-cap-notes></ul>
+            <p class="muted small-note" data-cap-notes-empty>Utilizza i campi "Talenti", "Tratti" e "Difetti" nella scheda completa per compilare questo riepilogo.</p>
+          </div>
+          <div>
+            <h3>Bonus dal database</h3>
+            <ul class="list" data-cap-bonus></ul>
+            <p class="muted small-note" data-cap-bonus-empty>La classe selezionata non fornisce talenti o capacità bonus nel dataset corrente.</p>
+          </div>
+        </div>
+        <div class="hr"></div>
+        <div>
+          <h3>Capacità chiave (note rapide)</h3>
+          <p data-cap-riassunto class="muted"></p>
         </div>
       </section>
     </div>
