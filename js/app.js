@@ -62,6 +62,26 @@ const routes = {
   '/tracker': 'view-tracker',
 };
 
+function parseRoute(rawRoute = ''){
+  const routeInfo = {
+    base: '/avvio',
+    subpath: [],
+    params: new URLSearchParams(),
+    raw: rawRoute,
+  };
+  if(typeof rawRoute !== 'string' || rawRoute.trim() === ''){
+    return routeInfo;
+  }
+  const [pathPart = '', queryPart = ''] = rawRoute.split('?');
+  const segments = pathPart.split('/').filter(Boolean);
+  if(segments.length){
+    routeInfo.base = `/${segments[0]}`;
+    routeInfo.subpath = segments.slice(1);
+  }
+  routeInfo.params = new URLSearchParams(queryPart);
+  return routeInfo;
+}
+
 const isMobile = () => mobileQuery.matches;
 
 function updateSidebarToggleLabel(){
@@ -145,13 +165,14 @@ if(typeof mobileQuery.addEventListener === 'function'){
 
 syncSidebarState();
 
-function render(route){
-  const tplId = routes[route] || routes['/avvio'];
+function render(rawRoute){
+  const routeInfo = parseRoute(rawRoute);
+  const tplId = routes[routeInfo.base] || routes['/avvio'];
   const tpl = document.getElementById(tplId);
   if(!tpl || !appEl) return;
   appEl.innerHTML = tpl.innerHTML;
-  afterRender(route);
-  highlightActive(route);
+  afterRender(routeInfo.base, routeInfo);
+  highlightActive(routeInfo.base);
   focusMainHeading();
   closeSidebar({ restoreFocus: false });
   syncSidebarState();
@@ -159,7 +180,9 @@ function render(route){
 
 function highlightActive(route){
   navLinks.forEach(a => {
-    const isActive = a.getAttribute('href') === `#${route}`;
+    const href = a.getAttribute('href') || '';
+    const current = href.startsWith('#') ? href.slice(1) : href;
+    const isActive = current === route;
     a.classList.toggle('active', isActive);
     if(isActive) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
@@ -188,10 +211,10 @@ function initSharedMenus(){
   }
 }
 
-function afterRender(route){
+function afterRender(route, context = {}){
   initSharedMenus();
   switch(route){
-    case '/scheda': initScheda(); break;
+    case '/scheda': initScheda(context); break;
     case '/tracker': initTracker(); break;
     case '/oggetti': initOggetti(); break;
     case '/regole': renderRulesPage(); break;
@@ -369,7 +392,7 @@ function updateComputedField(key, value){
 
 const getStateValue = key => state[key];
 
-function initScheda(){
+function initScheda(context = {}){
   fieldBindings = new Map();
   const container = document.getElementById('app');
   const autoFields = container ? Array.from(container.querySelectorAll('[data-field]')) : [];
@@ -447,7 +470,8 @@ function initScheda(){
     .forEach(key => bindField(document.getElementById(key), key));
 
   migrateLegacyValute();
-  setupSchedaTabs();
+  const preferredTabSlug = context.subpath?.[0] || context.params?.get('tab') || null;
+  setupSchedaTabs({ initialTabSlug: preferredTabSlug, baseRoute: context.base ?? '/scheda' });
   initSchedaGenerali();
   updateAlignmentSummary();
   updateRuleSummary();
@@ -850,15 +874,22 @@ function handleFieldUpdate(key, value){
   }
 }
 
-function setupSchedaTabs(){
+function setupSchedaTabs({ initialTabSlug = null, baseRoute = '/scheda' } = {}){
   const buttons = Array.from(document.querySelectorAll('.scheda-tabs__btn'));
   const panels = Array.from(document.querySelectorAll('[data-tab-panel]'));
   if(!buttons.length || !panels.length) return;
+
+  const slugToTarget = new Map();
+  const targetToSlug = new Map();
 
   const ensurePanelMetadata = () => {
     buttons.forEach(btn => {
       const target = btn.dataset.tabTarget;
       if(!target) return;
+      const rawSlug = btn.dataset.tabRoute || target;
+      if(!slugToTarget.has(rawSlug)) slugToTarget.set(rawSlug, target);
+      if(!slugToTarget.has(target)) slugToTarget.set(target, target);
+      if(!targetToSlug.has(target)) targetToSlug.set(target, rawSlug);
       if(!btn.hasAttribute('role')) btn.setAttribute('role', 'tab');
       if(!btn.id) btn.id = `tab-${target}`;
       const panelId = `panel-${target}`;
@@ -875,7 +906,40 @@ function setupSchedaTabs(){
 
   ensurePanelMetadata();
 
-  const setActive = (id, persist = false, focusTab = false) => {
+  const getSlugForTarget = (target) => {
+    if(targetToSlug.has(target)) return targetToSlug.get(target);
+    for(const [slug, mappedTarget] of slugToTarget.entries()){
+      if(mappedTarget === target) return slug;
+    }
+    return null;
+  };
+
+  const normaliseSlug = (slug) => {
+    if(!slug) return null;
+    if(slugToTarget.has(slug)) return slug;
+    const lower = slug.toLowerCase();
+    for(const key of slugToTarget.keys()){
+      if(key.toLowerCase() === lower) return key;
+    }
+    return null;
+  };
+
+  const updateTabInHash = (target) => {
+    if(baseRoute !== '/scheda') return;
+    const slug = getSlugForTarget(target);
+    if(!slug) return;
+    const currentRoute = parseRoute(location.hash.replace('#',''));
+    const params = new URLSearchParams(currentRoute.params);
+    if(params.has('tab')) params.delete('tab');
+    const queryString = params.toString();
+    const querySuffix = queryString ? `?${queryString}` : '';
+    const newHash = slug ? `#/scheda/${slug}${querySuffix}` : `#/scheda${querySuffix}`;
+    if(location.hash === newHash) return;
+    if(typeof history.replaceState === 'function') history.replaceState(null, '', newHash);
+    else location.hash = newHash;
+  };
+
+  const setActive = (id, { persist = false, focusTab = false, updateUrl = false } = {}) => {
     if(!id) return;
     buttons.forEach(btn => {
       const active = btn.dataset.tabTarget === id;
@@ -900,16 +964,17 @@ function setupSchedaTabs(){
       state.lastSchedaTab = id;
       saveAppState(state);
     }
+    if(updateUrl) updateTabInHash(id);
   };
 
   const focusTabByIndex = (index) => {
     const btn = buttons[(index + buttons.length) % buttons.length];
     if(!btn) return;
-    setActive(btn.dataset.tabTarget, true, true);
+    setActive(btn.dataset.tabTarget, { persist: true, focusTab: true, updateUrl: true });
   };
 
   buttons.forEach((btn, index) => {
-    btn.addEventListener('click', () => setActive(btn.dataset.tabTarget, true));
+    btn.addEventListener('click', () => setActive(btn.dataset.tabTarget, { persist: true, updateUrl: true }));
     btn.addEventListener('keydown', evt => {
       let targetIndex = null;
       switch(evt.key){
@@ -936,11 +1001,16 @@ function setupSchedaTabs(){
   });
 
   const availableTargets = new Set(buttons.map(btn => btn.dataset.tabTarget));
-  let preferred = state.lastSchedaTab;
+  let preferred = null;
+  if(initialTabSlug){
+    const normalised = normaliseSlug(initialTabSlug);
+    if(normalised) preferred = slugToTarget.get(normalised);
+  }
+  if(!preferred) preferred = state.lastSchedaTab;
   if(!preferred || !availableTargets.has(preferred)){
     preferred = buttons.find(btn => btn.hasAttribute('data-tab-default'))?.dataset.tabTarget || buttons[0].dataset.tabTarget;
   }
-  setActive(preferred, false);
+  setActive(preferred, { persist: false, updateUrl: Boolean(initialTabSlug) });
 }
 
 function hasSchedaMenus(){
