@@ -251,7 +251,7 @@ function cloneProgression(list){
     uid: entry.uid || createMulticlassUid(),
     classId: entry.classId || entry.id || '',
     level: Number.isFinite(Number(entry.level)) ? Math.max(0, Number(entry.level)) : 0,
-    archetypes: toArray(entry.archetypes)
+    archetypes: [...toArray(entry.archetypes)]
   }));
 }
 
