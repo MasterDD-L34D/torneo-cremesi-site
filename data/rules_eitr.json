@@ -1,0 +1,126 @@
+{
+  "id": "eitr",
+  "name": "Elephant in the Room",
+  "variant": "Torneo Cremesi",
+  "version": "2024.06",
+  "sources": [
+    "Elephant in the Room 2016 update (L. Grey)",
+    "HR Torneo Cremesi 2024",
+    "PF1e Core Rulebook"
+  ],
+  "summary": [
+    "Elimina i talenti tassa: prerequisiti puramente numerici o catene di miglioramenti vengono concessi in automatico quando necessari.",
+    "I talenti marziali scalano con il Bonus di Attacco Base: le versioni Migliorata/Superiore si attivano quando raggiungi BAB +6/+11.",
+    "Chi investe in destrezza non paga tasse aggiuntive: Finesse garantisce TxC e danni con armi eleggibili e apre gli stili destrezza.",
+    "I combattenti a due armi e con scudo ricevono gli upgrade base senza sprecare talenti di supporto.",
+    "EITR si applica solo se il toggle è attivo sulla scheda; disattivalo per usare i prerequisiti e i costi RAW."
+  ],
+  "freeFeats": [
+    {
+      "name": "Attacco Poderoso",
+      "detail": "Concesso a BAB +1 senza prerequisito di For 13; scala automaticamente a Potenziato (+6 BAB) e Superiore (+11 BAB)."
+    },
+    {
+      "name": "Mira Letale",
+      "detail": "Replica Attacco Poderoso per armi a distanza; rimuove la richiesta di Des 13 e scala con il BAB come la controparte melee."
+    },
+    {
+      "name": "Arma Finesse",
+      "detail": "Concesso gratuitamente; fornisce Destrezza ai TxC con tutte le armi leggere/piercing idonee e Destrezza ai danni con BAB +5."
+    },
+    {
+      "name": "Competenza Scudi",
+      "detail": "Include Colpo con Scudo Migliorato; quando ottieni competenza nello scudo, puoi usare lo scudo come arma senza malus." 
+    },
+    {
+      "name": "Colpo Senz'Armi Migliorato",
+      "detail": "Concesso alle classi con stili di combattimento o manovre come punto d'ingresso per Grapple/Stunning Fist senza investimenti extra."
+    },
+    {
+      "name": "Maestria in Combattimento",
+      "detail": "Diventa una stance: attiva l'azione per ottenere +2 CA schivare ( +4 a BAB +8 ) scambiando -2/-4 al TxC; non è prerequisito di altri talenti." 
+    },
+    {
+      "name": "Tiro Rapido",
+      "detail": "Le classi con competenza negli archi ricevono la versione base gratis; le iterazioni migliorate arrivano con BAB +6/+11." 
+    },
+    {
+      "name": "Stile da Combattimento",
+      "detail": "I talenti di Stile (Tiger, Snake, Crane, ecc.) includono gratuitamente i talenti successivi quando rispetti i requisiti di BAB o livello." 
+    }
+  ],
+  "adjustedFeats": [
+    {
+      "name": "Combattere con Due Armi",
+      "detail": "Prerequisiti di Destrezza ridotti a 13/17; le versioni Migliorata e Superiore si sbloccano automaticamente a BAB +6/+11." 
+    },
+    {
+      "name": "Critico Migliorato",
+      "detail": "Garantisce automaticamente Critico Devastante (BAB +9) e Critico Leggendario (BAB +13); rimosso il requisito di Specializzazione." 
+    },
+    {
+      "name": "Specializzazione nell'Arma",
+      "detail": "Selezionando Arma Prediletta con BAB +5 ottieni anche Specializzazione; le versioni Maggiore/Migliorata sbloccano con BAB +9/+13." 
+    },
+    {
+      "name": "Talenti di Manovra",
+      "detail": "Ogni talento Migliorato (Sbilanciare, Spezzare, ecc.) fornisce anche il corrispondente Superiore a BAB +11 senza ulteriori talenti." 
+    },
+    {
+      "name": "Stile Scudo",
+      "detail": "La catena concede Resistenza Superiore, Colpo Scudo Migliorato e Distrazione Scudo con un solo investimento grazie agli scaglioni BAB." 
+    },
+    {
+      "name": "Arma Prediletta",
+      "detail": "Include automaticamente il talento focalizzato nel gruppo arma (Weapon Focus + Weapon Mastery); gli archetipi che concedono WF ne ottengono i benefici estesi." 
+    },
+    {
+      "name": "Schianto Migliorato",
+      "detail": "Rimuove Maestria in Combattimento come prerequisito e concede Schianto Superiore appena raggiungi BAB +11." 
+    },
+    {
+      "name": "Maestria con le Armature",
+      "detail": "Competenza Armature Pesanti concede anche Riduzione del Fallimento Arcano -10% cumulativa fino a -20% con BAB +11." 
+    }
+  ],
+  "classAdjustments": [
+    {
+      "target": "Guerriero",
+      "changes": [
+        "Il talento bonus di 1° livello concede automaticamente Attacco Poderoso o Arma Finesse in base alla build.",
+        "Weapon Training considera le catene EITR: i bonus si applicano anche alle versioni Migliorate/Superiori acquisite gratuitamente." 
+      ]
+    },
+    {
+      "target": "Monaco",
+      "changes": [
+        "Stile di combattimento concede l'intero percorso (base/migliorato/superiore) quando il monaco raggiunge i livelli richiesti.",
+        "Il colpo senz'armi del monaco conta come arma Finesse e beneficia della Destrezza ai danni concessa da EITR." 
+      ]
+    },
+    {
+      "target": "Ranger",
+      "changes": [
+        "Stile di combattimento fornisce automaticamente gli upgrade della catena scelta (TWF, Arco, Difesa) ai relativi scaglioni di BAB.",
+        "I talenti sostitutivi di Hunter's Bond considerano già Attacco Poderoso/Mira Letale gratuiti." 
+      ]
+    },
+    {
+      "target": "Ladro & Ninja",
+      "changes": [
+        "Arma Finesse e Destrezza ai danni sono integrati: talenti come Dervish Dance diventano opzioni stilistiche, non tassazioni obbligatorie.",
+        "I talenti di manovra ottenuti via Finesse Rogue concedono anche le versioni superiori ai breakpoint EITR." 
+      ]
+    }
+  ],
+  "otherRules": [
+    "Talenti che concedono bonus statici (Dodge, Toughness) non richiedono prerequisiti e possono essere selezionati liberamente.",
+    "Quando un talento elenca una capacità già coperta da EITR (es. Weapon Focus con catene aggiuntive) si applica la versione più favorevole.",
+    "Gli archetipi che scambiano talenti bonus mantengono i benefici EITR collegati a quel talento se il sostituto è della stessa catena."
+  ],
+  "notes": [
+    "Consulta il compendio HR per eccezioni puntuali (es. catene di talento di terze parti escluse dal torneo).",
+    "I talenti concessi automaticamente contano come prerequisito soddisfatto ma non occupano slot bonus per nuove selezioni.",
+    "Disattivando EITR nella scheda vengono ripristinati i prerequisiti RAW, compresi i punteggi di caratteristica e gli investimenti extra." 
+  ]
+}
