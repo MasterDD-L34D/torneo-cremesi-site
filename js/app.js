@@ -239,10 +239,6 @@ document.getElementById('btnImportJSON').onclick = () => {
 };
 document.getElementById('btnPrint').onclick = () => window.print();
 
-// Carica la vista iniziale
-if(!location.hash) location.hash = '#/avvio';
-render(location.hash.replace('#',''));
-
 /*
   Gestione Scheda (parte B)
   Salva/Carica dati, costruisci tabelle e selettori TC, oggetti custom.
@@ -2035,3 +2031,7 @@ function deleteCurrentOC(){
 
 // Utility: debounce
 function debounce(fn, ms){ let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms); }; }
+
+// Carica la vista iniziale
+if(!location.hash) location.hash = '#/avvio';
+render(location.hash.replace('#',''));
