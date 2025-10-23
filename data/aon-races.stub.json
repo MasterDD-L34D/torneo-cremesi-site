@@ -1,0 +1,697 @@
+{
+  "entries": [
+    {
+      "id": "human",
+      "name": "Umano",
+      "source": "Manuale Base",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "human-heart-of-the-fields",
+          "name": "Cuore dei Campi",
+          "summary": "+1 a Professione (agricoltore) e prove contro fatica"
+        },
+        {
+          "id": "human-eyes-of-the-city",
+          "name": "Occhi della Città",
+          "summary": "+2 a Percezione e Conoscenze (locali) in città"
+        },
+        {
+          "id": "human-gifted-adaptability",
+          "name": "Adattabilità Ispiratrice",
+          "summary": "Trasforma il talento bonus in un +2 giornaliero a un'abilità"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 55,
+        "max": 120
+      }
+    },
+    {
+      "id": "dwarf",
+      "name": "Nano",
+      "source": "Manuale Base",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "dwarf-ancient-enmity",
+          "name": "Antica Inimicizia",
+          "summary": "+1 a colpire e CA contro goblinoidi e orchi"
+        },
+        {
+          "id": "dwarf-iron-within",
+          "name": "Ferro Dentro",
+          "summary": "+2 ai TS contro veleni e malattie, -2 a Nuotare"
+        },
+        {
+          "id": "dwarf-sky-sentinel",
+          "name": "Sentinella del Cielo",
+          "summary": "+1 a Percezione e tiri per colpire contro creature volanti"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 120,
+        "max": 140
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 60,
+        "max": 90
+      }
+    },
+    {
+      "id": "elf",
+      "name": "Elfo",
+      "source": "Manuale Base",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "elf-arctic",
+          "name": "Elfo Artico",
+          "summary": "+2 a Sopravvivenza e TS contro il freddo"
+        },
+        {
+          "id": "elf-urbanite",
+          "name": "Elfo Urbano",
+          "summary": "Bonus a Diplomazia e Conoscenze (locali) al posto di Percezione"
+        },
+        {
+          "id": "elf-ancient-lorekeeper",
+          "name": "Custode delle Tradizioni",
+          "summary": "Scambia le competenze marziali con incantesimi di oracolo"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 210
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 80
+      }
+    },
+    {
+      "id": "gnome",
+      "name": "Gnomo",
+      "source": "Manuale Base",
+      "size": "Piccola",
+      "altTraits": [
+        {
+          "id": "gnome-darkvision",
+          "name": "Scurovisione",
+          "summary": "Sostituisce la visione crepuscolare con scurovisione 18 m"
+        },
+        {
+          "id": "gnome-fell-magic",
+          "name": "Magia Macabra",
+          "summary": "+1 livello incantatore agli incantesimi di necromanzia"
+        },
+        {
+          "id": "gnome-obsessive",
+          "name": "Ossessivo",
+          "summary": "+2 a un'abilità di Artigianato o Professione"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 90,
+        "max": 120
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 20,
+        "max": 35
+      }
+    },
+    {
+      "id": "halfling",
+      "name": "Halfling",
+      "source": "Manuale Base",
+      "size": "Piccola",
+      "altTraits": [
+        {
+          "id": "halfling-surefooted",
+          "name": "Piedi Sicuri",
+          "summary": "+1 ad Acrobazia e Scalare invece del bonus a Percezione"
+        },
+        {
+          "id": "halfling-outrider",
+          "name": "Avanguardia",
+          "summary": "Bonus a Cavalcare e alle armi da lancio"
+        },
+        {
+          "id": "halfling-luckless",
+          "name": "Sfortuna Controllata",
+          "summary": "Ritira un TS al giorno ma tieni il nuovo risultato"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 80,
+        "max": 100
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 15,
+        "max": 25
+      }
+    },
+    {
+      "id": "half-elf",
+      "name": "Mezzelfo",
+      "source": "Manuale Base",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "half-elf-ancestral-arms",
+          "name": "Armi Ancestrali",
+          "summary": "Competenza marziale o esotica aggiuntiva"
+        },
+        {
+          "id": "half-elf-kindred-raised",
+          "name": "Cresciuto dai Parenti",
+          "summary": "Talento sostituito con bonus culturali e linguaggi"
+        },
+        {
+          "id": "half-elf-wary-eyed",
+          "name": "Occhi Guardinghi",
+          "summary": "+2 a Percezione e Iniziativa quando sorpreso"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 200
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 50,
+        "max": 90
+      }
+    },
+    {
+      "id": "half-orc",
+      "name": "Mezzorco",
+      "source": "Manuale Base",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "half-orc-brutal-realm",
+          "name": "Dominio Brutale",
+          "summary": "+1 ai danni con armi a due mani e a Intimidire"
+        },
+        {
+          "id": "half-orc-iron-hide",
+          "name": "Pelle di Ferro",
+          "summary": "+1 armatura naturale al posto della scurovisione"
+        },
+        {
+          "id": "half-orc-toothy",
+          "name": "Zanne Afferate",
+          "summary": "Attacco naturale con morso 1d4"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 170,
+        "max": 210
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 70,
+        "max": 120
+      }
+    },
+    {
+      "id": "aasimar",
+      "name": "Aasimar",
+      "source": "Guida del Giocatore Avanzata",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "aasimar-angel-blood",
+          "name": "Sangue Angelico",
+          "summary": "Resistenza al freddo 5 e bonus a Diplomazia"
+        },
+        {
+          "id": "aasimar-emberkin",
+          "name": "Cenere d'Angelo",
+          "summary": "Mani ardenti 1/giorno e resistenza al fuoco"
+        },
+        {
+          "id": "aasimar-plumekith",
+          "name": "Penne Celestiali",
+          "summary": "Planata e bonus alle prove in volo"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 200
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 55,
+        "max": 95
+      }
+    },
+    {
+      "id": "tiefling",
+      "name": "Tiefling",
+      "source": "Guida del Giocatore Avanzata",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "tiefling-fiendish-sorcery",
+          "name": "Stregoneria Infernale",
+          "summary": "+2 livello incantatore per stregone e strega"
+        },
+        {
+          "id": "tiefling-razor-tusks",
+          "name": "Zanne Seghettate",
+          "summary": "Morso 1d4 e bonus ai CMD contro lotta"
+        },
+        {
+          "id": "tiefling-vestigial-wings",
+          "name": "Ali Rudimentali",
+          "summary": "Caduta lenta e bonus ad Acrobazia"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 200
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 55,
+        "max": 100
+      }
+    },
+    {
+      "id": "dhampir",
+      "name": "Dhampir",
+      "source": "Bestiario 2",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "dhampir-jiangshi",
+          "name": "Nato Jiang-Shi",
+          "summary": "Resistenza all'elettricità 5 e bonus a Furtività"
+        },
+        {
+          "id": "dhampir-moroi",
+          "name": "Nato Moroi",
+          "summary": "Bonus a Diplomazia e Conoscenze (nobiltà)"
+        },
+        {
+          "id": "dhampir-vetala",
+          "name": "Nato Vetala",
+          "summary": "Può drenare energia per guarire"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 170,
+        "max": 210
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 60,
+        "max": 95
+      }
+    },
+    {
+      "id": "ifrit",
+      "name": "Ifrit",
+      "source": "Guida del Giocatore Avanzata",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "ifrit-fire-affinity",
+          "name": "Affinità del Fuoco",
+          "summary": "+1 livello incantatore per incantesimi di fuoco"
+        },
+        {
+          "id": "ifrit-cinder-soul",
+          "name": "Anima di Brace",
+          "summary": "Scambia la resistenza al fuoco con bonus contro il freddo"
+        },
+        {
+          "id": "ifrit-blistering-feint",
+          "name": "Inganno Bruciante",
+          "summary": "+2 a Raggirare durante le finte"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 85
+      }
+    },
+    {
+      "id": "oread",
+      "name": "Oread",
+      "source": "Guida del Giocatore Avanzata",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "oread-crystalline-body",
+          "name": "Corpo Cristallino",
+          "summary": "+1 armatura naturale al posto di scivolare nella pietra"
+        },
+        {
+          "id": "oread-oreblooded",
+          "name": "Sangue Minerale",
+          "summary": "+2 a Artigianato (metalli)"
+        },
+        {
+          "id": "oread-gravity-sense",
+          "name": "Senso della Gravità",
+          "summary": "+4 a Percezione contro trappole"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 60,
+        "max": 110
+      }
+    },
+    {
+      "id": "sylph",
+      "name": "Silfide",
+      "source": "Guida del Giocatore Avanzata",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "sylph-cloudkin",
+          "name": "Figlia delle Nuvole",
+          "summary": "Planata al posto della mano del vento"
+        },
+        {
+          "id": "sylph-skyborne",
+          "name": "Figlia del Vento",
+          "summary": "Bonus contro elettricità e folata di vento"
+        },
+        {
+          "id": "sylph-drifting",
+          "name": "Vagabonda",
+          "summary": "+2 a Furtività mentre vola"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 80
+      }
+    },
+    {
+      "id": "undine",
+      "name": "Ondina",
+      "source": "Guida del Giocatore Avanzata",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "undine-deeps",
+          "name": "Figlia degli Abissi",
+          "summary": "Nuotare 9 m e resistenza al freddo 5"
+        },
+        {
+          "id": "undine-river",
+          "name": "Figlia del Fiume",
+          "summary": "+2 a Professione (marinaio) e Sopravvivenza"
+        },
+        {
+          "id": "undine-tidecaller",
+          "name": "Chiamamaree",
+          "summary": "Ondata d'acqua minore 1/giorno"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 85
+      }
+    },
+    {
+      "id": "catfolk",
+      "name": "Felide",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "catfolk-spry",
+          "name": "Agile",
+          "summary": "+2 ad Acrobazia e Saltare"
+        },
+        {
+          "id": "catfolk-climber",
+          "name": "Arrampicatore",
+          "summary": "Velocità di scalare 6 m"
+        },
+        {
+          "id": "catfolk-nine-lives",
+          "name": "Nove Vite",
+          "summary": "+1 ai TS contro morte e energia negativa"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 180
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 40,
+        "max": 75
+      }
+    },
+    {
+      "id": "tengu",
+      "name": "Tengu",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "tengu-razor-beak",
+          "name": "Becco Affilato",
+          "summary": "Migliora il morso a 1d6"
+        },
+        {
+          "id": "tengu-winged",
+          "name": "Alato",
+          "summary": "Planata con ali rudimentali"
+        },
+        {
+          "id": "tengu-city-raider",
+          "name": "Razziatore Urbano",
+          "summary": "Bonus a Furtività e Scalare tra i tetti"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 80
+      }
+    },
+    {
+      "id": "goblin",
+      "name": "Goblin",
+      "source": "Bestiario",
+      "size": "Piccola",
+      "altTraits": [
+        {
+          "id": "goblin-fire-belly",
+          "name": "Pancia di Fuoco",
+          "summary": "Resistenza al fuoco 5 e fiato ardente"
+        },
+        {
+          "id": "goblin-city-scavenger",
+          "name": "Raccoglitore Urbano",
+          "summary": "+2 a Percezione per cercare oggetti di valore"
+        },
+        {
+          "id": "goblin-sneaky-rider",
+          "name": "Cavaliere Furtivo",
+          "summary": "Bonus a Cavalcare e Furtività da montato"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 90,
+        "max": 110
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 15,
+        "max": 25
+      }
+    },
+    {
+      "id": "kobold",
+      "name": "Coboldo",
+      "source": "Guida alle Razze",
+      "size": "Piccola",
+      "altTraits": [
+        {
+          "id": "kobold-dragon-scaled",
+          "name": "Scaglie Draconiche",
+          "summary": "Resistenza energia 5 e +1 armatura naturale"
+        },
+        {
+          "id": "kobold-trap-wrecker",
+          "name": "Distruttore di Trappole",
+          "summary": "+2 a Disattivare Congegni"
+        },
+        {
+          "id": "kobold-tunnel-runner",
+          "name": "Corridore dei Tunnel",
+          "summary": "Velocità 9 m in passaggi stretti"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 100,
+        "max": 130
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 25,
+        "max": 35
+      }
+    },
+    {
+      "id": "kitsune",
+      "name": "Kitsune",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "kitsune-keen-nose",
+          "name": "Naso Fine",
+          "summary": "Bonus a Percezione olfattiva e Sopravvivenza"
+        },
+        {
+          "id": "kitsune-nine-tales",
+          "name": "Nove Code",
+          "summary": "Incantesimi bonus quando ottieni talenti metamagici"
+        },
+        {
+          "id": "kitsune-swift-shifter",
+          "name": "Mutamento Rapido",
+          "summary": "Cambio forma come azione veloce 1/giorno"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 150,
+        "max": 190
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 45,
+        "max": 80
+      }
+    },
+    {
+      "id": "nagaji",
+      "name": "Nagaji",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "nagaji-ensnaring",
+          "name": "Avvolgente",
+          "summary": "Bonus a lottare con la coda"
+        },
+        {
+          "id": "nagaji-burrow",
+          "name": "Scavatore",
+          "summary": "Velocità di scavare 3 m"
+        },
+        {
+          "id": "nagaji-venomous",
+          "name": "Veleno della Stirpe",
+          "summary": "Morso velenoso"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 200
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 70,
+        "max": 120
+      }
+    },
+    {
+      "id": "samsaran",
+      "name": "Samsaran",
+      "source": "Guida alle Razze",
+      "size": "Media",
+      "altTraits": [
+        {
+          "id": "samsaran-ancient-history",
+          "name": "Storia Antica",
+          "summary": "+2 a Conoscenze (storia) e (piani)"
+        },
+        {
+          "id": "samsaran-lifebound",
+          "name": "Vincolo Vitale",
+          "summary": "Bonus ai TS contro morte"
+        },
+        {
+          "id": "samsaran-shards-of-the-past",
+          "name": "Frammenti del Passato",
+          "summary": "Tre abilità di classe aggiuntive"
+        }
+      ],
+      "height": {
+        "unit": "cm",
+        "min": 160,
+        "max": 200
+      },
+      "weight": {
+        "unit": "kg",
+        "min": 50,
+        "max": 90
+      }
+    }
+  ]
+}

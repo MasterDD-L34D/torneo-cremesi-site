@@ -2,7 +2,43 @@
 // Router e logica dell’interfaccia per il sito Torneo Cremesi
 
 import { loadAppState, saveAppState, exportAll, importAll, loadOC, saveOC } from './store.js';
-import { TC_DATA, STATS } from './data.js';
+import { TC_DATA, STATS, ALIGNMENTS, AGE_STAGES } from './data.js';
+import { ensureAllRuleVariants, getRuleVariant, formatAbpSummary } from './rules.js';
+import { getRaces, getClasses, getTraitsAndDrawbacks } from './aon.js';
+
+/*
+  Stato applicativo condiviso
+  Queste variabili devono essere inizializzate prima di render() perché il
+  routing può subito portare alla scheda (es. caricando #/scheda direttamente).
+*/
+let state = loadAppState();
+const COIN_KEYS = ['pp','gp','sp','cp'];
+let fieldBindings = new Map();
+let raceCatalog = [];
+let classCatalog = [];
+let traitCatalog = { traits: [], drawbacks: [] };
+let raceCatalogLoaded = false;
+let classCatalogLoaded = false;
+let traitCatalogLoaded = false;
+let raceCatalogPromise = null;
+let classCatalogPromise = null;
+let traitCatalogPromise = null;
+let schedaMenusPromise = null;
+const SIZE_ORDER = ['Minuscola','Piccola','Media','Grande','Enorme','Mastodontica'];
+const ARRAY_FIELD = 'array';
+const ABP_FALLBACK_ORDER = ['potency','resilience','resistance','deflection','ability'];
+const ruleDataReady = ensureAllRuleVariants()
+  .catch(err => {
+    console.error('[Regole] Impossibile caricare i dataset EITR/ABP.', err);
+    return null;
+  })
+  .then(() => {
+    try {
+      updateRuleSummary();
+    } catch (err) {
+      console.error('[Scheda] Impossibile aggiornare il riepilogo regole dopo il caricamento.', err);
+    }
+  });
 
 /*
   Router
@@ -25,6 +61,41 @@ const routes = {
   '/scheda': 'view-scheda',
   '/tracker': 'view-tracker',
 };
+
+const PROFICIENCY_FIELD_CONFIG = [
+  { key: 'profArmiSemplici', label: 'Armi semplici', sourceKey: 'profArmiSempliciFonte' },
+  { key: 'profArmiMarziali', label: 'Armi marziali', sourceKey: 'profArmiMarzialiFonte' },
+  { key: 'profArmiEsotiche', label: 'Armi esotiche', sourceKey: 'profArmiEsoticheFonte' },
+  { key: 'profArmatureLeggere', label: 'Armature leggere', sourceKey: 'profArmatureLeggereFonte' },
+  { key: 'profArmatureMedie', label: 'Armature medie', sourceKey: 'profArmatureMedieFonte' },
+  { key: 'profArmaturePesanti', label: 'Armature pesanti', sourceKey: 'profArmaturePesantiFonte' },
+  { key: 'profScudi', label: 'Scudi', sourceKey: 'profScudiFonte' },
+  { key: 'profScudiPesanti', label: 'Scudi pesanti', sourceKey: 'profScudiPesantiFonte' },
+  { key: 'profScudiTorre', label: 'Scudi torre', sourceKey: 'profScudiTorreFonte' },
+  { key: 'profCategorieExtra', label: 'Categorie aggiuntive', sourceKey: null }
+];
+
+const CAPABILITY_NOTE_FIELDS = ['talenti', 'tratti', 'difetti', 'riassCapacita'];
+
+function parseRoute(rawRoute = ''){
+  const routeInfo = {
+    base: '/avvio',
+    subpath: [],
+    params: new URLSearchParams(),
+    raw: rawRoute,
+  };
+  if(typeof rawRoute !== 'string' || rawRoute.trim() === ''){
+    return routeInfo;
+  }
+  const [pathPart = '', queryPart = ''] = rawRoute.split('?');
+  const segments = pathPart.split('/').filter(Boolean);
+  if(segments.length){
+    routeInfo.base = `/${segments[0]}`;
+    routeInfo.subpath = segments.slice(1);
+  }
+  routeInfo.params = new URLSearchParams(queryPart);
+  return routeInfo;
+}
 
 const isMobile = () => mobileQuery.matches;
 
@@ -109,13 +180,14 @@ if(typeof mobileQuery.addEventListener === 'function'){
 
 syncSidebarState();
 
-function render(route){
-  const tplId = routes[route] || routes['/avvio'];
+function render(rawRoute){
+  const routeInfo = parseRoute(rawRoute);
+  const tplId = routes[routeInfo.base] || routes['/avvio'];
   const tpl = document.getElementById(tplId);
   if(!tpl || !appEl) return;
   appEl.innerHTML = tpl.innerHTML;
-  afterRender(route);
-  highlightActive(route);
+  afterRender(routeInfo.base, routeInfo);
+  highlightActive(routeInfo.base);
   focusMainHeading();
   closeSidebar({ restoreFocus: false });
   syncSidebarState();
@@ -123,7 +195,12 @@ function render(route){
 
 function highlightActive(route){
   navLinks.forEach(a => {
-    a.classList.toggle('active', a.getAttribute('href') === `#${route}`);
+    const href = a.getAttribute('href') || '';
+    const current = href.startsWith('#') ? href.slice(1) : href;
+    const isActive = current === route;
+    a.classList.toggle('active', isActive);
+    if(isActive) a.setAttribute('aria-current', 'page');
+    else a.removeAttribute('aria-current');
   });
 }
 
@@ -139,11 +216,23 @@ function focusMainHeading(){
   }
 }
 
-function afterRender(route){
+function initSharedMenus(){
+  buildTCSelect();
+  setupAlignmentSelect();
+  setupAgeStageSelect();
+  buildOCPicker();
+  if(hasSchedaMenus()){
+    hydrateSchedaMenus().catch(err => console.error('[Scheda] Impossibile popolare i menù dinamici.', err));
+  }
+}
+
+function afterRender(route, context = {}){
+  initSharedMenus();
   switch(route){
-    case '/scheda': initScheda(); break;
+    case '/scheda': initScheda(context); break;
     case '/tracker': initTracker(); break;
     case '/oggetti': initOggetti(); break;
+    case '/regole': renderRulesPage(); break;
     default: break;
   }
 }
@@ -165,18 +254,157 @@ document.getElementById('btnImportJSON').onclick = () => {
 };
 document.getElementById('btnPrint').onclick = () => window.print();
 
-// Carica la vista iniziale
-if(!location.hash) location.hash = '#/avvio';
-render(location.hash.replace('#',''));
-
 /*
   Gestione Scheda (parte B)
   Salva/Carica dati, costruisci tabelle e selettori TC, oggetti custom.
 */
-let state = loadAppState();
-const COIN_KEYS = ['pp','gp','sp','cp'];
 
-function initScheda(){
+function toArray(value){
+  if(Array.isArray(value)) return value;
+  if(value == null || value === '') return [];
+  return Array.isArray(value) ? value : [value];
+}
+
+const createMulticlassUid = (() => {
+  let counter = Date.now();
+  return () => `mc_${counter++}`;
+})();
+
+function createClassEntry(classId = '', level = 0, archetypes = []){
+  return {
+    uid: createMulticlassUid(),
+    classId: classId || '',
+    level: Number.isFinite(Number(level)) ? Math.max(0, Number(level)) : 0,
+    archetypes: toArray(archetypes)
+  };
+}
+
+function cloneProgression(list){
+  if(!Array.isArray(list)) return [];
+  return list.map(entry => ({
+    uid: entry.uid || createMulticlassUid(),
+    classId: entry.classId || entry.id || '',
+    level: Number.isFinite(Number(entry.level)) ? Math.max(0, Number(entry.level)) : 0,
+    archetypes: toArray(entry.archetypes)
+  }));
+}
+
+function normaliseClassProgression(list){
+  if(!Array.isArray(list)) return [];
+  return list.map(entry => ({
+    uid: entry.uid || createMulticlassUid(),
+    classId: entry.classId || entry.id || entry.classeId || '',
+    level: Number.isFinite(Number(entry.level ?? entry.lv ?? entry.livello))
+      ? Math.max(0, Number(entry.level ?? entry.lv ?? entry.livello))
+      : 0,
+    archetypes: toArray(entry.archetypes || entry.archetypeIds || [])
+  }));
+}
+
+function sumProgressionLevels(list){
+  if(!Array.isArray(list)) return 0;
+  return list.reduce((acc, entry) => acc + (Number.isFinite(Number(entry.level)) ? Number(entry.level) : 0), 0);
+}
+
+function getPrimaryProgressionEntry(){
+  if(!Array.isArray(state.classProgression) || !state.classProgression.length) return null;
+  const sorted = [...state.classProgression].sort((a, b) => (Number(b.level) || 0) - (Number(a.level) || 0));
+  return sorted.find(entry => entry.classId && Number(entry.level) > 0) || sorted[0] || null;
+}
+
+function syncPrimaryClassFromProgression(){
+  const primary = getPrimaryProgressionEntry();
+  if(primary){
+    state.classeId = primary.classId || state.classeId || '';
+    state.archetypes = toArray(primary.archetypes);
+  } else {
+    state.classeId = state.classeId || '';
+    state.archetypes = toArray(state.archetypes || []);
+  }
+}
+
+function syncProgressionFromPrimary(){
+  if(!Array.isArray(state.classProgression) || !state.classProgression.length){
+    state.classProgression = [createClassEntry(state.classeId || '', Number(state.livello) || 0, state.archetypes)];
+    return;
+  }
+  const first = state.classProgression[0];
+  first.classId = state.classeId || '';
+  first.archetypes = toArray(state.archetypes);
+  if(!state.multiClassEnabled){
+    first.level = Number.isFinite(Number(state.livello)) ? Number(state.livello) : first.level;
+  }
+}
+
+function persistClassProgression(){
+  if(state.multiClassEnabled){
+    state.lastMulticlassPlan = cloneProgression(state.classProgression);
+  }
+  saveAppState(state);
+}
+
+function registerBinding(key, el){
+  if(!fieldBindings.has(key)) fieldBindings.set(key, new Set());
+  fieldBindings.get(key).add(el);
+}
+
+function setElementValue(el, value){
+  if(!el) return;
+  if(el.dataset.fieldType === ARRAY_FIELD){
+    const values = toArray(value);
+    Array.from(el.options || []).forEach(opt => {
+      opt.selected = values.includes(opt.value);
+    });
+    return;
+  }
+  if(el.type === 'checkbox'){
+    el.checked = value === true || value === 'true';
+    return;
+  }
+  if(value == null){
+    el.value = '';
+    return;
+  }
+  el.value = value;
+}
+
+function getElementValue(el){
+  if(el.dataset.fieldType === ARRAY_FIELD){
+    return Array.from(el.selectedOptions || []).map(opt => opt.value);
+  }
+  if(el.type === 'checkbox'){
+    return !!el.checked;
+  }
+  return el.value;
+}
+
+function restoreFieldValue(key){
+  const els = fieldBindings.get(key);
+  if(!els) return;
+  const value = state[key];
+  els.forEach(el => setElementValue(el, value));
+}
+
+function syncBoundFields(key, origin){
+  const els = fieldBindings.get(key);
+  if(!els) return;
+  const value = getElementValue(origin);
+  els.forEach(el => {
+    if(el === origin) return;
+    setElementValue(el, value);
+  });
+}
+
+function updateComputedField(key, value){
+  if(state[key] === value) return;
+  state[key] = value;
+  restoreFieldValue(key);
+}
+
+const getStateValue = key => state[key];
+
+function initScheda(context = {}){
+  fieldBindings = new Map();
   const container = document.getElementById('app');
   const autoFields = container ? Array.from(container.querySelectorAll('[data-field]')) : [];
   const handledKeys = new Set();
@@ -222,9 +450,21 @@ function initScheda(){
     .forEach(key => bindField(document.getElementById(key), key));
 
   migrateLegacyValute();
-  // Stats
+  const preferredTabSlug = context.subpath?.[0] || context.params?.get('tab') || null;
+  setupSchedaTabs({ initialTabSlug: preferredTabSlug, baseRoute: context.base ?? '/scheda' });
+  initSchedaGenerali();
+  updateAlignmentSummary();
+  updateRuleSummary();
+  updateAnagraficaSummary();
+  updateMisureSummary();
+  updateRazzaClassiSummary();
+  updateTraitNotes();
+  updateDrawbackNotes();
+  renderClassCapabilities();
+  renderProficiencySummary();
+  renderCapabilityNotes();
+
   buildStats();
-  // Tabelle
   buildAtkTable();
   buildSpellTable();
   const btnAddAtkRow = document.getElementById('btnAddAtkRow');
@@ -400,31 +640,47 @@ export function addRow(tableId, data){
 }
 
 function buildTCSelect(){
-  const sel = document.getElementById('tcSelect');
-  if(!sel) return;
-  sel.innerHTML = `<option value="">— seleziona TC —</option>` + Object.entries(TC_DATA).map(([code,info])=>`<option value="${code}">${code} — ${info.title}</option>`).join('');
-  if(state.tc) sel.value = state.tc;
-  applyTC(sel.value);
-  sel.onchange = () => {
-    state.tc = sel.value;
-    saveAppState(state);
-    applyTC(sel.value);
-  };
+  const selects = Array.from(document.querySelectorAll('select[data-tc-select]'));
+  if(!selects.length) return;
+  const options = `<option value="">— seleziona TC —</option>` + Object.entries(TC_DATA).map(([code, info]) => `<option value="${code}">${code} — ${info.title}</option>`).join('');
+  selects.forEach(sel => {
+    sel.innerHTML = options;
+    if(state.tc) sel.value = state.tc;
+    sel.onchange = () => {
+      const value = sel.value;
+      state.tc = value;
+      selects.forEach(other => { if(other !== sel) other.value = value; });
+      applyTC(value);
+      saveAppState(state);
+    };
+  });
+  applyTC(state.tc || selects[0].value || '');
 }
 
 function applyTC(code){
   const info = TC_DATA[code] || null;
-  const codeEl = document.getElementById('tcCode');
-  const titleEl = document.getElementById('tcTitle');
-  const narrEl = document.getElementById('tcNarr');
-  const rawList = document.getElementById('tcRaw');
-  if(!codeEl) return; // non in questa vista
-  codeEl.value = code || '';
-  titleEl.value = info?.title || '';
-  narrEl.value = info?.narr || '';
-  rawList.innerHTML = '';
-  (info?.raw || []).forEach(r => {
-    const li = document.createElement('li'); li.textContent = r; rawList.appendChild(li);
+  document.querySelectorAll('[data-tc-code]').forEach(el => {
+    if('value' in el) el.value = code || '';
+    else el.textContent = code || '';
+  });
+  document.querySelectorAll('[data-tc-title]').forEach(el => {
+    if('value' in el) el.value = info?.title || '';
+    else el.textContent = info?.title || '';
+  });
+  document.querySelectorAll('[data-tc-narr]').forEach(el => {
+    if('value' in el) el.value = info?.narr || '';
+    else el.textContent = info?.narr || '';
+  });
+  document.querySelectorAll('[data-tc-raw]').forEach(el => {
+    el.innerHTML = '';
+    (info?.raw || []).forEach(r => {
+      const li = document.createElement('li');
+      li.textContent = r;
+      el.appendChild(li);
+    });
+  });
+  document.querySelectorAll('select[data-tc-select]').forEach(sel => {
+    if(sel.value !== code) sel.value = code || '';
   });
 }
 
@@ -460,6 +716,1575 @@ function buildOCPicker(){
     saveAppState(state);
   };
   if(picker.value !== '') picker.dispatchEvent(new Event('change'));
+}
+
+function renderRulesPage(){
+  ruleDataReady.then(() => {
+    renderEitrRules();
+    renderAbpSection();
+  });
+}
+
+function renderEitrRules(){
+  const data = getRuleVariant('eitr');
+  const loading = !data;
+  const summaryEl = document.querySelector('[data-eitr-summary]');
+  if(summaryEl){
+    if(loading){
+      summaryEl.innerHTML = '<li>Dati EITR in caricamento…</li>';
+    } else {
+      summaryEl.innerHTML = (data.summary || []).map(line => `<li>${line}</li>`).join('');
+    }
+  }
+  const freeEl = document.querySelector('[data-eitr-free]');
+  if(freeEl){
+    if(loading){
+      freeEl.innerHTML = '<li>Dati EITR in caricamento…</li>';
+    } else {
+      freeEl.innerHTML = (data.freeFeats || []).map(item => `<li><b>${item.name}</b>: ${item.detail}</li>`).join('');
+    }
+  }
+  const adjustedEl = document.querySelector('[data-eitr-adjusted]');
+  if(adjustedEl){
+    if(loading){
+      adjustedEl.innerHTML = '<li>Dati EITR in caricamento…</li>';
+    } else {
+      adjustedEl.innerHTML = (data.adjustedFeats || []).map(item => `<li><b>${item.name}</b>: ${item.detail}</li>`).join('');
+    }
+  }
+  const classEl = document.querySelector('[data-eitr-classes]');
+  if(classEl){
+    if(loading){
+      classEl.innerHTML = '<li>Dati EITR in caricamento…</li>';
+    } else {
+      const classes = (data.classAdjustments || []).map(entry => {
+        const changes = (entry.changes || []).map(change => `<li>${change}</li>`).join('');
+        return `<li><b>${entry.target}</b><ul>${changes}</ul></li>`;
+      }).join('');
+      classEl.innerHTML = classes || '<li>Nessun adattamento di classe registrato.</li>';
+    }
+  }
+  const otherEl = document.querySelector('[data-eitr-other]');
+  if(otherEl){
+    if(loading){
+      otherEl.innerHTML = '<li>Dati EITR in caricamento…</li>';
+    } else {
+      const other = (data.otherRules || []).map(item => `<li>${item}</li>`).join('');
+      otherEl.innerHTML = other || '<li>Nessuna regola aggiuntiva nel dataset.</li>';
+    }
+  }
+  const notesEl = document.querySelector('[data-eitr-notes]');
+  if(notesEl){
+    notesEl.innerHTML = loading ? 'Dati EITR in caricamento…' : (data.notes || []).map(note => `<span>${note}</span>`).join('<br>');
+  }
+  const sourceEl = document.querySelector('[data-eitr-sources]');
+  if(sourceEl){
+    if(loading){
+      sourceEl.textContent = 'In caricamento…';
+    } else {
+      const sources = (data.sources || []).join(' • ');
+      sourceEl.textContent = sources || '—';
+    }
+  }
+}
+
+function renderAbpSection(){
+  const data = getRuleVariant('abp');
+  const loading = !data;
+  const summaryEl = document.querySelector('[data-abp-summary]');
+  if(summaryEl){
+    summaryEl.innerHTML = loading ? '<li>Dati ABP in caricamento…</li>' : (data.summary || []).map(line => `<li>${line}</li>`).join('');
+  }
+  const noteEl = document.querySelector('[data-abp-note]');
+  if(noteEl){
+    if(loading){
+      noteEl.textContent = 'Dati ABP in caricamento…';
+    } else {
+      const note = data.notes?.[0] || data.note || '';
+      noteEl.textContent = note;
+    }
+  }
+  const table = document.querySelector('[data-abp-table]');
+  if(!table) return;
+  const tbody = table.querySelector('tbody');
+  if(!tbody) return;
+  const currentLevel = parseInt(state.livello || 7, 10) || 0;
+  const order = data?.order || ABP_FALLBACK_ORDER;
+  const rows = (data?.progression || []).map(row => {
+    const active = currentLevel >= row.level ? ' class="is-active"' : '';
+    const rowBonuses = row.bonuses || {};
+    const bonuses = order.filter(id => rowBonuses[id] != null)
+      .map(id => {
+        const value = rowBonuses[id];
+        const label = (data?.labels && data.labels[id]) || id;
+        const detail = (data?.details && data.details[id]) || '';
+        const valueText = id === 'ability' ? `+${value} (caratteristica a scelta)` : `+${value}`;
+        const detailHtml = detail ? `<small class="muted">${detail}</small>` : '';
+        return `<div class="abp-table__item"><span><b>${label}</b>: ${valueText}</span>${detailHtml}</div>`;
+      }).join('');
+    const note = row.note ? `<div class="abp-table__note">${row.note}</div>` : '';
+    return `<tr${active}><td>${row.level}</td><td class="abp-table__cell">${bonuses}${note}</td></tr>`;
+  }).join('');
+  tbody.innerHTML = rows || (loading ? '<tr><td colspan="2">Dati ABP in caricamento…</td></tr>' : '<tr><td colspan="2">Nessun dato di progressione disponibile.</td></tr>');
+  const conversionPotency = document.querySelector('[data-abp-conversion="potency"]');
+  if(conversionPotency){
+    if(loading){
+      conversionPotency.innerHTML = '<li>Dati ABP in caricamento…</li>';
+    } else {
+      conversionPotency.innerHTML = (data.conversion?.potency || []).map(entry => {
+        const options = (entry.options || []).join(', ');
+        const note = entry.note ? `<small class="muted">${entry.note}</small>` : '';
+        return `<li><b>Spendi +${entry.cost}</b>: ${options}${note ? `<br>${note}` : ''}</li>`;
+      }).join('') || '<li>Nessuna opzione di conversione disponibile.</li>';
+    }
+  }
+  const conversionResilience = document.querySelector('[data-abp-conversion="resilience"]');
+  if(conversionResilience){
+    if(loading){
+      conversionResilience.innerHTML = '<li>Dati ABP in caricamento…</li>';
+    } else {
+      conversionResilience.innerHTML = (data.conversion?.resilience || []).map(entry => {
+        const options = (entry.options || []).join(', ');
+        const note = entry.note ? `<small class="muted">${entry.note}</small>` : '';
+        return `<li><b>Spendi +${entry.cost}</b>: ${options}${note ? `<br>${note}` : ''}</li>`;
+      }).join('') || '<li>Nessuna opzione di conversione disponibile.</li>';
+    }
+  }
+  const lootEl = document.querySelector('[data-abp-loot]');
+  if(lootEl){
+    if(loading){
+      lootEl.innerHTML = '<li>Dati ABP in caricamento…</li>';
+    } else {
+      const loot = (data.lootGuidelines || []).map(item => `<li>${item}</li>`).join('');
+      lootEl.innerHTML = loot || '<li>Nessuna linea guida aggiuntiva nel dataset.</li>';
+    }
+  }
+  const extraNotes = document.querySelector('[data-abp-notes]');
+  if(extraNotes){
+    if(loading){
+      extraNotes.innerHTML = '<li>Dati ABP in caricamento…</li>';
+    } else {
+      const listNotes = Array.isArray(data.notes) ? data.notes.slice(1) : [];
+      extraNotes.innerHTML = listNotes.length ? listNotes.map(note => `<li>${note}</li>`).join('') : '<li>Nessuna nota supplementare.</li>';
+    }
+  }
+}
+
+function handleFieldUpdate(key, value){
+  const isProficiencyField = PROFICIENCY_FIELD_CONFIG.some(cfg => cfg.key === key || cfg.sourceKey === key);
+  const isCapabilityNoteField = CAPABILITY_NOTE_FIELDS.includes(key);
+  switch(key){
+    case 'alignment':
+    case 'divinita':
+      updateAlignmentSummary();
+      break;
+    case 'razzaId':
+    case 'raceAltTraits':
+      if(applyRaceDetails(state.razzaId)) updateAnagraficaSummary();
+      updateRazzaClassiSummary();
+      break;
+    case 'classeId':
+    case 'archetypes':
+      applyClassDetails(state.classeId);
+      syncProgressionFromPrimary();
+      updateRazzaClassiSummary();
+      renderClassCapabilities();
+      renderProficiencySummary();
+      renderCapabilityNotes();
+      if(state.multiClassEnabled) renderMulticlassList();
+      updateMulticlassStatus();
+      if(state.multiClassEnabled) persistClassProgression();
+      break;
+    case 'livello':
+      syncProgressionFromPrimary();
+      updateRazzaClassiSummary();
+      updateRuleSummary();
+      updateMulticlassStatus();
+      renderClassCapabilities();
+      renderCapabilityNotes();
+      break;
+    case 'taglia':
+      state.tagliaManual = !!value;
+      if(!state.tagliaManual) applyRaceDetails(state.razzaId);
+      updateAnagraficaSummary();
+      break;
+    case 'eta':
+    case 'etaStage':
+    case 'genere':
+      updateAnagraficaSummary();
+      break;
+    case 'altezzaVal':
+    case 'pesoVal':
+      updateMisureSummary();
+      break;
+    case 'traitsList':
+      updateTraitNotes();
+      break;
+    case 'drawbackList':
+      updateDrawbackNotes();
+      break;
+    case 'toggleEitr':
+    case 'toggleAbp':
+      updateRuleSummary();
+      break;
+    default:
+      break;
+  }
+  if(isProficiencyField){
+    renderProficiencySummary();
+  }
+  if(isCapabilityNoteField){
+    renderCapabilityNotes();
+  }
+}
+
+function setupSchedaTabs({ initialTabSlug = null, baseRoute = '/scheda' } = {}){
+  const buttons = Array.from(document.querySelectorAll('.scheda-tabs__btn'));
+  const panels = Array.from(document.querySelectorAll('[data-tab-panel]'));
+  if(!buttons.length || !panels.length) return;
+
+  const slugToTarget = new Map();
+  const targetToSlug = new Map();
+
+  const ensurePanelMetadata = () => {
+    buttons.forEach(btn => {
+      const target = btn.dataset.tabTarget;
+      if(!target) return;
+      const rawSlug = btn.dataset.tabRoute || target;
+      if(!slugToTarget.has(rawSlug)) slugToTarget.set(rawSlug, target);
+      if(!slugToTarget.has(target)) slugToTarget.set(target, target);
+      if(!targetToSlug.has(target)) targetToSlug.set(target, rawSlug);
+      if(!btn.hasAttribute('role')) btn.setAttribute('role', 'tab');
+      if(!btn.id) btn.id = `tab-${target}`;
+      const panelId = `panel-${target}`;
+      btn.setAttribute('aria-controls', panelId);
+      if(!btn.hasAttribute('tabindex')) btn.setAttribute('tabindex', '-1');
+      const panel = panels.find(p => p.dataset.tabPanel === target);
+      if(panel){
+        if(!panel.id) panel.id = panelId;
+        panel.setAttribute('role', 'tabpanel');
+        panel.setAttribute('aria-labelledby', btn.id);
+      }
+    });
+  };
+
+  ensurePanelMetadata();
+
+  const getSlugForTarget = (target) => {
+    if(targetToSlug.has(target)) return targetToSlug.get(target);
+    for(const [slug, mappedTarget] of slugToTarget.entries()){
+      if(mappedTarget === target) return slug;
+    }
+    return null;
+  };
+
+  const normaliseSlug = (slug) => {
+    if(!slug) return null;
+    if(slugToTarget.has(slug)) return slug;
+    const lower = slug.toLowerCase();
+    for(const key of slugToTarget.keys()){
+      if(key.toLowerCase() === lower) return key;
+    }
+    return null;
+  };
+
+  const updateTabInHash = (target) => {
+    if(baseRoute !== '/scheda') return;
+    const slug = getSlugForTarget(target);
+    if(!slug) return;
+    const currentRoute = parseRoute(location.hash.replace('#',''));
+    const params = new URLSearchParams(currentRoute.params);
+    if(params.has('tab')) params.delete('tab');
+    const queryString = params.toString();
+    const querySuffix = queryString ? `?${queryString}` : '';
+    const newHash = slug ? `#/scheda/${slug}${querySuffix}` : `#/scheda${querySuffix}`;
+    if(location.hash === newHash) return;
+    if(typeof history.replaceState === 'function') history.replaceState(null, '', newHash);
+    else location.hash = newHash;
+  };
+
+  const setActive = (id, { persist = false, focusTab = false, updateUrl = false } = {}) => {
+    if(!id) return;
+    buttons.forEach(btn => {
+      const active = btn.dataset.tabTarget === id;
+      btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      btn.setAttribute('tabindex', active ? '0' : '-1');
+      if(active && focusTab) btn.focus();
+    });
+    panels.forEach(panel => {
+      const match = panel.getAttribute('data-tab-panel') === id;
+      if(match){
+        panel.removeAttribute('hidden');
+        panel.setAttribute('aria-hidden', 'false');
+        panel.setAttribute('tabindex', '0');
+      } else {
+        panel.setAttribute('hidden', '');
+        panel.setAttribute('aria-hidden', 'true');
+        panel.setAttribute('tabindex', '-1');
+      }
+    });
+    if(persist){
+      state.lastSchedaTab = id;
+      saveAppState(state);
+    }
+    if(updateUrl) updateTabInHash(id);
+  };
+
+  const focusTabByIndex = (index) => {
+    const btn = buttons[(index + buttons.length) % buttons.length];
+    if(!btn) return;
+    setActive(btn.dataset.tabTarget, { persist: true, focusTab: true, updateUrl: true });
+  };
+
+  buttons.forEach((btn, index) => {
+    btn.addEventListener('click', () => setActive(btn.dataset.tabTarget, { persist: true, updateUrl: true }));
+    btn.addEventListener('keydown', evt => {
+      let targetIndex = null;
+      switch(evt.key){
+        case 'ArrowRight':
+        case 'ArrowDown':
+          targetIndex = index + 1;
+          break;
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          targetIndex = index - 1;
+          break;
+        case 'Home':
+          targetIndex = 0;
+          break;
+        case 'End':
+          targetIndex = buttons.length - 1;
+          break;
+        default:
+          return;
+      }
+      evt.preventDefault();
+      focusTabByIndex(targetIndex);
+    });
+  });
+
+  const availableTargets = new Set(buttons.map(btn => btn.dataset.tabTarget));
+  let preferred = null;
+  if(initialTabSlug){
+    const normalised = normaliseSlug(initialTabSlug);
+    if(normalised) preferred = slugToTarget.get(normalised);
+  }
+  if(!preferred) preferred = state.lastSchedaTab;
+  if(!preferred || !availableTargets.has(preferred)){
+    preferred = buttons.find(btn => btn.hasAttribute('data-tab-default'))?.dataset.tabTarget || buttons[0].dataset.tabTarget;
+  }
+  setActive(preferred, { persist: false, updateUrl: Boolean(initialTabSlug) });
+}
+
+function hasSchedaMenus(){
+  return !!document.querySelector('#dgRazza, #dgClasse, #dgTrattiGenerali, #dgDifetti, #dgTrattiRazza, #dgArchetipi');
+}
+
+async function ensureRaceCatalog(){
+  if(raceCatalogLoaded) return raceCatalog;
+  if(!raceCatalogPromise){
+    raceCatalogPromise = getRaces()
+      .catch(err => {
+        console.warn('[AON] Impossibile ottenere la lista razze, uso fallback.', err);
+        return [];
+      })
+      .then(list => Array.isArray(list) ? list : [])
+      .then(list => {
+        raceCatalog = list;
+        raceCatalogLoaded = true;
+        return raceCatalog;
+      })
+      .finally(() => {
+        raceCatalogPromise = null;
+      });
+  }
+  return raceCatalogPromise;
+}
+
+async function ensureClassCatalog(){
+  if(classCatalogLoaded) return classCatalog;
+  if(!classCatalogPromise){
+    classCatalogPromise = getClasses()
+      .catch(err => {
+        console.warn('[AON] Impossibile ottenere la lista classi, uso fallback.', err);
+        return [];
+      })
+      .then(list => Array.isArray(list) ? list : [])
+      .then(list => {
+        classCatalog = list;
+        classCatalogLoaded = true;
+        return classCatalog;
+      })
+      .finally(() => {
+        classCatalogPromise = null;
+      });
+  }
+  return classCatalogPromise;
+}
+
+async function ensureTraitCatalog(){
+  if(traitCatalogLoaded) return traitCatalog;
+  if(!traitCatalogPromise){
+    traitCatalogPromise = getTraitsAndDrawbacks()
+      .catch(err => {
+        console.warn('[AON] Impossibile ottenere tratti/difetti, uso fallback.', err);
+        return { traits: [], drawbacks: [] };
+      })
+      .then(data => ({
+        traits: Array.isArray(data?.traits) ? data.traits : [],
+        drawbacks: Array.isArray(data?.drawbacks) ? data.drawbacks : [],
+      }))
+      .then(result => {
+        traitCatalog = result;
+        traitCatalogLoaded = true;
+        return traitCatalog;
+      })
+      .finally(() => {
+        traitCatalogPromise = null;
+      });
+  }
+  return traitCatalogPromise;
+}
+
+async function hydrateSchedaMenus(){
+  if(!hasSchedaMenus()) return { sizeAdjusted: false, traitAdjusted: false };
+  if(schedaMenusPromise) return schedaMenusPromise;
+  schedaMenusPromise = (async () => {
+    await Promise.all([ensureRaceCatalog(), ensureClassCatalog(), ensureTraitCatalog()]);
+    renderRaceSelect();
+    renderClassSelect();
+    const traitAdjusted = renderTraitsSelect();
+    const sizeAdjusted = applyRaceDetails(state.razzaId);
+    applyClassDetails(state.classeId);
+    return { sizeAdjusted, traitAdjusted };
+  })();
+  try {
+    return await schedaMenusPromise;
+  } finally {
+    schedaMenusPromise = null;
+  }
+}
+
+async function initSchedaGenerali(){
+  let sizeAdjusted = false;
+  let traitAdjusted = false;
+  try {
+    ({ sizeAdjusted, traitAdjusted } = await hydrateSchedaMenus());
+  } catch (err) {
+    console.error('[Scheda] Errore durante il popolamento dei menù dinamici.', err);
+  }
+  updateAlignmentSummary();
+  updateAnagraficaSummary();
+  updateMisureSummary();
+  updateRuleSummary();
+  updateTraitNotes();
+  updateDrawbackNotes();
+  updateRazzaClassiSummary();
+  initMulticlassUI();
+  updateMulticlassStatus();
+  if(sizeAdjusted || traitAdjusted) saveAppState(state);
+}
+
+function initMulticlassUI(){
+  const toggleBtn = document.getElementById('dgToggleMulticlass');
+  const addBtn = document.getElementById('dgAddClass');
+  const statusEl = document.getElementById('dgMulticlassStatus');
+  const singleBlock = document.querySelector('[data-multiclass-single]');
+  const panel = document.querySelector('[data-multiclass-panel]');
+  const classSelect = document.getElementById('dgClasse');
+  const archSelect = document.getElementById('dgArchetipi');
+  if(!toggleBtn || !addBtn || !statusEl || !singleBlock || !panel) return;
+
+  const applyMode = ({ focusUid } = {}) => {
+    const multi = state.multiClassEnabled === true;
+    toggleBtn.setAttribute('aria-pressed', multi ? 'true' : 'false');
+    toggleBtn.textContent = multi ? 'Disattiva Multiclasse' : 'Attiva Multiclasse';
+    addBtn.disabled = !multi;
+    singleBlock.hidden = multi;
+    panel.hidden = !multi;
+    if(classSelect) classSelect.disabled = multi;
+    if(archSelect) archSelect.disabled = multi;
+    if(multi){
+      renderMulticlassList({ focusUid });
+    }
+    updateMulticlassStatus();
+  };
+
+  toggleBtn.addEventListener('click', () => {
+    const currently = state.multiClassEnabled === true;
+    if(currently){
+      state.lastMulticlassPlan = cloneProgression(state.classProgression);
+      const primary = getPrimaryProgressionEntry();
+      state.classProgression = primary
+        ? [createClassEntry(primary.classId, primary.level, primary.archetypes)]
+        : [createClassEntry(state.classeId || '', Number(state.livello) || 0, state.archetypes)];
+      state.multiClassEnabled = false;
+    } else {
+      state.multiClassEnabled = true;
+      if(state.lastMulticlassPlan?.length){
+        state.classProgression = cloneProgression(state.lastMulticlassPlan);
+      } else if(!state.classProgression.length){
+        state.classProgression = [createClassEntry(state.classeId || '', Number(state.livello) || 0, state.archetypes)];
+      }
+    }
+    syncPrimaryClassFromProgression();
+    updateRazzaClassiSummary();
+    const focusUid = state.multiClassEnabled ? (state.classProgression[0]?.uid || null) : null;
+    applyMode({ focusUid });
+    applyClassDetails(state.classeId);
+    persistClassProgression();
+    renderClassCapabilities();
+    renderProficiencySummary();
+    renderCapabilityNotes();
+  });
+
+  addBtn.addEventListener('click', () => {
+    if(!state.multiClassEnabled) return;
+    const newEntry = createClassEntry('', 0, []);
+    state.classProgression.push(newEntry);
+    renderMulticlassList({ focusUid: newEntry.uid });
+    updateRazzaClassiSummary();
+    persistClassProgression();
+  });
+
+  applyMode();
+}
+
+let multiclassListRoot = null;
+
+function handleMulticlassListClick(evt){
+  const listEl = multiclassListRoot;
+  if(!listEl) return;
+  const removeBtn = evt.target.closest('[data-mc-remove]');
+  if(!removeBtn || !listEl.contains(removeBtn)) return;
+  evt.preventDefault();
+  const itemEl = removeBtn.closest('.multiclass-item');
+  if(!itemEl) return;
+  const uid = itemEl.dataset.uid;
+  if(!uid || !Array.isArray(state.classProgression)) return;
+  if(state.classProgression.length <= 1) return;
+  const next = state.classProgression.filter(entry => entry.uid !== uid);
+  state.classProgression = next.length ? next : [createClassEntry('', 0, [])];
+  syncPrimaryClassFromProgression();
+  updateRazzaClassiSummary();
+  persistClassProgression();
+  renderMulticlassList();
+}
+
+function ensureMulticlassListEvents(listEl){
+  if(!listEl || listEl === multiclassListRoot) return;
+  if(multiclassListRoot){
+    multiclassListRoot.removeEventListener('click', handleMulticlassListClick);
+  }
+  multiclassListRoot = listEl;
+  multiclassListRoot.addEventListener('click', handleMulticlassListClick);
+}
+
+function renderMulticlassList({ focusUid = null } = {}){
+  const listEl = document.getElementById('dgMulticlassList');
+  if(!listEl){
+    if(multiclassListRoot){
+      multiclassListRoot.removeEventListener('click', handleMulticlassListClick);
+      multiclassListRoot = null;
+    }
+    return;
+  }
+  ensureMulticlassListEvents(listEl);
+  listEl.innerHTML = '';
+  if(!Array.isArray(state.classProgression) || !state.classProgression.length){
+    state.classProgression = [createClassEntry(state.classeId || '', Number(state.livello) || 0, state.archetypes)];
+  }
+  state.classProgression.forEach(entry => { if(!entry.uid) entry.uid = createMulticlassUid(); });
+  let focusTarget = null;
+  state.classProgression.forEach(entry => {
+    const item = document.createElement('article');
+    item.className = 'multiclass-item';
+    item.dataset.uid = entry.uid;
+    item.innerHTML = `
+      <div class="multiclass-item__header">
+        <div>
+          <label>Classe</label>
+          <select data-mc-class></select>
+          <p class="muted small-note" data-mc-source></p>
+        </div>
+        <div>
+          <label>Livelli assegnati</label>
+          <input type="number" min="0" max="20" step="1" data-mc-level />
+        </div>
+        <div class="multiclass-item__actions">
+          <button type="button" class="btn" data-mc-remove>Rimuovi</button>
+        </div>
+      </div>
+      <div class="multiclass-item__archetypes">
+        <label>Archetipi compatibili</label>
+        <select multiple size="5" data-mc-archetypes></select>
+        <p class="multiclass-item__note" data-mc-note></p>
+      </div>
+    `;
+    bindMulticlassItem(item, entry);
+    if(entry.uid === focusUid){
+      focusTarget = item.querySelector('[data-mc-class]');
+    }
+    listEl.appendChild(item);
+  });
+  if(focusTarget){
+    const focus = () => focusTarget.focus();
+    if(typeof requestAnimationFrame === 'function') requestAnimationFrame(focus);
+    else setTimeout(focus, 0);
+  }
+  updateMulticlassStatus();
+  renderClassCapabilities();
+  renderProficiencySummary();
+  renderCapabilityNotes();
+}
+
+function bindMulticlassItem(container, entry){
+  const classSelect = container.querySelector('[data-mc-class]');
+  const levelInput = container.querySelector('[data-mc-level]');
+  const removeBtn = container.querySelector('[data-mc-remove]');
+  const sourceEl = container.querySelector('[data-mc-source]');
+  const archetypeSelect = container.querySelector('[data-mc-archetypes]');
+  const noteEl = container.querySelector('[data-mc-note]');
+
+  const refresh = () => {
+    if(classSelect){
+      classSelect.innerHTML = buildClassOptions();
+      classSelect.value = entry.classId || '';
+    }
+    const cls = getClassById(entry.classId);
+    if(sourceEl) sourceEl.textContent = cls?.source ? `Fonte: ${cls.source}` : '';
+    if(levelInput) levelInput.value = Number.isFinite(Number(entry.level)) ? Number(entry.level) : 0;
+    if(removeBtn){
+      removeBtn.disabled = state.classProgression.length <= 1;
+      removeBtn.dataset.uid = entry.uid || '';
+    }
+    if(archetypeSelect){
+      const valid = populateArchetypeOptions(archetypeSelect, cls, entry.archetypes);
+      if(valid.length !== entry.archetypes.length){
+        entry.archetypes = valid;
+      }
+      const evaluation = evaluateArchetypeCompatibility(cls, entry.archetypes);
+      writeArchetypeNote(noteEl, cls, entry.archetypes, evaluation);
+    }
+  };
+
+  refresh();
+
+  classSelect?.addEventListener('change', () => {
+    entry.classId = classSelect.value || '';
+    entry.archetypes = [];
+    if(entry.classId && (!entry.level || entry.level === 0)){
+      entry.level = 1;
+    }
+    refresh();
+    syncPrimaryClassFromProgression();
+    updateRazzaClassiSummary();
+    persistClassProgression();
+    updateMulticlassStatus();
+    renderClassCapabilities();
+    renderProficiencySummary();
+    renderCapabilityNotes();
+  });
+
+  const commitLevel = debounce(() => {
+    const value = Number.parseInt(levelInput.value, 10);
+    entry.level = Number.isFinite(value) && value >= 0 ? value : 0;
+    refresh();
+    syncPrimaryClassFromProgression();
+    updateRazzaClassiSummary();
+    persistClassProgression();
+    updateMulticlassStatus();
+    renderClassCapabilities();
+    renderCapabilityNotes();
+  }, 200);
+  levelInput?.addEventListener('input', commitLevel);
+  levelInput?.addEventListener('change', commitLevel);
+
+  archetypeSelect?.addEventListener('change', () => {
+    const cls = getClassById(entry.classId);
+    if(!cls){
+      entry.archetypes = [];
+      refresh();
+      persistClassProgression();
+      return;
+    }
+    const selected = Array.from(archetypeSelect.selectedOptions || []).map(opt => opt.value);
+    const evaluation = evaluateArchetypeCompatibility(cls, selected);
+    if(!evaluation.valid){
+      populateArchetypeOptions(archetypeSelect, cls, entry.archetypes);
+      writeArchetypeNote(noteEl, cls, entry.archetypes, evaluation);
+      return;
+    }
+    entry.archetypes = selected;
+    writeArchetypeNote(noteEl, cls, entry.archetypes, evaluation);
+    syncPrimaryClassFromProgression();
+    updateRazzaClassiSummary();
+    persistClassProgression();
+    renderClassCapabilities();
+    renderCapabilityNotes();
+  });
+
+}
+
+function updateMulticlassStatus(){
+  const statusEl = document.getElementById('dgMulticlassStatus');
+  if(!statusEl) return;
+  statusEl.classList.remove('status--warning', 'status--error');
+  if(state.multiClassEnabled){
+    const total = sumProgressionLevels(state.classProgression);
+    const target = Number.isFinite(Number(state.livello)) ? Number(state.livello) : 0;
+    const entries = Array.isArray(state.classProgression) ? state.classProgression : [];
+    let message = '';
+    const extraErrors = [];
+    const extraWarnings = [];
+    let classlessWithLevels = 0;
+    let archetypesWithoutClass = 0;
+    const levellessLabels = new Set();
+
+    entries.forEach(entry => {
+      const level = Number.isFinite(Number(entry.level)) ? Number(entry.level) : 0;
+      const cls = getClassById(entry.classId);
+      const hasClass = !!cls;
+      const archetypes = toArray(entry.archetypes);
+      if(level > 0 && !hasClass){
+        classlessWithLevels += 1;
+      }
+      if(archetypes.length && !hasClass){
+        archetypesWithoutClass += 1;
+      }
+      if(hasClass && level === 0){
+        levellessLabels.add(cls?.name || 'una classe selezionata');
+      }
+    });
+
+    if(!target){
+      message = 'Imposta il livello totale per distribuire i livelli di classe.';
+      statusEl.classList.add('status--warning');
+    } else if(total === target){
+      message = `Livelli assegnati: ${total}/${target}.`;
+    } else if(total < target){
+      message = `Livelli assegnati ${total}/${target}: ne restano ${target - total}.`;
+      statusEl.classList.add('status--warning');
+    } else {
+      message = `Livelli assegnati ${total}/${target}: riduci di ${total - target}.`;
+      statusEl.classList.add('status--error');
+    }
+
+    if(classlessWithLevels === 1){
+      extraErrors.push('Assegna una classe alla voce che ha livelli distribuiti.');
+    } else if(classlessWithLevels > 1){
+      extraErrors.push(`Assegna una classe alle ${classlessWithLevels} voci che hanno livelli distribuiti.`);
+    }
+
+    if(archetypesWithoutClass === 1){
+      extraErrors.push('Rimuovi gli archetipi dalla voce senza classe.');
+    } else if(archetypesWithoutClass > 1){
+      extraErrors.push('Rimuovi gli archetipi dalle voci senza classe.');
+    }
+
+    if(levellessLabels.size){
+      const labels = Array.from(levellessLabels);
+      const joined = labels.length === 1 ? labels[0] : labels.join(', ');
+      extraWarnings.push(`Aggiungi livelli a ${joined}.`);
+    }
+
+    if(extraErrors.length){
+      statusEl.classList.add('status--error');
+      message = [message, ...extraErrors].filter(Boolean).join(' • ');
+    } else if(extraWarnings.length){
+      if(!statusEl.classList.contains('status--error')){
+        statusEl.classList.add('status--warning');
+      }
+      message = [message, ...extraWarnings].filter(Boolean).join(' • ');
+    }
+
+    statusEl.textContent = message;
+  } else {
+    statusEl.textContent = 'Modalità classe singola attiva.';
+  }
+}
+
+function setupAlignmentSelect(){
+  const selects = Array.from(document.querySelectorAll('select[data-align-select]'));
+  if(!selects.length) return;
+  const options = `<option value="">— seleziona —</option>` + ALIGNMENTS.map(a => `<option value="${a.id}">${a.id} — ${a.label}</option>`).join('');
+  selects.forEach(select => {
+    select.innerHTML = options;
+    const value = state.alignment ?? '';
+    if(value && !ALIGNMENTS.some(a => a.id === value)){
+      const custom = document.createElement('option');
+      custom.value = value;
+      custom.textContent = `${value} — personalizzato`;
+      select.appendChild(custom);
+    }
+    select.value = value || '';
+  });
+  restoreFieldValue('alignment');
+}
+
+function setupAgeStageSelect(){
+  const selects = Array.from(document.querySelectorAll('select[data-age-stage-select], #dgEtaStage'));
+  if(!selects.length) return;
+  const options = `<option value="">—</option>` + AGE_STAGES.map(stage => `<option value="${stage.id}">${stage.label}</option>`).join('');
+  selects.forEach(select => {
+    select.innerHTML = options;
+    const value = state.etaStage ?? '';
+    if(value && !AGE_STAGES.some(stage => stage.id === value)){
+      const custom = document.createElement('option');
+      custom.value = value;
+      custom.textContent = `${value} — personalizzato`;
+      select.appendChild(custom);
+    }
+    select.value = value || '';
+  });
+  restoreFieldValue('etaStage');
+}
+
+function renderRaceSelect(){
+  const select = document.getElementById('dgRazza');
+  if(!select) return;
+  select.innerHTML = `<option value="">— seleziona —</option>` + raceCatalog.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+  restoreFieldValue('razzaId');
+}
+
+function getClassById(id){
+  if(!id) return null;
+  return classCatalog.find(c => c.id === id) || null;
+}
+
+function getArchetypeById(classId, archetypeId){
+  if(!classId || !archetypeId) return null;
+  const cls = getClassById(classId);
+  return cls?.archetypes?.find(a => a.id === archetypeId) || null;
+}
+
+function buildClassOptions(){
+  const options = ['<option value="">— seleziona —</option>'];
+  classCatalog.forEach(cls => {
+    options.push(`<option value="${cls.id}">${cls.name}</option>`);
+  });
+  return options.join('');
+}
+
+function renderClassSelect(){
+  const select = document.getElementById('dgClasse');
+  if(!select) return;
+  select.innerHTML = buildClassOptions();
+  restoreFieldValue('classeId');
+}
+
+function normaliseFeatureKey(str){
+  return (str || '')
+    .toString()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function populateArchetypeOptions(selectEl, cls, selectedIds){
+  if(!selectEl) return [];
+  if(!cls){
+    selectEl.innerHTML = '';
+    selectEl.disabled = true;
+    return [];
+  }
+  const archetypes = Array.isArray(cls?.archetypes) ? cls.archetypes : [];
+  if(!archetypes.length){
+    selectEl.innerHTML = '';
+    selectEl.disabled = true;
+    return [];
+  }
+  selectEl.disabled = false;
+  selectEl.innerHTML = archetypes.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+  const valid = toArray(selectedIds).filter(id => archetypes.some(a => a.id === id));
+  Array.from(selectEl.options).forEach(opt => {
+    opt.selected = valid.includes(opt.value);
+  });
+  return valid;
+}
+
+function evaluateArchetypeCompatibility(cls, selectedIds){
+  const archetypes = Array.isArray(cls?.archetypes) ? cls.archetypes : [];
+  const selected = toArray(selectedIds).map(id => archetypes.find(a => a.id === id)).filter(Boolean);
+  const featureOwners = new Map();
+  const conflicts = [];
+  const declaredConflicts = [];
+  const missing = [];
+  const isMulti = selected.length > 1;
+  selected.forEach(arch => {
+    const features = [...toArray(arch.replaces), ...toArray(arch.modifies)];
+    const normalised = features.map(normaliseFeatureKey).filter(Boolean);
+    if(!normalised.length && isMulti && !missing.includes(arch.name)) missing.push(arch.name);
+    normalised.forEach((featureKey, idx) => {
+      const owner = featureOwners.get(featureKey);
+      if(owner && owner.id !== arch.id){
+        conflicts.push({
+          first: owner,
+          second: arch,
+          feature: featureKey,
+          featureLabel: features[idx] || features.find(f => normaliseFeatureKey(f) === featureKey) || featureKey
+        });
+      } else {
+        featureOwners.set(featureKey, arch);
+      }
+    });
+    const declared = toArray(arch.conflictsWith).map(val => normaliseFeatureKey(val));
+    declared.forEach(declaredId => {
+      const conflicting = selected.find(item => normaliseFeatureKey(item.id) === declaredId);
+      if(conflicting){
+        const key = `${[arch.id, conflicting.id].sort().join('#')}`;
+        if(!declaredConflicts.find(entry => entry.key === key)){
+          declaredConflicts.push({ first: arch, second: conflicting, key });
+        }
+      }
+    });
+  });
+  return {
+    valid: conflicts.length === 0 && declaredConflicts.length === 0,
+    conflicts,
+    declaredConflicts,
+    missing
+  };
+}
+
+function writeArchetypeNote(noteEl, cls, selectedIds, evaluation){
+  if(!noteEl) return;
+  noteEl.classList.remove('is-error', 'is-warning');
+  if(!cls){
+    noteEl.textContent = 'Seleziona una classe per visualizzare gli archetipi.';
+    return;
+  }
+  const archetypes = Array.isArray(cls?.archetypes) ? cls.archetypes : [];
+  if(!archetypes.length){
+    noteEl.textContent = 'La classe selezionata non ha archetipi collegati nel dataset corrente.';
+    return;
+  }
+  const selected = toArray(selectedIds);
+  if(evaluation?.conflicts?.length){
+    noteEl.classList.add('is-error');
+    noteEl.textContent = evaluation.conflicts.map(conflict => `${conflict.first.name} e ${conflict.second.name} confliggono su ${conflict.featureLabel || conflict.feature}.`).join(' • ');
+    return;
+  }
+  if(evaluation?.declaredConflicts?.length){
+    noteEl.classList.add('is-error');
+    noteEl.textContent = evaluation.declaredConflicts.map(item => `${item.first.name} e ${item.second.name} sono dichiarati incompatibili.`).join(' • ');
+    return;
+  }
+  if(!selected.length){
+    noteEl.textContent = 'Nessun archetipo selezionato.';
+    return;
+  }
+  const lines = selected.map(id => {
+    const arch = archetypes.find(a => a.id === id);
+    if(!arch) return null;
+    const replaces = toArray(arch.replaces);
+    const modifies = toArray(arch.modifies);
+    const parts = [];
+    if(replaces.length) parts.push(`sostituisce ${replaces.join(', ')}`);
+    if(modifies.length) parts.push(`modifica ${modifies.join(', ')}`);
+    return `${arch.name}${parts.length ? ` — ${parts.join(' e ')}` : ''}`;
+  }).filter(Boolean);
+  let text = lines.join(' • ');
+  if(evaluation?.missing?.length){
+    noteEl.classList.add('is-warning');
+    const warning = `Verifica manualmente la compatibilità di ${evaluation.missing.join(', ')}.`;
+    text = text ? `${text} • ${warning}` : warning;
+  }
+  noteEl.textContent = text || 'Nessun archetipo selezionato.';
+}
+
+function renderTraitsSelect(){
+  let changed = false;
+  const traitSelect = document.getElementById('dgTrattiGenerali');
+  if(traitSelect){
+    if(traitCatalog.traits.length){
+      const grouped = traitCatalog.traits.reduce((acc, trait) => {
+        const cat = trait.category || 'Generico';
+        if(!acc[cat]) acc[cat] = [];
+        acc[cat].push(trait);
+        return acc;
+      }, {});
+      traitSelect.innerHTML = Object.entries(grouped).map(([cat, list]) => {
+        return `<optgroup label="${cat}">${list.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</optgroup>`;
+      }).join('');
+      traitSelect.disabled = false;
+      const allowed = new Set(traitCatalog.traits.map(t => t.id));
+      const filtered = toArray(state.traitsList).filter(id => allowed.has(id));
+      if(filtered.length !== toArray(state.traitsList).length){
+        state.traitsList = filtered;
+        changed = true;
+      }
+    } else {
+      traitSelect.innerHTML = '';
+      traitSelect.disabled = true;
+      if(state.traitsList.length){
+        state.traitsList = [];
+        changed = true;
+      }
+    }
+    restoreFieldValue('traitsList');
+  }
+  const drawbackSelect = document.getElementById('dgDifetti');
+  if(drawbackSelect){
+    if(traitCatalog.drawbacks.length){
+      drawbackSelect.innerHTML = traitCatalog.drawbacks.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+      drawbackSelect.disabled = false;
+      const allowed = new Set(traitCatalog.drawbacks.map(t => t.id));
+      const filtered = toArray(state.drawbackList).filter(id => allowed.has(id));
+      if(filtered.length !== toArray(state.drawbackList).length){
+        state.drawbackList = filtered;
+        changed = true;
+      }
+    } else {
+      drawbackSelect.innerHTML = '';
+      drawbackSelect.disabled = true;
+      if(state.drawbackList.length){
+        state.drawbackList = [];
+        changed = true;
+      }
+    }
+    restoreFieldValue('drawbackList');
+  }
+  return changed;
+}
+
+function applyRaceDetails(raceId){
+  const race = raceCatalog.find(r => r.id === raceId) || null;
+  const fonteEl = document.getElementById('dgRazzaFonte');
+  const traitsSelect = document.getElementById('dgTrattiRazza');
+  const traitNote = document.getElementById('dgTrattiRazzaNote');
+  const tagliaSelect = document.getElementById('dgTaglia');
+  const tagliaNote = document.getElementById('dgTagliaNote');
+  const altezzaNote = document.getElementById('dgAltezzaRange');
+  const pesoNote = document.getElementById('dgPesoRange');
+  let sizeChanged = false;
+
+  if(race){
+    if(fonteEl) fonteEl.textContent = race.source ? `Fonte: ${race.source}` : '';
+    const altTraits = race.altTraits || [];
+    if(traitsSelect){
+      if(altTraits.length){
+        traitsSelect.innerHTML = altTraits.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+        traitsSelect.disabled = false;
+      } else {
+        traitsSelect.innerHTML = '';
+        traitsSelect.disabled = true;
+        if(state.raceAltTraits.length) state.raceAltTraits = [];
+      }
+      restoreFieldValue('raceAltTraits');
+    }
+    const selectedIds = toArray(state.raceAltTraits).filter(id => altTraits.some(t => t.id === id));
+    if(selectedIds.length !== state.raceAltTraits.length){
+      state.raceAltTraits = selectedIds;
+    }
+    const summaries = selectedIds.map(id => {
+      const trait = altTraits.find(t => t.id === id);
+      return trait ? `${trait.name}: ${trait.summary || '—'}` : null;
+    }).filter(Boolean);
+    if(traitNote){
+      if(altTraits.length){
+        traitNote.textContent = summaries.length ? summaries.join(' • ') : 'Nessun tratto alternativo selezionato.';
+      } else {
+        traitNote.textContent = 'La razza selezionata non offre tratti alternativi nel dataset corrente.';
+      }
+    }
+    const computedSize = computeRaceSize(race, selectedIds);
+    renderSizeOptions(tagliaSelect, computedSize);
+    if(!state.tagliaManual && computedSize && state.taglia !== computedSize){
+      updateComputedField('taglia', computedSize);
+      sizeChanged = true;
+    }
+    if(tagliaNote){
+      const overrides = selectedIds.map(id => {
+        const trait = altTraits.find(t => t.id === id);
+        return trait?.sizeOverride ? `${trait.name} ⇒ ${trait.sizeOverride}` : null;
+      }).filter(Boolean);
+      const baseText = race.size ? `Taglia base: ${race.size}` : '';
+      tagliaNote.textContent = overrides.length ? `${baseText}. Override: ${overrides.join(' • ')}` : baseText;
+    }
+    if(altezzaNote) altezzaNote.textContent = formatRangeNote(race.height, 'cm');
+    if(pesoNote) pesoNote.textContent = formatRangeNote(race.weight, 'kg');
+  } else {
+    if(fonteEl) fonteEl.textContent = '';
+    if(traitsSelect){
+      traitsSelect.innerHTML = '';
+      traitsSelect.disabled = true;
+    }
+    if(traitNote) traitNote.textContent = 'Seleziona una razza per visualizzare i tratti alternativi.';
+    renderSizeOptions(tagliaSelect, null);
+    if(tagliaNote) tagliaNote.textContent = '';
+    if(altezzaNote) altezzaNote.textContent = '';
+    if(pesoNote) pesoNote.textContent = '';
+  }
+  return sizeChanged;
+}
+
+function applyClassDetails(classId){
+  const cls = getClassById(classId);
+  const fonteEl = document.getElementById('dgClasseFonte');
+  const archSelect = document.getElementById('dgArchetipi');
+  const archNote = document.getElementById('dgArchetipiNote');
+  if(cls){
+    if(fonteEl) fonteEl.textContent = cls.source ? `Fonte: ${cls.source}` : '';
+    const selected = toArray(state.archetypes);
+    const valid = populateArchetypeOptions(archSelect, cls, selected);
+    if(valid.length !== selected.length){
+      state.archetypes = valid;
+      syncProgressionFromPrimary();
+      if(state.multiClassEnabled) persistClassProgression();
+    }
+    if(archSelect && state.multiClassEnabled) archSelect.disabled = true;
+    if(archNote){
+      const evaluation = evaluateArchetypeCompatibility(cls, toArray(state.archetypes));
+      writeArchetypeNote(archNote, cls, toArray(state.archetypes), evaluation);
+    }
+  } else {
+    if(fonteEl) fonteEl.textContent = '';
+    if(archSelect){
+      archSelect.innerHTML = '';
+      archSelect.disabled = true;
+    }
+    if(archNote) archNote.textContent = 'Seleziona una classe per visualizzare gli archetipi.';
+  }
+  renderClassCapabilities();
+  renderProficiencySummary();
+  renderCapabilityNotes();
+}
+
+function renderSizeOptions(select, recommended){
+  if(!select) return;
+  const options = ['<option value="">— seleziona —</option>'];
+  SIZE_ORDER.forEach(size => {
+    const label = size === recommended ? `${size} (consigliata)` : size;
+    options.push(`<option value="${size}">${label}</option>`);
+  });
+  select.innerHTML = options.join('');
+  restoreFieldValue('taglia');
+}
+
+function computeRaceSize(race, altTraitIds){
+  if(!race) return '';
+  let size = race.size || '';
+  const altTraits = race.altTraits || [];
+  altTraitIds.forEach(id => {
+    const trait = altTraits.find(t => t.id === id);
+    if(trait?.sizeOverride) size = trait.sizeOverride;
+  });
+  return size;
+}
+
+function formatRangeNote(range, defaultUnit){
+  if(!range) return '';
+  if(range.text) return range.text;
+  const unit = range.unit || defaultUnit || '';
+  if(range.min != null && range.max != null){
+    return `${range.min}–${range.max} ${unit}`.trim();
+  }
+  if(range.min != null) return `${range.min} ${unit}`.trim();
+  if(range.max != null) return `${range.max} ${unit}`.trim();
+  return '';
+}
+
+function updateAlignmentSummary(){
+  const alignment = ALIGNMENTS.find(a => a.id === state.alignment);
+  const note = document.getElementById('dgAllineamentoNote');
+  if(note){
+    note.textContent = alignment ? alignment.description : 'Seleziona un allineamento per mostrare la descrizione.';
+  }
+  const parts = [];
+  if(alignment) parts.push(`${alignment.id} ${alignment.label}`);
+  if(state.divinita) parts.push(state.divinita);
+  updateComputedField('allineamentoSynth', parts.join(' / '));
+}
+
+function updateAnagraficaSummary(){
+  const size = state.taglia || '';
+  const eta = state.eta || '';
+  const stage = AGE_STAGES.find(s => s.id === state.etaStage);
+  const genere = state.genere || '';
+  const parts = [];
+  if(size) parts.push(size);
+  if(eta) parts.push(stage ? `${eta} anni (${stage.label})` : `${eta} anni`);
+  else if(stage) parts.push(stage.label);
+  if(genere) parts.push(genere);
+  updateComputedField('tagliaSintesi', parts.join(' / '));
+  const ageNote = document.getElementById('dgEtaBonus');
+  if(ageNote){
+    ageNote.textContent = stage ? stage.summary : 'Seleziona una fascia d’età per applicare modificatori opzionali.';
+  }
+}
+
+function updateMisureSummary(){
+  const height = state.altezzaVal ? `${state.altezzaVal} cm` : '';
+  const weight = state.pesoVal ? `${state.pesoVal} kg` : '';
+  updateComputedField('misureSintesi', [height, weight].filter(Boolean).join(' / '));
+}
+
+function updateRazzaClassiSummary(){
+  const raceName = raceCatalog.find(r => r.id === state.razzaId)?.name || '';
+  const entries = Array.isArray(state.classProgression) && state.classProgression.length
+    ? state.classProgression
+    : [createClassEntry(state.classeId || '', state.livello || 0, state.archetypes)];
+  const classSummary = entries
+    .map(entry => {
+      const cls = getClassById(entry.classId);
+      const classLabel = cls?.name || (entry.classId || '').toString();
+      const levelLabel = Number(entry.level) ? `Lv ${Number(entry.level)}` : '';
+      const archetypeNames = toArray(entry.archetypes)
+        .map(id => getArchetypeById(entry.classId, id)?.name || null)
+        .filter(Boolean);
+      const fragments = [];
+      if(classLabel) fragments.push(classLabel.trim());
+      if(levelLabel) fragments.push(levelLabel);
+      if(archetypeNames.length) fragments.push(archetypeNames.join(', '));
+      return fragments.join(' ');
+    })
+    .filter(Boolean)
+    .join(' + ');
+  const parts = [];
+  if(raceName) parts.push(raceName);
+  if(classSummary) parts.push(classSummary);
+  updateComputedField('razzaClassiSynth', parts.join(' / '));
+}
+
+function updateRuleSummary(){
+  const note = document.getElementById('dgRuleSummary');
+  if(!note) return;
+  const eitr = state.toggleEitr !== false;
+  const abp = state.toggleAbp !== false;
+  const level = state.livello || 7;
+  const eitrText = eitr ? 'EITR attivo' : 'EITR disattivato';
+  let abpText = abp ? 'ABP attivo' : 'ABP disattivato';
+  if(abp){
+    const summary = formatAbpSummary(level);
+    if(summary) abpText = `ABP attivo — ${summary}`;
+  }
+  note.textContent = `${eitrText} • ${abpText}`;
+  renderAbpSection();
+}
+
+function updateTraitNotes(){
+  const note = document.getElementById('dgTrattiNote');
+  if(!note) return;
+  const selections = toArray(state.traitsList);
+  if(!selections.length){
+    note.textContent = traitCatalog.traits.length ? 'Seleziona fino a due tratti da applicare oltre al Tratto di Campagna.' : 'Tratti non disponibili: controlla la connessione ad AON.';
+    return;
+  }
+  const lines = selections.map(id => {
+    const trait = traitCatalog.traits.find(t => t.id === id);
+    return trait ? `${trait.name}: ${trait.summary || '—'}` : null;
+  }).filter(Boolean);
+  note.textContent = lines.join(' • ');
+}
+
+function updateDrawbackNotes(){
+  const note = document.getElementById('dgDifettiNote');
+  if(!note) return;
+  const selections = toArray(state.drawbackList);
+  if(!selections.length){
+    note.textContent = traitCatalog.drawbacks.length ? 'Puoi selezionare un difetto opzionale per ottenere un tratto extra.' : 'Nessun difetto disponibile nel dataset caricato.';
+    return;
+  }
+  const lines = selections.map(id => {
+    const item = traitCatalog.drawbacks.find(t => t.id === id);
+    return item ? `${item.name}: ${item.summary || '—'}` : null;
+  }).filter(Boolean);
+  note.textContent = lines.join(' • ');
+}
+
+function splitUserEntries(value){
+  if(typeof value !== 'string') return [];
+  return value
+    .split(/[\n;•]+/)
+    .map(str => str.replace(/^[\s\-–—•]+/, '').trim())
+    .filter(Boolean);
+}
+
+function renderTextList(listEl, items, emptyEl){
+  if(!listEl) return;
+  listEl.innerHTML = '';
+  const normalised = (items || [])
+    .map(item => typeof item === 'string' ? item : item?.text)
+    .map(text => (text || '').toString().trim())
+    .filter(Boolean);
+  if(!normalised.length){
+    if(emptyEl) emptyEl.hidden = false;
+    return;
+  }
+  if(emptyEl) emptyEl.hidden = true;
+  normalised.forEach(text => {
+    const li = document.createElement('li');
+    li.textContent = text;
+    listEl.appendChild(li);
+  });
+}
+
+function renderLabeledList(listEl, items, emptyEl){
+  if(!listEl) return;
+  listEl.innerHTML = '';
+  const normalised = (items || [])
+    .map(item => {
+      if(!item || !item.label) return null;
+      const values = Array.isArray(item.values) ? item.values.filter(Boolean) : [];
+      const text = values.length ? values.join(' • ') : '';
+      return text ? { label: item.label, text } : null;
+    })
+    .filter(Boolean);
+  if(!normalised.length){
+    if(emptyEl) emptyEl.hidden = false;
+    return;
+  }
+  if(emptyEl) emptyEl.hidden = true;
+  normalised.forEach(item => {
+    const li = document.createElement('li');
+    const strong = document.createElement('strong');
+    strong.textContent = `${item.label}:`;
+    li.appendChild(strong);
+    li.appendChild(document.createTextNode(` ${item.text}`));
+    listEl.appendChild(li);
+  });
+}
+
+function getEffectiveClassEntries(){
+  if(Array.isArray(state.classProgression) && state.classProgression.length){
+    return state.classProgression;
+  }
+  return [createClassEntry(state.classeId || '', Number(state.livello) || 0, state.archetypes)];
+}
+
+function mergeClassProficiencies(bucket, cls, profs){
+  if(!profs) return;
+  const classLabel = cls?.name || cls?.id || '';
+  const pushMany = (target, values, prefix = null) => {
+    values.forEach(text => {
+      if(!text) return;
+      const label = prefix ? `${prefix}: ${classLabel}` : classLabel;
+      target.push({ className: classLabel, text: text.toString(), label });
+    });
+  };
+  const armour = profs.armor || { light: [], medium: [], heavy: [] };
+  pushMany(bucket.weapons, toArray(profs.weapons || []));
+  pushMany(bucket.armorLight, toArray(armour.light || []));
+  pushMany(bucket.armorMedium, toArray(armour.medium || []));
+  pushMany(bucket.armorHeavy, toArray(armour.heavy || []));
+  pushMany(bucket.shields, toArray(profs.shields || []));
+  pushMany(bucket.other, toArray(profs.other || []));
+}
+
+function collectClassCapabilityInfo(){
+  const entries = getEffectiveClassEntries();
+  const info = {
+    features: [],
+    replaced: [],
+    focus: [],
+    bonusFeats: [],
+    proficiencies: {
+      weapons: [],
+      armorLight: [],
+      armorMedium: [],
+      armorHeavy: [],
+      shields: [],
+      other: []
+    }
+  };
+  entries.forEach(entry => {
+    const cls = getClassById(entry.classId);
+    if(!cls) return;
+    const classLabel = cls.name || entry.classId || 'Classe selezionata';
+    const levelCap = Number.isFinite(Number(entry.level)) ? Number(entry.level) : null;
+    const archetypes = toArray(entry.archetypes).map(id => getArchetypeById(entry.classId, id)).filter(Boolean);
+    const replacedMap = new Map();
+    const modifiedMap = new Map();
+    archetypes.forEach(arch => {
+      toArray(arch.replaces).forEach(name => {
+        const key = normaliseFeatureKey(name);
+        if(key) replacedMap.set(key, arch);
+      });
+      toArray(arch.modifies).forEach(name => {
+        const key = normaliseFeatureKey(name);
+        if(key) modifiedMap.set(key, arch);
+      });
+      if(arch.summary){
+        info.features.push({
+          className: classLabel,
+          name: arch.name,
+          level: null,
+          summary: arch.summary,
+          status: 'archetype'
+        });
+      }
+    });
+    const features = Array.isArray(cls.features) ? cls.features : [];
+    features.forEach(feature => {
+      const name = feature?.name || feature?.id;
+      if(!name) return;
+      if(levelCap != null && feature?.level != null && Number(feature.level) > levelCap) return;
+      const key = normaliseFeatureKey(name);
+      if(replacedMap.has(key)){
+        const arch = replacedMap.get(key);
+        info.replaced.push({
+          className: classLabel,
+          name,
+          level: feature.level ?? null,
+          summary: feature.summary || feature.description || '',
+          archetype: arch?.name || ''
+        });
+        return;
+      }
+      const modified = modifiedMap.get(key);
+      const summaryParts = [feature.summary || feature.description || ''];
+      if(modified){
+        summaryParts.push(`Modificato da ${modified.name}.`);
+      }
+      info.features.push({
+        className: classLabel,
+        name,
+        level: feature.level ?? null,
+        summary: summaryParts.filter(Boolean).join(' '),
+        status: modified ? 'modified' : 'active'
+      });
+    });
+    const focusOptions = Array.isArray(cls.focusOptions) ? cls.focusOptions : [];
+    focusOptions.forEach(option => {
+      info.focus.push({
+        className: classLabel,
+        label: option.label || option.name || option.type || 'Selezione',
+        count: option.count || null,
+        options: toArray(option.options || []),
+        summary: option.summary || ''
+      });
+    });
+    const bonusFeats = toArray(cls.bonusFeats);
+    bonusFeats.forEach(text => {
+      info.bonusFeats.push({ className: classLabel, text: text.toString() });
+    });
+    mergeClassProficiencies(info.proficiencies, cls, cls.proficiencies);
+  });
+  return info;
+}
+
+function renderClassCapabilities(){
+  const activeList = document.querySelector('[data-cap-features]');
+  const activeEmpty = document.querySelector('[data-cap-features-empty]');
+  const replacedList = document.querySelector('[data-cap-replaced]');
+  const replacedEmpty = document.querySelector('[data-cap-replaced-empty]');
+  const focusList = document.querySelector('[data-cap-focus]');
+  const focusEmpty = document.querySelector('[data-cap-focus-empty]');
+  if(!activeList && !replacedList && !focusList) return;
+  const info = collectClassCapabilityInfo();
+  const featureItems = info.features.map(item => {
+    const parts = [];
+    if(item.className) parts.push(item.className);
+    if(item.name) parts.push(item.name);
+    const label = item.level != null ? `${parts.join(' · ')} (Lv ${item.level})` : parts.join(' · ');
+    return { label, text: item.summary, status: item.status };
+  });
+  if(activeList){
+    activeList.innerHTML = '';
+    if(!featureItems.length){
+      if(activeEmpty) activeEmpty.hidden = false;
+    } else {
+      if(activeEmpty) activeEmpty.hidden = true;
+      featureItems.forEach(item => {
+        const li = document.createElement('li');
+        const strong = document.createElement('strong');
+        strong.textContent = item.label;
+        li.appendChild(strong);
+        if(item.text){
+          const detail = document.createElement('div');
+          detail.textContent = item.text;
+          li.appendChild(detail);
+        }
+        if(item.status === 'modified') li.classList.add('is-modified');
+        if(item.status === 'archetype') li.classList.add('is-archetype');
+        activeList.appendChild(li);
+      });
+    }
+  }
+  if(replacedList){
+    const replacedItems = info.replaced.map(item => {
+      const base = item.level != null ? `${item.className} · ${item.name} (Lv ${item.level})` : `${item.className} · ${item.name}`;
+      const detail = item.archetype ? `Sostituito da ${item.archetype}. ${item.summary || ''}`.trim() : item.summary || '';
+      return detail ? `${base}: ${detail}` : base;
+    });
+    renderTextList(replacedList, replacedItems, replacedEmpty);
+  }
+  if(focusList){
+    const focusItems = info.focus.map(option => {
+      const countLabel = option.count ? ` (scegli ${option.count})` : '';
+      const prefix = `${option.className} · ${option.label}${countLabel}`;
+      const detailParts = [];
+      if(option.options.length) detailParts.push(option.options.join(', '));
+      if(option.summary) detailParts.push(option.summary);
+      return `${prefix}: ${detailParts.filter(Boolean).join(' — ')}`.trim();
+    });
+    renderTextList(focusList, focusItems, focusEmpty);
+  }
+}
+
+function renderProficiencySummary(){
+  const recordedList = document.querySelector('[data-cap-profs-recorded]');
+  const recordedEmpty = document.querySelector('[data-cap-profs-recorded-empty]');
+  const databaseList = document.querySelector('[data-cap-profs-database]');
+  const databaseEmpty = document.querySelector('[data-cap-profs-database-empty]');
+  if(recordedList){
+    const items = PROFICIENCY_FIELD_CONFIG.map(cfg => {
+      const value = state[cfg.key];
+      if(!value) return null;
+      const values = cfg.key === 'profCategorieExtra' ? splitUserEntries(value) : [value];
+      const formatted = values.filter(Boolean).join(' • ');
+      if(!formatted) return null;
+      const source = cfg.sourceKey ? (state[cfg.sourceKey] || '').trim() : '';
+      const label = source ? `${cfg.label}: ${formatted} (${source})` : `${cfg.label}: ${formatted}`;
+      return label;
+    }).filter(Boolean);
+    renderTextList(recordedList, items, recordedEmpty);
+  }
+  if(databaseList){
+    const info = collectClassCapabilityInfo();
+    const parts = [];
+    const push = (label, entries) => {
+      entries.forEach(item => {
+        const owner = item.className ? `${item.className}: ` : '';
+        parts.push(`${label} — ${owner}${item.text}`);
+      });
+    };
+    push('Armi', info.proficiencies.weapons);
+    push('Armature leggere', info.proficiencies.armorLight);
+    push('Armature medie', info.proficiencies.armorMedium);
+    push('Armature pesanti', info.proficiencies.armorHeavy);
+    push('Scudi', info.proficiencies.shields);
+    push('Altro', info.proficiencies.other);
+    renderTextList(databaseList, parts, databaseEmpty);
+  }
+}
+
+function renderCapabilityNotes(){
+  const notesList = document.querySelector('[data-cap-notes]');
+  const notesEmpty = document.querySelector('[data-cap-notes-empty]');
+  const bonusList = document.querySelector('[data-cap-bonus]');
+  const bonusEmpty = document.querySelector('[data-cap-bonus-empty]');
+  const summaryEl = document.querySelector('[data-cap-riassunto]');
+  if(notesList){
+    const items = [
+      { label: 'Talenti', values: splitUserEntries(state.talenti) },
+      { label: 'Tratti', values: splitUserEntries(state.tratti) },
+      { label: 'Difetti', values: splitUserEntries(state.difetti) }
+    ];
+    renderLabeledList(notesList, items, notesEmpty);
+  }
+  if(bonusList){
+    const info = collectClassCapabilityInfo();
+    const bonusItems = info.bonusFeats.map(item => `${item.className}: ${item.text}`);
+    renderTextList(bonusList, bonusItems, bonusEmpty);
+  }
+  if(summaryEl){
+    const text = (state.riassCapacita || '').toString().trim();
+    summaryEl.textContent = text || 'Compila il campo "Capacità di Classe chiave" nella scheda completa per una nota rapida.';
+  }
 }
 
 /*
@@ -520,11 +2345,19 @@ function renderOCTable(){
     return [o.nome,o.slot,o.rarita,o.effetto].filter(Boolean).some(s => (s+"").toLowerCase().includes(q));
   });
   tbody.innerHTML = '';
-  filtered.forEach(o => {
+  if(!filtered.length){
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${o.nome||''}</td><td>${o.slot||'—'}</td><td>${o.li||'—'}</td><td>${o.prezzo||'—'}</td><td>${o.rarita||'—'}</td><td><button class="btn" data-idx="${o.idx}">Modifica</button></td>`;
+    tr.innerHTML = '<td colspan="6" class="muted">Nessun oggetto trovato.</td>';
     tbody.appendChild(tr);
-  });
+  } else {
+    filtered.forEach(o => {
+      const tr = document.createElement('tr');
+      const li = o.li ?? '—';
+      const prezzo = o.prezzo ?? '—';
+      tr.innerHTML = `<td>${o.nome||''}</td><td>${o.slot||'—'}</td><td>${li}</td><td>${prezzo}</td><td>${o.rarita||'—'}</td><td><button class="btn" data-idx="${o.idx}">Modifica</button></td>`;
+      tbody.appendChild(tr);
+    });
+  }
   tbody.querySelectorAll('button[data-idx]').forEach(btn => {
     btn.onclick = () => {
       ocSelectionIndex = parseInt(btn.getAttribute('data-idx'),10);
@@ -540,15 +2373,15 @@ function renderOCTable(){
 }
 
 function fillOCForm(o){
-  document.getElementById('ocNome').value     = o.nome||'';
-  document.getElementById('ocSlot').value     = o.slot||'';
-  document.getElementById('ocLI').value       = o.li||'';
-  document.getElementById('ocPrezzo').value   = o.prezzo||'';
-  document.getElementById('ocRarita').value   = o.rarita||'Comune';
-  document.getElementById('ocHR').value       = o.hr?'Sì':'No';
-  document.getElementById('ocAzioni').value   = o.azioni||'';
-  document.getElementById('ocTS').value       = o.ts||'';
-  document.getElementById('ocEffetto').value  = o.effetto||'';
+  document.getElementById('ocNome').value     = o.nome ?? '';
+  document.getElementById('ocSlot').value     = o.slot ?? '';
+  document.getElementById('ocLI').value       = o.li ?? '';
+  document.getElementById('ocPrezzo').value   = o.prezzo ?? '';
+  document.getElementById('ocRarita').value   = o.rarita ?? 'Comune';
+  document.getElementById('ocHR').value       = o.hr ? 'Sì' : 'No';
+  document.getElementById('ocAzioni').value   = o.azioni ?? '';
+  document.getElementById('ocTS').value       = o.ts ?? '';
+  document.getElementById('ocEffetto').value  = o.effetto ?? '';
   document.getElementById('ocDettagli').value = (o.dettagli||[]).map(x=>'- '+x).join('\n');
   document.getElementById('ocStatus').textContent = ocSelectionIndex == null ? 'Nuovo oggetto…' : `Modifica #${ocSelectionIndex+1}`;
 }
@@ -568,11 +2401,15 @@ async function loadOCSeed(){
 
 function saveCurrentOC(){
   const list = loadOC();
+  const liValue = document.getElementById('ocLI').value;
+  const prezzoValue = document.getElementById('ocPrezzo').value;
+  const li = liValue === '' ? null : parseInt(liValue,10);
+  const prezzo = prezzoValue === '' ? null : parseInt(prezzoValue,10);
   const item = {
     nome: document.getElementById('ocNome').value.trim(),
     slot: document.getElementById('ocSlot').value.trim(),
-    li: parseInt(document.getElementById('ocLI').value || '0',10) || null,
-    prezzo: parseInt(document.getElementById('ocPrezzo').value || '0',10) || null,
+    li: Number.isFinite(li) ? li : null,
+    prezzo: Number.isFinite(prezzo) ? prezzo : null,
     rarita: document.getElementById('ocRarita').value,
     hr: document.getElementById('ocHR').value === 'Sì',
     azioni: document.getElementById('ocAzioni').value.trim(),
@@ -599,3 +2436,7 @@ function deleteCurrentOC(){
 
 // Utility: debounce
 function debounce(fn, ms){ let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms); }; }
+
+// Carica la vista iniziale
+if(!location.hash) location.hash = '#/avvio';
+render(location.hash.replace('#',''));

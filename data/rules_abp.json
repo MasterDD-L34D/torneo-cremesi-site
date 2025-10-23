@@ -1,0 +1,76 @@
+{
+  "id": "abp",
+  "name": "Automatic Bonus Progression",
+  "variant": "Torneo Cremesi",
+  "version": "2024.06",
+  "sources": [
+    "Pathfinder Unchained, pag. 152",
+    "HR Torneo Cremesi 2024"
+  ],
+  "summary": [
+    "Potenza sostituisce i bonus di potenziamento alle armi impugnate; puoi convertire parte del valore in capacità speciali secondo la tabella di conversione.",
+    "Resilienza applica il bonus di potenziamento ad armatura e scudo; il valore può essere diviso liberamente e convertito in proprietà difensive.",
+    "Resistenza (mantello) e Deflessione (anello) scalano automaticamente; non acquistare oggetti che replicano questi bonus.",
+    "Potere innato fornisce un bonus di potenziamento ad una caratteristica a scelta, riassegnabile ad ogni incremento.",
+    "Le capacità ottenute tramite ABP non si cumulano con oggetti che concedono lo stesso tipo di bonus: usa sempre il valore più alto."
+  ],
+  "order": ["potency", "resilience", "resistance", "deflection", "ability"],
+  "labels": {
+    "potency": "Potenza (arma)",
+    "resilience": "Resilienza (armatura/scudo)",
+    "resistance": "Resistenza (mantello)",
+    "deflection": "Deflessione (anello)",
+    "ability": "Potere innato (caratteristica)"
+  },
+  "details": {
+    "potency": "Applica il bonus di potenziamento a tutte le armi impugnate o converti il valore in proprietà magiche (vedi conversione).",
+    "resilience": "Distribuisci il bonus tra armatura e scudo; puoi spenderlo per fortificazione, energia, o altre proprietà difensive equivalenti.",
+    "resistance": "Bonus di resistenza cumulativo ai TS (come un Mantello della Resistenza).",
+    "deflection": "Bonus di deviazione alla CA (come un Anello di Protezione).",
+    "ability": "Bonus di potenziamento ad una caratteristica a scelta; può essere riassegnato a riposo prolungato." 
+  },
+  "conversion": {
+    "potency": [
+      { "cost": 1, "options": ["Flaming", "Keen", "Holy", "Corrosive", "Thundering"] },
+      { "cost": 2, "options": ["Speed", "Bane specializzato", "Furious", "Impact"] },
+      { "cost": 3, "options": ["Brilliant Energy", "Holy Burst", "Vorpal"], "note": "Disponibili solo se compatibili con l'arma." }
+    ],
+    "resilience": [
+      { "cost": 1, "options": ["Energia (fuoco/freddo/acido/elettricità)", "Spiked Armor"], "note": "Massimo due energie diverse attive." },
+      { "cost": 2, "options": ["Fortificazione (leggera)", "Shadow", "Slick"], "note": "Fortificazione scala a media/pesante spendendo 3/4 punti." },
+      { "cost": 3, "options": ["Fortificazione (media)", "Spell Resistance 13"], "note": "SR non si cumula con altre fonti." }
+    ]
+  },
+  "progression": [
+    { "level": 1,  "bonuses": { "potency": 1 } },
+    { "level": 2,  "bonuses": { "resilience": 1 } },
+    { "level": 3,  "bonuses": { "resistance": 1 } },
+    { "level": 4,  "bonuses": { "deflection": 1 } },
+    { "level": 5,  "bonuses": { "potency": 2, "ability": 2 }, "note": "Prima scelta di potere innato; scegli la caratteristica ogni volta che il bonus aumenta." },
+    { "level": 6,  "bonuses": { "resilience": 2 } },
+    { "level": 7,  "bonuses": { "resistance": 2 } },
+    { "level": 8,  "bonuses": { "deflection": 2 } },
+    { "level": 9,  "bonuses": { "potency": 3 }, "note": "Puoi convertire fino a +3 di potenza in proprietà speciali cumulative." },
+    { "level": 10, "bonuses": { "resilience": 3, "ability": 4 }, "note": "Seconda soglia di potere innato; valuta di cambiare caratteristica in base alla build." },
+    { "level": 11, "bonuses": { "resistance": 3 } },
+    { "level": 12, "bonuses": { "deflection": 3 } },
+    { "level": 13, "bonuses": { "potency": 4 } },
+    { "level": 14, "bonuses": { "resilience": 4 } },
+    { "level": 15, "bonuses": { "resistance": 4, "ability": 6 }, "note": "Terza soglia di potere innato." },
+    { "level": 16, "bonuses": { "deflection": 4 } },
+    { "level": 17, "bonuses": { "potency": 5 } },
+    { "level": 18, "bonuses": { "resilience": 5 } },
+    { "level": 19, "bonuses": { "resistance": 5 } },
+    { "level": 20, "bonuses": { "deflection": 5 }, "note": "Capstone: tutti i bonus ABP al massimo." }
+  ],
+  "lootGuidelines": [
+    "Non acquistare armi/armature con bonus di potenziamento: usa il budget per capacità uniche o utility narrative.",
+    "Gli oggetti che forniscono bonus di deviazione/resistenza vanno trattati come slot cosmetici senza valore monetario.",
+    "Gli slot anello/mantello restano disponibili per effetti non numerici (telepatia, planeshift, ecc.)."
+  ],
+  "notes": [
+    "La tabella mostra i bonus cumulativi maturati: ogni riga evidenziata corrisponde al livello corrente della scheda.",
+    "Se ottieni un oggetto con bonus superiore rispetto all'ABP, usa il valore più alto e considera l'altro sospeso.",
+    "Gli incantatori possono convertire Potere innato in potenziamento alla caratteristica chiave oppure distribuirlo temporaneamente grazie a rituali del compendio."
+  ]
+}

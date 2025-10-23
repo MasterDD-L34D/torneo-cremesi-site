@@ -1,0 +1,194 @@
+{
+  "entries": [
+    {
+      "id": "fighter-archer",
+      "name": "Archer",
+      "source": "Paizo",
+      "replaces": [
+        "Bravery (1)",
+        "Bravery (2)",
+        "Bravery (3)",
+        "Bravery (4)",
+        "Armor Training (1)",
+        "Armor Training (2)",
+        "Armor Training (3)",
+        "Armor Training (4)",
+        "Weapon Training (1)",
+        "Weapon Training (2)",
+        "Weapon Training (3)",
+        "Weapon Training (4)"
+      ],
+      "modifies": [
+        "Weapon Mastery"
+      ]
+    },
+    {
+      "id": "fighter-armiger",
+      "name": "Armiger",
+      "source": "Paizo",
+      "replaces": [
+        "Bonus Feat (1)",
+        "Bonus Feat (10)",
+        "Bravery (1)"
+      ],
+      "modifies": [
+        "Class Skills",
+        "Skill Ranks",
+        "Bonus Feat (2)",
+        "Bonus Feat (4)",
+        "Bonus Feat (6)",
+        "Bonus Feat (8)",
+        "Bonus Feat (12)",
+        "Bonus Feat (14)",
+        "Bonus Feat (16)",
+        "Bonus Feat (18)",
+        "Bonus Feat (20)"
+      ]
+    },
+    {
+      "id": "fighter-armor-master",
+      "name": "Armor Master",
+      "source": "Paizo",
+      "replaces": [
+        "Bravery (1)",
+        "Armor Training (1)",
+        "Armor Training (2)",
+        "Armor Training (3)",
+        "Armor Training (4)",
+        "Weapon Training (1)",
+        "Weapon Training (2)",
+        "Weapon Training (3)",
+        "Weapon Training (4)",
+        "Armor Mastery",
+        "Weapon Mastery"
+      ]
+    },
+    {
+      "id": "fighter-aquanaut",
+      "name": "Aquanaut",
+      "source": "Paizo",
+      "replaces": [
+        "Bravery (1)",
+        "Bravery (2)",
+        "Bravery (3)",
+        "Bravery (4)",
+        "Armor Training (1)",
+        "Armor Training (2)",
+        "Armor Training (3)",
+        "Armor Training (4)",
+        "Weapon Training (1)",
+        "Weapon Training (2)",
+        "Weapon Training (3)",
+        "Weapon Training (4)"
+      ],
+      "modifies": [
+        "Weapon & Armor",
+        "Weapon Mastery"
+      ]
+    },
+    {
+      "id": "fighter-blackjack",
+      "name": "Blackjack",
+      "source": "Paizo",
+      "replaces": [
+        "Bonus Feat (2)",
+        "Bonus Feat (6)",
+        "Bonus Feat (10)",
+        "Bonus Feat (14)",
+        "Bonus Feat (18)"
+      ]
+    },
+    {
+      "id": "fighter-border-defender",
+      "name": "Border Defender",
+      "source": "Paizo",
+      "replaces": [
+        "Bravery (1)",
+        "Bravery (2)",
+        "Bravery (3)",
+        "Bravery (4)"
+      ]
+    },
+    {
+      "id": "fighter-brawler",
+      "name": "Brawler",
+      "source": "Paizo",
+      "replaces": [
+        "Bravery (1)",
+        "Bravery (2)",
+        "Bravery (3)",
+        "Bravery (4)",
+        "Armor Training (1)",
+        "Armor Training (2)",
+        "Armor Training (3)",
+        "Armor Training (4)",
+        "Weapon Training (1)",
+        "Weapon Training (2)",
+        "Weapon Training (3)",
+        "Weapon Training (4)"
+      ],
+      "modifies": [
+        "Weapon Mastery"
+      ]
+    },
+    {
+      "id": "fighter-buckler-duelist",
+      "name": "Buckler Duelist",
+      "source": "Paizo",
+      "replaces": [
+        "Bravery (1)",
+        "Bravery (2)",
+        "Bravery (3)",
+        "Bravery (4)",
+        "Weapon Training (2)"
+      ],
+      "modifies": [
+        "Weapon Training (1)"
+      ]
+    },
+    {
+      "id": "fighter-cad",
+      "name": "Cad",
+      "source": "Paizo",
+      "replaces": [
+        "Class Skills",
+        "Bonus Feat (8)",
+        "Bonus Feat (10)",
+        "Bonus Feat (12)",
+        "Bonus Feat (14)",
+        "Bonus Feat (16)",
+        "Bonus Feat (18)",
+        "Bonus Feat (20)",
+        "Weapon Training (4)"
+      ],
+      "modifies": [
+        "Weapon & Armor",
+        "Bravery (1)"
+      ]
+    },
+    {
+      "id": "fighter-child-of-war",
+      "name": "Child of War",
+      "source": "Paizo",
+      "replaces": [
+        "Bonus Feat (1)",
+        "Bonus Feat (2)",
+        "Bonus Feat (6)",
+        "Bonus Feat (8)",
+        "Bonus Feat (10)",
+        "Bonus Feat (12)",
+        "Bonus Feat (14)",
+        "Bravery (1)",
+        "Bravery (2)",
+        "Bravery (3)",
+        "Bravery (4)"
+      ],
+      "modifies": [
+        "Class Skills",
+        "Skill Ranks",
+        "Weapon & Armor",
+        "Bonus Feat (4)"
+      ]
+    }
+  ]
+}

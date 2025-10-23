@@ -65,3 +65,24 @@ export const TC_DATA = {
 
 // Lista delle 6 statistiche base
 export const STATS = ["For","Des","Cos","Int","Sag","Car"];
+
+export const ALIGNMENTS = [
+  { id: 'LG', label: 'Legale Buono', description: 'Segue il codice e persegue il bene sopra ogni altra cosa.' },
+  { id: 'NG', label: 'Neutrale Buono', description: 'Fiducioso e altruista, privilegia il bene rispetto alla legge.' },
+  { id: 'CG', label: 'Caotico Buono', description: 'Libero e benevolo, sfida le regole oppressive.' },
+  { id: 'LN', label: 'Legale Neutrale', description: 'Onora l’ordine e il dovere, spesso al di sopra del bene e del male.' },
+  { id: 'N',  label: 'Neutrale', description: 'Equilibrato tra estremi morali e legali.' },
+  { id: 'CN', label: 'Caotico Neutrale', description: 'Valorizza la libertà personale e l’imprevedibilità.' },
+  { id: 'LM', label: 'Legale Malvagio', description: 'Utilizza la legge e la gerarchia per dominare gli altri.' },
+  { id: 'NM', label: 'Neutrale Malvagio', description: 'Persegue fini egoistici o crudeli senza riguardo per ordine o caos.' },
+  { id: 'CM', label: 'Caotico Malvagio', description: 'Anarchico e spietato, agisce per distruggere o dominare.' }
+];
+
+export const AGE_STAGES = [
+  { id: 'young', label: 'Giovane', summary: '–2 For, –2 Cos, +2 Des; adatto a PG adolescenti.' },
+  { id: 'adult', label: 'Adulto', summary: 'Nessuna modifica alle caratteristiche.' },
+  { id: 'middle', label: 'Mezza età', summary: '–1 For, –1 Des, –1 Cos; +1 Int, +1 Sag, +1 Car.' },
+  { id: 'old', label: 'Anziano', summary: '–2 For, –2 Des, –2 Cos; +1 Int, +1 Sag, +1 Car.' },
+  { id: 'venerable', label: 'Venerabile', summary: '–3 For, –3 Des, –3 Cos; +1 Int, +1 Sag, +1 Car.' }
+];
+
