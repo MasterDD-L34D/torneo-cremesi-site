@@ -9,7 +9,8 @@ const ENDPOINTS = {
 const STUBS = {
   races: 'data/aon-races.stub.json',
   classes: 'data/aon-classes.stub.json',
-  traits: 'data/aon-traits.stub.json'
+  traits: 'data/aon-traits.stub.json',
+  drawbacks: 'data/aon-traits.stub.json'
 };
 
 let raceCache = null;
@@ -180,26 +181,56 @@ export async function getClasses(){
   return classCache;
 }
 
+function collectTraitEntries(raw){
+  if(Array.isArray(raw?.traits)) return raw.traits;
+  if(Array.isArray(raw?.Traits)) return raw.Traits;
+  if(Array.isArray(raw?.entries)) return raw.entries;
+  if(Array.isArray(raw?.Entries)) return raw.Entries;
+  if(Array.isArray(raw?.drawbacks)) return raw.drawbacks;
+  if(Array.isArray(raw?.Drawbacks)) return raw.Drawbacks;
+  if(Array.isArray(raw)) return raw;
+  if(raw && typeof raw === 'object'){
+    return Object.values(raw)
+      .flat()
+      .filter(entry => typeof entry === 'object' && entry != null);
+  }
+  return [];
+}
+
+function isDrawbackEntry(entry){
+  const type = entry?.type || entry?.Type || '';
+  return typeof type === 'string' && type.toLowerCase() === 'drawback';
+}
+
 export async function getTraitsAndDrawbacks(){
   if(traitCache) return traitCache;
-  const raw = await fetchWithFallback(ENDPOINTS.traits, STUBS.traits);
-  let traits = [];
-  let drawbacks = [];
-  if(Array.isArray(raw?.traits)) traits = raw.traits;
-  else if(Array.isArray(raw?.Traits)) traits = raw.Traits;
-  else if(Array.isArray(raw)) traits = raw;
-  else if(raw && typeof raw === 'object') traits = Object.values(raw).flat().filter(item => item?.type !== 'Drawback');
+  const [rawTraits, rawDrawbacks] = await Promise.all([
+    fetchWithFallback(ENDPOINTS.traits, STUBS.traits),
+    fetchWithFallback(ENDPOINTS.drawbacks, STUBS.drawbacks)
+  ]);
 
-  if(Array.isArray(raw?.drawbacks)) drawbacks = raw.drawbacks;
-  else if(Array.isArray(raw?.Drawbacks)) drawbacks = raw.Drawbacks;
-  else if(raw && typeof raw === 'object' && raw.drawbacks == null && raw.Drawbacks == null){
-    const asArray = Object.values(raw).flat();
-    drawbacks = asArray.filter(item => (item?.type || item?.Type) === 'Drawback');
-  }
+  const traitSourceEntries = collectTraitEntries(rawTraits);
+  const traitEntries = traitSourceEntries.filter(entry => !isDrawbackEntry(entry));
+  const drawbackEntries = [
+    ...collectTraitEntries(rawDrawbacks),
+    ...traitSourceEntries.filter(isDrawbackEntry)
+  ];
+
+  const normalisedTraits = traitEntries
+    .map(t => normaliseTrait(t))
+    .filter(Boolean);
+
+  const drawbackMap = new Map();
+  drawbackEntries.forEach(entry => {
+    const normalised = normaliseTrait(entry);
+    if(normalised && !drawbackMap.has(normalised.id)){
+      drawbackMap.set(normalised.id, normalised);
+    }
+  });
 
   traitCache = {
-    traits: traits.map(t => normaliseTrait(t)).filter(Boolean),
-    drawbacks: drawbacks.map(t => normaliseTrait(t)).filter(Boolean)
+    traits: normalisedTraits,
+    drawbacks: Array.from(drawbackMap.values())
   };
   return traitCache;
 }
