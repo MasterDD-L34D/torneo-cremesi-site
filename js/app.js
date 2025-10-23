@@ -409,52 +409,21 @@ function initScheda(context = {}){
   const autoFields = container ? Array.from(container.querySelectorAll('[data-field]')) : [];
   const handledKeys = new Set();
 
-  state.toggleEitr = state.toggleEitr ?? true;
-  state.toggleAbp = state.toggleAbp ?? true;
-  state.raceAltTraits = toArray(state.raceAltTraits ?? []);
-  state.archetypes = toArray(state.archetypes ?? []);
-  state.traitsList = toArray(state.traitsList ?? []);
-  state.drawbackList = toArray(state.drawbackList ?? []);
-  state.tagliaManual = state.tagliaManual ?? false;
-  state.multiClassEnabled = state.multiClassEnabled === true;
-  state.lastMulticlassPlan = normaliseClassProgression(state.lastMulticlassPlan || []);
-  state.classProgression = normaliseClassProgression(state.classProgression || []);
-  if(!state.classProgression.length){
-    const baseLevel = Number.isFinite(Number(state.livello)) ? Number(state.livello) : 0;
-    state.classProgression = [createClassEntry(state.classeId || '', baseLevel, state.archetypes)];
-  }
-  if(!state.multiClassEnabled && state.classProgression.length > 1){
-    state.lastMulticlassPlan = cloneProgression(state.classProgression);
-    state.classProgression = [state.classProgression[0]];
-  }
-  syncPrimaryClassFromProgression();
-
   const bindField = (el, key) => {
     if(!el || !key) return;
     handledKeys.add(key);
-    registerBinding(key, el);
+    const baseValue = el.defaultValue ?? el.value ?? '';
     if(state[key] != null){
-      setElementValue(el, state[key]);
-    } else if(el.dataset.fieldType === ARRAY_FIELD){
-      state[key] = [];
-      setElementValue(el, []);
-    } else if(el.type === 'checkbox'){
-      state[key] = el.checked;
-    } else {
-      const baseValue = el.defaultValue ?? el.value ?? '';
-      if(baseValue !== ''){
-        state[key] = baseValue;
-      }
+      el.value = state[key];
+    } else if(baseValue !== ''){
+      el.value = baseValue;
     }
     const persist = debounce(() => {
-      const value = getElementValue(el);
-      state[key] = value;
-      syncBoundFields(key, el);
-      handleFieldUpdate(key, value, el);
+      state[key] = el.value;
       saveAppState(state);
     }, 250);
     el.addEventListener('input', persist);
-    if(el.tagName === 'SELECT' || el.type === 'checkbox' || el.type === 'radio'){
+    if(el.tagName === 'SELECT'){
       el.addEventListener('change', persist);
     }
   };
@@ -465,7 +434,7 @@ function initScheda(context = {}){
   });
 
   const legacyIds = [
-    'nome','razzaClassiSynth','livello','allineamentoSynth','tagliaSintesi','misureSintesi',
+    'nome','razzaClassi','livello','allineamento','taglia','altezza',
     'palette','motto','imgUrl','descrizione',
     'talenti','tratti','difetti','pf','ca','ts','bab','cmbcmd','iniziativa','velocita',
     'skills','loadout','altro','budget','pp','gp','sp','cp',
@@ -505,6 +474,11 @@ function initScheda(context = {}){
       saveTables();
     });
   }
+  // TC selector e auto-fill
+  buildTCSelect();
+  // Oggetti custom picker
+  buildOCPicker();
+  setupSchedaNav(container);
 }
 
 function migrateLegacyValute(){
@@ -525,6 +499,69 @@ function migrateLegacyValute(){
     touched = true;
   });
   if(touched) saveAppState(state);
+}
+
+function setupSchedaNav(container){
+  const links = Array.from(container?.querySelectorAll('.scheda-nav a[data-target]') || []);
+  if(!links.length) return;
+  const sections = links
+    .map(link => {
+      const targetId = link.dataset.target;
+      const section = targetId ? container?.querySelector(`#${targetId}`) : null;
+      return section ? { link, section } : null;
+    })
+    .filter(Boolean);
+  if(!sections.length) return;
+  const order = new Map(sections.map(({ section }, idx) => [section, idx]));
+  const setActive = targetLink => {
+    if(!targetLink) return;
+    links.forEach(link => {
+      const isActive = link === targetLink;
+      link.classList.toggle('active', isActive);
+      if(isActive){
+        link.setAttribute('aria-current', 'page');
+      } else {
+        link.removeAttribute('aria-current');
+      }
+    });
+  };
+  if(typeof IntersectionObserver === 'function'){
+    const observer = new IntersectionObserver(entries => {
+      const inView = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => (order.get(a.target) ?? 0) - (order.get(b.target) ?? 0));
+      if(!inView.length) return;
+      const activeSection = inView[0].target;
+      const found = sections.find(item => item.section === activeSection);
+      if(found) setActive(found.link);
+    }, {
+      rootMargin: '-45% 0px -45% 0px',
+      threshold: [0.25, 0.4, 0.6],
+    });
+    sections.forEach(({ section }) => observer.observe(section));
+  }
+  links.forEach(link => {
+    link.addEventListener('click', evt => {
+      evt.preventDefault();
+      const targetId = link.dataset.target;
+      if(!targetId) return;
+      const section = container.querySelector(`#${targetId}`);
+      if(!section) return;
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const heading = section.querySelector('h2, h3');
+      if(heading){
+        heading.setAttribute('tabindex', '-1');
+        try{
+          heading.focus({ preventScroll: true });
+        } catch(err){
+          heading.focus();
+        }
+        heading.addEventListener('blur', () => heading.removeAttribute('tabindex'), { once: true });
+      }
+      setActive(link);
+    });
+  });
+  setActive(sections[0]?.link);
 }
 
 function parseLegacyValute(str){
