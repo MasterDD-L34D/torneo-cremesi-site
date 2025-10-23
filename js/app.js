@@ -264,17 +264,42 @@ function migrateLegacyValute(){
 function setupSchedaNav(container){
   const links = Array.from(container?.querySelectorAll('.scheda-nav a[data-target]') || []);
   if(!links.length) return;
+  const sections = links
+    .map(link => {
+      const targetId = link.dataset.target;
+      const section = targetId ? container?.querySelector(`#${targetId}`) : null;
+      return section ? { link, section } : null;
+    })
+    .filter(Boolean);
+  if(!sections.length) return;
+  const order = new Map(sections.map(({ section }, idx) => [section, idx]));
   const setActive = targetLink => {
+    if(!targetLink) return;
     links.forEach(link => {
       const isActive = link === targetLink;
       link.classList.toggle('active', isActive);
       if(isActive){
-        link.setAttribute('aria-current', 'true');
+        link.setAttribute('aria-current', 'page');
       } else {
         link.removeAttribute('aria-current');
       }
     });
   };
+  if(typeof IntersectionObserver === 'function'){
+    const observer = new IntersectionObserver(entries => {
+      const inView = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => (order.get(a.target) ?? 0) - (order.get(b.target) ?? 0));
+      if(!inView.length) return;
+      const activeSection = inView[0].target;
+      const found = sections.find(item => item.section === activeSection);
+      if(found) setActive(found.link);
+    }, {
+      rootMargin: '-45% 0px -45% 0px',
+      threshold: [0.25, 0.4, 0.6],
+    });
+    sections.forEach(({ section }) => observer.observe(section));
+  }
   links.forEach(link => {
     link.addEventListener('click', evt => {
       evt.preventDefault();
@@ -296,7 +321,7 @@ function setupSchedaNav(container){
       setActive(link);
     });
   });
-  setActive(links[0]);
+  setActive(sections[0]?.link);
 }
 
 function parseLegacyValute(str){
