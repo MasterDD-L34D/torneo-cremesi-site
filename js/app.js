@@ -265,7 +265,15 @@ function setupSchedaNav(container){
   const links = Array.from(container?.querySelectorAll('.scheda-nav a[data-target]') || []);
   if(!links.length) return;
   const setActive = targetLink => {
-    links.forEach(link => link.classList.toggle('active', link === targetLink));
+    links.forEach(link => {
+      const isActive = link === targetLink;
+      link.classList.toggle('active', isActive);
+      if(isActive){
+        link.setAttribute('aria-current', 'true');
+      } else {
+        link.removeAttribute('aria-current');
+      }
+    });
   };
   links.forEach(link => {
     link.addEventListener('click', evt => {
