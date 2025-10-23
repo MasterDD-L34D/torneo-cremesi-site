@@ -109,14 +109,29 @@ if(typeof mobileQuery.addEventListener === 'function'){
 
 syncSidebarState();
 
-function render(route){
+function parseHash(rawHash){
+  const hash = typeof rawHash === 'string' ? rawHash : location.hash;
+  const trimmed = hash?.startsWith('#') ? hash.slice(1) : hash ?? '';
+  if(!trimmed){
+    return { route: '/avvio', params: new URLSearchParams() };
+  }
+  const [path, query = ''] = trimmed.split('?');
+  return {
+    route: path || '/avvio',
+    params: new URLSearchParams(query),
+  };
+}
+
+function render(route, params = new URLSearchParams()){
+  const searchParams = params instanceof URLSearchParams ? params : new URLSearchParams(params);
   const tplId = routes[route] || routes['/avvio'];
   const tpl = document.getElementById(tplId);
   if(!tpl || !appEl) return;
   appEl.innerHTML = tpl.innerHTML;
-  afterRender(route);
+  afterRender(route, searchParams);
   highlightActive(route);
-  focusMainHeading();
+  const shouldSkipFocus = route === '/scheda' && searchParams.has('section');
+  focusMainHeading({ skip: shouldSkipFocus });
   closeSidebar({ restoreFocus: false });
   syncSidebarState();
 }
@@ -127,7 +142,8 @@ function highlightActive(route){
   });
 }
 
-function focusMainHeading(){
+function focusMainHeading({ skip = false } = {}){
+  if(skip) return;
   if(!appEl) return;
   const heading = appEl.querySelector('h1');
   if(heading){
@@ -139,9 +155,11 @@ function focusMainHeading(){
   }
 }
 
-function afterRender(route){
+function afterRender(route, params){
   switch(route){
-    case '/scheda': initScheda(); break;
+    case '/scheda':
+      initScheda({ section: params?.get('section') || '' });
+      break;
     case '/tracker': initTracker(); break;
     case '/oggetti': initOggetti(); break;
     default: break;
@@ -150,8 +168,8 @@ function afterRender(route){
 
 // Eventi di navigazione: cambio hash
 window.addEventListener('hashchange', ()=>{
-  const route = location.hash.replace('#','');
-  render(route);
+  const { route, params } = parseHash(location.hash);
+  render(route, params);
 });
 
 // Pulsanti globali (sidebar)
@@ -167,7 +185,8 @@ document.getElementById('btnPrint').onclick = () => window.print();
 
 // Carica la vista iniziale
 if(!location.hash) location.hash = '#/avvio';
-render(location.hash.replace('#',''));
+const initial = parseHash(location.hash);
+render(initial.route, initial.params);
 
 /*
   Gestione Scheda (parte B)
@@ -176,10 +195,54 @@ render(location.hash.replace('#',''));
 let state = loadAppState();
 const COIN_KEYS = ['pp','gp','sp','cp'];
 
-function initScheda(){
+function initScheda({ section } = {}){
   const container = document.getElementById('app');
   const autoFields = container ? Array.from(container.querySelectorAll('[data-field]')) : [];
   const handledKeys = new Set();
+
+  const focusElement = element => {
+    if(!element) return;
+    if(typeof element.focus !== 'function') return;
+    const hadTabindex = element.hasAttribute('tabindex');
+    if(!hadTabindex){
+      element.setAttribute('tabindex', '-1');
+    }
+    element.focus({ preventScroll: true });
+    element.addEventListener('blur', () => {
+      if(!hadTabindex){
+        element.removeAttribute('tabindex');
+      }
+    }, { once: true });
+  };
+
+  const scrollToSection = (sectionId, { smooth = true } = {}) => {
+    if(!container || !sectionId) return;
+    const safeId = (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') ? CSS.escape(sectionId) : sectionId;
+    const target = container.querySelector(`#${safeId}`);
+    if(!target) return;
+    target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+    const heading = target.querySelector('h2, h3, h4');
+    focusElement(heading || target);
+  };
+
+  const quickNavLinks = container ? Array.from(container.querySelectorAll('.scheda-nav a[data-target]')) : [];
+  quickNavLinks.forEach(link => {
+    link.addEventListener('click', evt => {
+      evt.preventDefault();
+      const targetId = link.dataset.target;
+      if(!targetId) return;
+      if(typeof history !== 'undefined' && typeof history.replaceState === 'function'){
+        const newHash = `#/scheda?section=${encodeURIComponent(targetId)}`;
+        history.replaceState(null, '', newHash);
+      }
+      scrollToSection(targetId);
+    });
+  });
+
+  const initialSection = section?.trim();
+  if(initialSection){
+    requestAnimationFrame(() => scrollToSection(initialSection, { smooth: false }));
+  }
 
   const bindField = (el, key) => {
     if(!el || !key) return;
